@@ -5,6 +5,8 @@ const freindsSchema = new mongoose.Schema({
       type: String,
       required: [true, "Leetcode Id is required"],
       unique: true,
+      index:true,
+
     }
 
 })
@@ -16,3 +18,5 @@ const addFriendsSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+export const AddFriends = mongoose.model("AddFriends", addFriendsSchema);
