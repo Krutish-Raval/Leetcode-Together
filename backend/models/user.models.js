@@ -1,11 +1,28 @@
 import bcrypt from "bcrypt";
 import mongoose from "mongoose";
+import jwt from "jsonwebtoken"
+
+
+const friendsSchema = new mongoose.Schema({
+    leetcodeId:{
+      type: String,
+      required: [true, "Leetcode Id is required"],
+      unique: true,
+      index:true,
+    },
+    friendName:{
+      type: String,
+      required: [true, "Name is required"],
+      index:true,
+      unique: true,
+    }
+
+})
 
 const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: [true, "Name is required"],
       index: true,
     },
     leetcodeId: {
@@ -20,7 +37,11 @@ const userSchema = new mongoose.Schema(
     },
     password: {
         type: String,
+        unique: true,
         required: [true, 'Password is required']
+    },
+    friends: {
+      type:[friendsSchema] ,
     },
     refreshToken: {
       type: String,
