@@ -17,6 +17,7 @@ const generateAccessTokenAndRefreshToken = async (userId) => {
     throw new ApiError(500, "Something went wrong while generating tokens");
   }
 };
+
 const registerUser = asyncHandler(async (req, res, next) => {
   // get user details
   // validation email in correct format and all required non empty
@@ -111,8 +112,8 @@ const logOutUser = asyncHandler(async (req, res, next) => {
   await User.findByIdAndUpdate(
     req.user._id,
     {
-      $set: {
-        RefreshToken: undefined,
+      $unset: {
+        RefreshToken: 1,
       },
     },
     {
@@ -282,6 +283,25 @@ const addFriend = asyncHandler(async (req, res, next) => {
       new: true,
     }
   ).select("-password -refreshToken");
+ 
+  // Add the user to the friend's friendOf list
+  const addedFriend = await User.findOne({ leetcodeId });
+
+  if (addedFriend) {
+    await User.findByIdAndUpdate(
+      addedFriend._id,
+      {
+        $addToSet: {
+          friendOf: {
+            leetcodeId: req.user.leetcodeId,
+            friendName: req.user.name,
+          },
+        },
+      },
+      { new: true }
+    );
+  } 
+
   return res
     .status(200)
     .json(new ApiResponse(200, user, "Friend added successfully"));
@@ -365,6 +385,7 @@ const updateFriendProfile = asyncHandler(async (req, res, next) => {
     .status(200)
     .json(new ApiResponse(200, user, "Friend profile updated successfully"));
 });
+
 
 export {
   addFriend,

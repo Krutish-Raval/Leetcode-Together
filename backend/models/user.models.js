@@ -1,23 +1,21 @@
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
-import jwt from "jsonwebtoken"
-
 
 const friendsSchema = new mongoose.Schema({
-    leetcodeId:{
-      type: String,
-      required: [true, "Leetcode Id is required"],
-      unique: true,
-      index:true,
-    },
-    friendName:{
-      type: String,
-      required: [true, "Name is required"],
-      index:true,
-      unique: true,
-    }
-
-})
+  leetcodeId: {
+    type: String,
+    required: [true, "Leetcode Id is required"],
+    unique: true,
+    index: true,
+  },
+  friendName: {
+    type: String,
+    required: [true, "Name is required"],
+    index: true,
+    unique: true,
+  },
+});
 
 const userSchema = new mongoose.Schema(
   {
@@ -25,29 +23,53 @@ const userSchema = new mongoose.Schema(
       type: String,
       index: true,
     },
+
     leetcodeId: {
       type: String,
       index: true,
     },
+
     email: {
       type: String,
       required: [true, "Email is required"],
       unique: true,
       index: true,
     },
+
     password: {
-        type: String,
-        unique: true,
-        required: [true, 'Password is required']
+      type: String,
+      unique: true,
+      required: [true, "Password is required"],
     },
+
     friends: {
-      type:[friendsSchema] ,
+      type: [friendsSchema],
     },
+
+    friendOf: {
+      type: [friendsSchema],
+    },
+
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+
+    otp: {
+      type: String,
+    },
+
+    otpExpiresIn: {
+      type: Date,
+    },
+
     refreshToken: {
       type: String,
     },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
 userSchema.pre("save", async function (next) {
@@ -58,21 +80,27 @@ userSchema.pre("save", async function (next) {
 });
 
 userSchema.methods.generateAccessToken = async function () {
-  return await jwt.sign({
-    _id: this._id,
-    email: this.email,
-  }, process.env.ACCESS_TOKEN_SECRET, 
-  {expiresIn: process.env.ACCESS_TOKEN_EXPIRY},
-  );
-};
-userSchema.methods.generateRefreshToken = async function () {
-    return await jwt.sign({
+  return await jwt.sign(
+    {
       _id: this._id,
       email: this.email,
-    }, process.env.REFRESH_TOKEN_SECRET, 
-    {expiresIn: process.env.REFRESH_TOKEN_EXPIRY},
-    );
-  };
+    },
+    process.env.ACCESS_TOKEN_SECRET,
+    { expiresIn: process.env.ACCESS_TOKEN_EXPIRY }
+  );
+};
+
+userSchema.methods.generateRefreshToken = async function () {
+  return await jwt.sign(
+    {
+      _id: this._id,
+      email: this.email,
+    },
+    process.env.REFRESH_TOKEN_SECRET,
+    { expiresIn: process.env.REFRESH_TOKEN_EXPIRY }
+  );
+};
+
 userSchema.methods.verifyPassword = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
