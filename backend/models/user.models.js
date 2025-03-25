@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const friendsSchema = new mongoose.Schema({
   leetcodeId: {
@@ -55,12 +55,9 @@ const userSchema = new mongoose.Schema(
       default: false,
     },
 
-    otp: {
-      type: String,
-    },
-
-    otpExpiresIn: {
-      type: Date,
+    solutionPosted:{
+      type: Schema.Types.ObjectId,
+      ref: "SolutionPost",
     },
 
     refreshToken: {

@@ -12,7 +12,7 @@ app.use(express.urlencoded({extended: true},{limit: "16kb"}))
 app.use(express.static("public"))
 app.use(cookieParser())
 app.use(express.json()); // Enable JSON body parsing
-app.use(express.urlencoded({ extended: true })); // For form-data
+
 //routes import
 
 import userRouter from "./routes/user.router.js"
@@ -20,4 +20,8 @@ import userRouter from "./routes/user.router.js"
 // routes declaration
 
 app.use("/api/v1/user", userRouter)
+
+// import authRouter from "./routes/auth.router.js"
+
+// app.use("/api/v1/auth", authRouter)
 export { app }

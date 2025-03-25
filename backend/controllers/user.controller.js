@@ -18,6 +18,7 @@ const generateAccessTokenAndRefreshToken = async (userId) => {
   }
 };
 
+
 const registerUser = asyncHandler(async (req, res, next) => {
   // get user details
   // validation email in correct format and all required non empty
@@ -26,22 +27,29 @@ const registerUser = asyncHandler(async (req, res, next) => {
   // remove password and refresh token from response
   // check for user creation
 
-  const { email, password } = req.body;
+  const { email, password,confirmPassword, OTP } = req.body;
 
-  if ([email, password].some((field) => field?.trim() === "")) {
+  if ([email, password,confirmPassword].some((field) => field?.trim() === "")) {
     throw new ApiError(400, "All fields are required");
-  } else if (!validator.isEmail(email)) {
+  } 
+  else if (!validator.isEmail(email)) {
     throw new ApiError(400, "Invalid Email format");
   }
+  else if(password !== confirmPassword){
+    throw new ApiError(400, "Passwords do not match");
+  }
   const existedUser = await User.findOne({ email });
-  console.log("existedUser: ", existedUser);
+  
+  // console.log("existedUser: ", existedUser);
   if (existedUser) {
     throw new ApiError(402, "User already exists");
   }
+
   const user = await User.create({
     email,
     password,
   });
+
   const createdUser = await User.findById(user._id).select(
     "-password -refreshToken"
   );

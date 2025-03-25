@@ -8,7 +8,7 @@ const transporter = nodemailer.createTransport({
     },
   });
   
-  export const sendEmail = async (to, subject, text) => {
+const sendEmail = async (to, subject, text) => {
     try {
       await transporter.sendMail({
         from: process.env.EMAIL_USER, 
@@ -16,7 +16,7 @@ const transporter = nodemailer.createTransport({
         subject,
         text,
       });
-      console.log(`Email sent to ${to}`);
+    //   console.log(`Email sent to ${to}`);
     } catch (error) {
       console.error(`Error sending email: ${error.message}`);
       throw new Error("Failed to send email. Please try again later.");
