@@ -25,6 +25,9 @@ const contestSolutionSchema = new Schema({
         ref:"SolutionPost",
         default: []
     }
+},
+{
+    timestamps:true
 })
 
 contestSolutionSchema.index({ contestType: 1, contestId: 1, questionNo: 1 });

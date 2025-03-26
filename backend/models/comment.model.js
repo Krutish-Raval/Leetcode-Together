@@ -13,7 +13,9 @@ const commentSchema = new Schema({
     commentText: {
       type: String,
     },
-
+},
+{
+    timestamps:true
 });
 
 export const Comment = mongoose.model("Comment", commentSchema);

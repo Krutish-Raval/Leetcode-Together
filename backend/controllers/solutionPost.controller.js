@@ -7,10 +7,25 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
 const postSolution = asyncHandler(async (req, res, next) => {
-  const { contestType,contestId,questionNo,hint,approach,implementation,codeSS,anyLink,title} = req.body;
+  const {
+    contestType,
+    contestId,
+    questionNo,
+    hint,
+    approach,
+    implementation,
+    codeSS,
+    anyLink,
+    title,
+  } = req.body;
   // console.log(req.body);
   // console.log(approach.length);
-  if ( contestType.trim() === "" || (contestType !== "weekly" && contestType !== "biweekly") || questionNo === 0 || contestId.trim() === "") {
+  if (
+    contestType.trim() === "" ||
+    (contestType !== "weekly" && contestType !== "biweekly") ||
+    questionNo === 0 ||
+    contestId.trim() === ""
+  ) {
     throw new ApiError(400, "enter all fields");
   }
   if (
@@ -20,23 +35,31 @@ const postSolution = asyncHandler(async (req, res, next) => {
     implementation.length === 0 ||
     codeSS.length === 0
   ) {
-    
     throw new ApiError(400, "enter all fields");
   }
-  const newSolution = await SolutionPost.create({
-    postedBy: req.user._id,
-    title:title,
-    hint:hint,
-    approach:approach,
-    implementation:implementation,
-    codeSS: codeSS,
-    anyLink:anyLink,
-  });
 
   let contestSolution = await ContestSolution.findOne({
     contestType,
     contestId,
     questionNo,
+  });
+  if (contestSolution) {
+    let existSolutionByUser = await SolutionPost.findOne({
+      postedBy: req.user._id,
+    });
+    if (existSolutionByUser) {
+      throw new ApiError(400, "Already Posted Solution Edit if You Want");
+    }
+  }
+
+  const newSolution = await SolutionPost.create({
+    postedBy: req.user._id,
+    title: title,
+    hint: hint,
+    approach: approach,
+    implementation: implementation,
+    codeSS: codeSS,
+    anyLink: anyLink,
   });
 
   if (!contestSolution) {
@@ -46,8 +69,7 @@ const postSolution = asyncHandler(async (req, res, next) => {
       questionNo,
       solutions: [newSolution],
     });
-  } 
-  else {
+  } else {
     contestSolution.solutions.push(newSolution);
     await contestSolution.save({ validateBeforeSave: false });
   }
@@ -61,13 +83,14 @@ const postSolution = asyncHandler(async (req, res, next) => {
 
 const getSolutionPosts = asyncHandler(async (req, res, next) => {
   const { contestType, contestId, questionNo } = req.body;
+
   if (
-    contestType.trim() === "" ||
-    contestType !== "weekly" ||
-    contestType !== "biweekly" ||
-    questionNo != 0 ||
+    (contestType.trim() !== "weekly" && contestType.trim() !== "biweekly") ||
+    contestType === "" ||
+    questionNo === 0 ||
     contestId.trim() === ""
   ) {
+    console.log(contestId, contestType, questionNo);
     throw new ApiError(400, "enter all fields");
   }
   const contestSolution = await ContestSolution.findOne({
@@ -79,13 +102,14 @@ const getSolutionPosts = asyncHandler(async (req, res, next) => {
     populate: [
       {
         path: "postedBy",
+        select: "name email _id",
       },
       {
         path: "comments",
         select: "commentText commentBy",
         populate: {
           path: "commentBy",
-          select: "name",
+          select: "name _id",
         },
       },
     ],
@@ -98,7 +122,7 @@ const getSolutionPosts = asyncHandler(async (req, res, next) => {
 });
 
 const deleteSolutionPost = asyncHandler(async (req, res, next) => {
-  const solutionId = req.params;
+  const { solutionId } = req.body;
   const userId = req.user._id;
   const solution = await SolutionPost.findById(solutionId);
   if (!solution) {
@@ -117,7 +141,102 @@ const deleteSolutionPost = asyncHandler(async (req, res, next) => {
     { $pull: { solutionPosted: solutionId } }
   );
   await SolutionPost.findByIdAndDelete(solutionId);
-  return ApiResponse(200, "Solution deleted successfully");
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "Solution deleted successfully"));
 });
 
-export {deleteSolutionPost, getSolutionPosts, postSolution};
+const editSolution = asyncHandler(async (req, res, next) => {
+  const {
+    contestType,
+    contestId,
+    questionNo,
+    hint,
+    approach,
+    implementation,
+    codeSS,
+    anyLink,
+    title,
+    solutionId,
+  } = req.body;
+  // console.log(req.body);
+  // console.log(approach.length);
+  if (
+    contestType.trim() === "" ||
+    (contestType !== "weekly" && contestType !== "biweekly") ||
+    questionNo === 0 ||
+    contestId.trim() === ""
+  ) {
+    throw new ApiError(400, "enter all fields");
+  }
+  if (
+    title.trim() === "" ||
+    hint.length === 0 ||
+    approach.length === 0 ||
+    implementation.length === 0 ||
+    codeSS.length === 0
+  ) {
+    throw new ApiError(400, "enter all fields");
+  }
+
+  let contestSolution = await ContestSolution.findOne({
+    contestType,
+    contestId,
+    questionNo,
+  });
+
+  const solution = await SolutionPost.findById(solutionId);
+  if (!solution) {
+    throw new ApiError(404, "Solution not found");
+  }
+
+  // Authorization check
+  if (solution.postedBy.toString() !== req.user._id.toString()) {
+    throw new ApiError(403, "You are not authorized to edit this solution");
+  }
+
+  const newSolution = await SolutionPost.findByIdAndUpdate(
+    solutionId,
+    {
+      $set: {
+        title: title,
+        hint: hint,
+        approach: approach,
+        implementation: implementation,
+        codeSS: codeSS,
+        anyLink: anyLink,
+      },
+    },
+    {
+      new: true,
+    }
+  );
+
+  const solutionIndex = contestSolution.solutions.findIndex(
+    (s) => s.toString() === solutionId
+  );
+
+  if (solutionIndex === -1) {
+    throw new ApiError(404, "Solution not found in Contest Solution");
+  }
+
+  contestSolution.solutions[solutionIndex] = solution._id;
+  await contestSolution.save({ validateBeforeSave: false });
+
+  const user = await User.findById(req.user._id);
+
+  const userSolutionIndex = user.solutionPosted.findIndex(
+    (s) => s.toString() === solutionId
+  );
+  if (userSolutionIndex === -1) {
+    throw new ApiError(404, "Solution not found in User's Posted Solutions");
+  }
+
+  user.solutionPosted[userSolutionIndex] = solution._id;
+  await user.save({ validateBeforeSave: false });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, newSolution, "Solution posted successfully"));
+});
+export { deleteSolutionPost, getSolutionPosts, postSolution,editSolution };

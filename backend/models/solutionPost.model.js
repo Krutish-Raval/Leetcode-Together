@@ -29,6 +29,9 @@ const solutionPostSchema = new Schema({
     }
     
 
+},
+{
+    timestamps:true
 })
 
 export const SolutionPost = mongoose.model("SolutionPost",solutionPostSchema);

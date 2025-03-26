@@ -11,7 +11,8 @@ import {
     updateFriendProfile,
     getCurrentUser,
     updateUserDetails,
-    addUserDetails
+    addUserDetails,
+    uploadedSolution
 
  } from '../controllers/user.controller.js';
 
@@ -43,5 +44,7 @@ router.route("/get-friend-list").get(verifyJWT, getFriendsList)
 router.route("/update-friend-profile").patch(verifyJWT, updateFriendProfile)
 
 router.route("/add-user-details").post(verifyJWT, addUserDetails)
+
+router.route("/uploaded-solution").get(verifyJWT,uploadedSolution)
 
 export default router;

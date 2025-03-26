@@ -18,7 +18,6 @@ const generateAccessTokenAndRefreshToken = async (userId) => {
   }
 };
 
-
 const registerUser = asyncHandler(async (req, res, next) => {
   // get user details
   // validation email in correct format and all required non empty
@@ -27,19 +26,19 @@ const registerUser = asyncHandler(async (req, res, next) => {
   // remove password and refresh token from response
   // check for user creation
 
-  const { email, password,confirmPassword, OTP } = req.body;
+  const { email, password, confirmPassword, OTP } = req.body;
 
-  if ([email, password,confirmPassword].some((field) => field?.trim() === "")) {
+  if (
+    [email, password, confirmPassword].some((field) => field?.trim() === "")
+  ) {
     throw new ApiError(400, "All fields are required");
-  } 
-  else if (!validator.isEmail(email)) {
+  } else if (!validator.isEmail(email)) {
     throw new ApiError(400, "Invalid Email format");
-  }
-  else if(password !== confirmPassword){
+  } else if (password !== confirmPassword) {
     throw new ApiError(400, "Passwords do not match");
   }
   const existedUser = await User.findOne({ email });
-  
+
   // console.log("existedUser: ", existedUser);
   if (existedUser) {
     throw new ApiError(402, "User already exists");
@@ -222,7 +221,7 @@ const addUserDetails = asyncHandler(async (req, res, next) => {
       new: true,
     }
   ).select("-password -refreshToken");
-//   console.log("user: ", user);
+  //   console.log("user: ", user);
   return res
     .status(200)
     .json(new ApiResponse(200, user, "User details added successfully"));
@@ -276,7 +275,7 @@ const addFriend = asyncHandler(async (req, res, next) => {
   });
   if (friendExists) {
     throw new ApiError(402, "Friend already exists in your friends list");
-    }
+  }
   const user = await User.findByIdAndUpdate(
     req.user._id,
     {
@@ -291,7 +290,7 @@ const addFriend = asyncHandler(async (req, res, next) => {
       new: true,
     }
   ).select("-password -refreshToken");
- 
+
   // Add the user to the friend's friendOf list
   const addedFriend = await User.findOne({ leetcodeId });
 
@@ -308,7 +307,7 @@ const addFriend = asyncHandler(async (req, res, next) => {
       },
       { new: true }
     );
-  } 
+  }
 
   return res
     .status(200)
@@ -394,9 +393,31 @@ const updateFriendProfile = asyncHandler(async (req, res, next) => {
     .json(new ApiResponse(200, user, "Friend profile updated successfully"));
 });
 
-
+const uploadedSolution = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id)
+    .select("solutionPosted")
+    .populate({
+      path: "solutionPosted",
+      populate: [
+        {
+          path: "postedBy",
+          select: "name email _id",
+        },
+        {
+          path: "comments",
+          select: "commentText commentBy",
+          populate: {
+            path: "commentBy",
+            select: "name _id",
+          },
+        },
+      ],
+    });
+    return res.status(200).json(new ApiResponse(200,user,"uploaded solution by user"));
+});
 export {
   addFriend,
+  addUserDetails,
   changeCurrentPassword,
   getCurrentUser,
   getFriendsList,
@@ -407,5 +428,5 @@ export {
   removeFriend,
   updateFriendProfile,
   updateUserDetails,
-  addUserDetails,
+  uploadedSolution
 };
