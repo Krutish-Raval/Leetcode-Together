@@ -24,4 +24,10 @@ app.use("/api/v1/user", userRouter)
 // import authRouter from "./routes/auth.router.js"
 
 // app.use("/api/v1/auth", authRouter)
+
+// solutionPost routes
+import solutionPostRouter from "./routes/solutionPost.router.js"
+
+app.use("/api/v1/contest-solution", solutionPostRouter)
+
 export { app }

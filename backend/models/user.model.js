@@ -56,8 +56,9 @@ const userSchema = new mongoose.Schema(
     },
 
     solutionPosted:{
-      type: Schema.Types.ObjectId,
+      type: [Schema.Types.ObjectId],
       ref: "SolutionPost",
+      default: [],
     },
 
     refreshToken: {

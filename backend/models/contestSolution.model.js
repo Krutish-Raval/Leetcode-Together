@@ -1,60 +1,32 @@
 import mongoose,{Schema} from "mongoose";
 
-const solutionPostSchema = new Schema({
-    
-    title :{
-        type:String,
-        required:true,
-    },
-    
-    problemId:{
-        type:String,
-    },
-
-    postedBy:{
-        type:Schema.Types.ObjectId,
-        ref:"User",
-    },
-
-    upvotes:{
-        type:Number,
-        default:0
-    },
-
-    hint: [String],
-
-    approach:[String],
-    
-    implementation:[String],
-
-    codeSchema:[String],
-
-    codeScreenshot:[String], //cloudinary url
-
-    anyLink:{
-        type:String,
-    },
-
-    comments: {
-        type:[Schema.Types.ObjectId],
-        ref:"Comment"
-    },
-
-    isPublished:{
-        type:Boolean,
-        default:false
-    },
-
-})
 const contestSolutionSchema = new Schema({
-    constestId:{
-        type:String,
-        required:true
+
+    contestType:{
+        type: String,
+        enum:["weekly","biweekly"],
+        required: [true, "Contest type is required"],
     },
-    solutionPost:{
-        type:[solutionPostSchema]
+
+    contestId:{
+        type: String,
+        required: [true, "Contest Id is required"],
+    },
+
+    questionNo:{
+        type:Number,
+        required: [true, "Question number is required"],
+        min:1,
+        max:4,
+    },
+    
+    solutions:{
+        type:[Schema.Types.ObjectId],
+        ref:"SolutionPost",
+        default: []
     }
 })
 
-export const contestSolution = mongoose.model("contestSolution", contestSolutionSchema);
+contestSolutionSchema.index({ contestType: 1, contestId: 1, questionNo: 1 });
 
+export const ContestSolution = mongoose.model("ContestSolution",contestSolutionSchema);
