@@ -12,7 +12,9 @@ import {
     getCurrentUser,
     updateUserDetails,
     addUserDetails,
-    uploadedSolution
+    uploadedSolution,
+    saveSolutionPost,
+    getSaveSolutionPost
 
  } from '../controllers/user.controller.js';
 
@@ -46,5 +48,9 @@ router.route("/update-friend-profile").patch(verifyJWT, updateFriendProfile)
 router.route("/add-user-details").post(verifyJWT, addUserDetails)
 
 router.route("/uploaded-solution").get(verifyJWT,uploadedSolution)
+
+router.route("/save-solution").post(verifyJWT,saveSolutionPost)
+
+router.route("/get-save-solution").get(verifyJWT,getSaveSolutionPost)
 
 export default router;

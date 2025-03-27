@@ -189,8 +189,7 @@ const editSolution = asyncHandler(async (req, res, next) => {
   if (!solution) {
     throw new ApiError(404, "Solution not found");
   }
-
-  // Authorization check
+  
   if (solution.postedBy.toString() !== req.user._id.toString()) {
     throw new ApiError(403, "You are not authorized to edit this solution");
   }

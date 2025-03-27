@@ -2,7 +2,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import mongoose, { Schema } from "mongoose";
 
-const friendsSchema = new mongoose.Schema({
+const friendsSchema = new Schema({
   leetcodeId: {
     type: String,
     required: [true, "Leetcode Id is required"],
@@ -17,7 +17,7 @@ const friendsSchema = new mongoose.Schema({
   },
 });
 
-const userSchema = new mongoose.Schema(
+const userSchema = new Schema(
   {
     name: {
       type: String,
@@ -59,6 +59,12 @@ const userSchema = new mongoose.Schema(
       type: [Schema.Types.ObjectId],
       ref: "SolutionPost",
       default: [],
+    },
+    
+    saved:{
+      type:[Schema.Types.ObjectId],
+      ref:"SolutionPost",
+      default:[],
     },
 
     refreshToken: {
