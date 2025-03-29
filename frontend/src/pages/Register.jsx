@@ -1,90 +1,205 @@
-import React, { useState } from 'react';
-import { FaArrowLeft } from 'react-icons/fa';
+import React, { useRef, useState } from 'react';
+import { FaArrowLeft, FaEye, FaEyeSlash } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useNavigate } from 'react-router-dom';
 import VerifyOtp from '../components/VerifyOtp';
 import { otpSend } from '../services/api';
 
 const Register = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [formData, setFormData] = useState({ email: '', password: '', confirmPassword: '' });
   const [otp, setOtp] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
+  const inputRefs = useRef([]);
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    if (password !== confirmPassword) {
+
+    if (formData.password !== formData.confirmPassword) {
+        toast.dismiss(); // Remove any existing toast
+
       toast.error("Passwords don't match!");
       return;
     }
 
+    setLoading(true);
     try {
-      await otpSend({ email });
-      setOtp(true); // Move to OTP verification
+      await otpSend({ email: formData.email });
+      setOtp(true);
+      toast.dismiss(); // Remove any existing toast
+
       toast.success('OTP sent! Please check your email.');
     } catch (error) {
+        toast.dismiss(); // Remove any existing toast
+
       toast.error(error?.response?.data?.message || 'Failed to send OTP. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
   const goBackToRegister = () => {
-    setOtp(false); // Return to register form
+    setOtp(false);
+  };
+
+  const togglePasswordVisibility = (field) => {
+    field === 'password'
+      ? setShowPassword((prev) => !prev)
+      : setShowConfirmPassword((prev) => !prev);
+  };
+
+  const handleKeyDown = (e, index) => {
+    if (e.key === 'Enter') {
+      if (index < 2) {
+        inputRefs.current[index + 1]?.focus();
+      } else {
+        handleRegister(e);
+      }
+    }
   };
 
   return (
     <div className="min-h-screen bg-[#0e0e10] text-white">
-      <ToastContainer />
-      <div className="bg-[#1e1e1e] py-4 px-8 flex items-center justify-between">
+     <ToastContainer
+      position="top-center"
+      autoClose={3000}
+      hideProgressBar={false}
+      newestOnTop
+      closeOnClick
+      rtl={false}
+      draggable
+      theme="dark"
+      limit={1}
+      />
+      
+      {/* Header Section with Login Button */}
+      <div className="bg-[#1e1e1e] py-4 px-8 flex items-center justify-between ">
         <h1 className="text-white text-2xl font-bold">
           <span className="text-yellow-500">&lt;/&gt;</span> LeetCode Together
         </h1>
-      </div>
-
-      <div className="flex justify-center items-center m-10">
-        <button className="text-yellow-500 flex items-center" onClick={() => (otp ? goBackToRegister() : navigate('/'))}>
-          <FaArrowLeft className="mr-2" /> {otp ? 'Back to Register' : 'Back to Home'}
+        <button 
+          className="bg-yellow-500 text-black font-bold py-2 px-4 rounded-lg hover:bg-yellow-600 cursor-pointer"
+          onClick={() => navigate('/login')}
+        >
+          Login
         </button>
       </div>
 
-      {!otp ? (
-        <div className="flex justify-center items-center">
-          <div className="bg-[#1e1e1e] p-8 rounded-lg shadow-lg max-w-md w-full">
-            <h1 className="text-3xl font-bold mb-6 text-white">Welcome</h1>
-            <p className="text-gray-400 mb-8">Sign up to your LeetCode Together account</p>
+      {/* Back Navigation Button */}
+      {/* <div className="flex justify-center items-center m-10">
+        <button className="text-yellow-500 flex items-center cursor-pointer" onClick={() => (otp ? goBackToRegister() : navigate('/'))}>
+          <FaArrowLeft className="mr-2" /> {otp ? 'Back to Register' : 'Back to Home'}
+        </button>
+      </div> */}
 
-            <input
-              type="email"
-              placeholder="you@example.com"
-              className="w-full p-3 mb-4 bg-[#2e2e2e] border border-gray-600 rounded-lg text-white"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <input
-              type="password"
-              placeholder="Password"
-              className="w-full p-3 mb-4 bg-[#2e2e2e] border border-gray-600 rounded-lg text-white"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            <input
-              type="password"
-              placeholder="Confirm Password"
-              className="w-full p-3 mb-4 bg-[#2e2e2e] border border-gray-600 rounded-lg text-white"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-            />
-            <button
-              className="w-full p-3 bg-yellow-500 text-black font-bold rounded-lg hover:bg-yellow-600"
-              onClick={handleRegister}
+      {!otp ? (
+        <div className="flex justify-center items-center m-25">
+        <form className="bg-[#1e1e1e] p-8 rounded-lg shadow-lg max-w-md w-full" onSubmit={handleRegister}>
+          
+          {/* Back to Home Button */}
+          <div className="mb-4">
+            <button 
+              className="flex items-center text-yellow-500 hover:text-yellow-400 transition-all cursor-pointer"
+              onClick={() => navigate('/')}
+              type="button"
             >
-              Sign Up
+              <FaArrowLeft className="mr-2" />
+              Back to Home
             </button>
           </div>
-        </div>
-      ) : (
-        <VerifyOtp email={email} password={password} confirmPassword={confirmPassword} goBack={goBackToRegister} />
+    
+          <h1 className="mx-auto w-fit text-3xl font-bold mb-4 text-white">Create Your Account</h1>
+          <p className="mx-auto w-fit text-gray-200 mb-6 ">Join Leetcode Together</p>
+    
+          {/* Email Input */}
+          <input
+            type="email"
+            name="email"
+            placeholder="you@example.com"
+            className="w-full p-3 mb-4 bg-[#2e2e2e] border border-gray-600 rounded-lg text-white"
+            value={formData.email}
+            onChange={handleChange}
+            onKeyDown={(e) => handleKeyDown(e, 0)}
+            ref={(el) => (inputRefs.current[0] = el)}
+            required
+          />
+    
+          {/* Password Input with Visibility Toggle */}
+          <div className="relative">
+            <input
+              type={showPassword ? 'text' : 'password'}
+              name="password"
+              placeholder="Password"
+              className="w-full p-3 mb-4 bg-[#2e2e2e] border border-gray-600 rounded-lg text-white pr-10"
+              value={formData.password}
+              onChange={handleChange}
+              onKeyDown={(e) => handleKeyDown(e, 1)}
+              ref={(el) => (inputRefs.current[1] = el)}
+              required
+            />
+            <button
+              type="button"
+              className="absolute right-4 top-4 text-gray-400 cursor-pointer"
+              onClick={() => togglePasswordVisibility('password')}
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </button>
+          </div>
+    
+          {/* Confirm Password with Visibility Toggle */}
+          <div className="relative">
+            <input
+              type={showConfirmPassword ? 'text' : 'password'}
+              name="confirmPassword"
+              placeholder="Confirm Password"
+              className="w-full p-3 mb-4 bg-[#2e2e2e] border border-gray-600 rounded-lg text-white pr-10"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              onKeyDown={(e) => handleKeyDown(e, 2)}
+              ref={(el) => (inputRefs.current[2] = el)}
+              required
+            />
+            <button
+              type="button"
+              className="absolute right-4 top-4 text-gray-400 cursor-pointer"
+              onClick={() => togglePasswordVisibility('confirmPassword')}
+            >
+              {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+            </button>
+          </div>
+    
+          {/* Sign-Up Button with Loading Effect */}
+          <button
+            className={`w-full p-3 ${loading ? 'bg-yellow-400' : 'bg-yellow-500'} text-black font-bold rounded-lg hover:bg-yellow-600 cursor-pointer`}
+            disabled={loading}
+          >
+            {loading ? (
+              <div className="flex items-center justify-center">
+                <svg className="animate-spin h-5 w-5 mr-3 text-black" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                </svg>
+                Sending OTP...
+              </div>
+            ) : (
+              'Sign Up'
+            )}
+          </button>
+        </form>
+      </div>):(
+        <VerifyOtp
+          email={formData.email}
+          password={formData.password}
+          confirmPassword={formData.confirmPassword}
+          goBack={goBackToRegister}
+        />
       )}
     </div>
   );

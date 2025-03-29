@@ -5,10 +5,14 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { sendEmail } from "../utils/emailService.js";
 import { OTP } from "../models/OTP.model.js";
+import validator from "validator";
+
 const sendVerificationOTP = asyncHandler(async (req, res, next) => {
   const {email}=req.body
-  // console.log(email);
   const otp = crypto.randomInt(100000, 999999).toString();
+  if(!validator.isEmail(email)){
+    throw new ApiError(400,"write correct email format")
+  }
   OTP.create({
     email:email,
     otp:otp

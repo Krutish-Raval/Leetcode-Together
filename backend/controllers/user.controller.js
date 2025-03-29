@@ -1,10 +1,10 @@
-import validator from "validator";
 import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { SolutionPost } from "../models/solutionPost.model.js";
 import { OTP } from "../models/OTP.model.js";
+
 const generateAccessTokenAndRefreshToken = async (userId) => {
   try {
     const user = await User.findById(userId);
@@ -35,19 +35,14 @@ const registerUser = asyncHandler(async (req, res, next) => {
     [email, password, confirmPassword].some((field) => field?.trim() === "")
   ) {
     throw new ApiError(400, "All fields are required");
-  } else if (!validator.isEmail(email)) {
-    throw new ApiError(400, "Invalid Email format");
-  } else if (password !== confirmPassword) {
-    throw new ApiError(400, "Passwords do not match");
-  }
+  } 
   const existedUser = await User.findOne({ email });
   
   const latestOtp = await OTP.findOne({ email }).sort({ createdAt: -1 }).limit(1);
-  console.log(latestOtp);
+  // console.log(latestOtp);
   if (!latestOtp || latestOtp.otp !== otp) {
     throw new ApiError(401, "Invalid or expired OTP");
   }
-  // console.log("existedUser: ", existedUser);
   if (existedUser) {
     throw new ApiError(402, "User already exists");
   }
