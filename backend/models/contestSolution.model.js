@@ -30,6 +30,5 @@ const contestSolutionSchema = new Schema({
     timestamps:true
 })
 
-contestSolutionSchema.index({ contestType: 1, contestId: 1, questionNo: 1 });
 
 export const ContestSolution = mongoose.model("ContestSolution",contestSolutionSchema);

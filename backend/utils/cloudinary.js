@@ -15,7 +15,7 @@ const uploadCloudinary = async (localFilePath) => {
         });
         console.log("Cloudinary Upload Response URL: ", response.url);
         fs.unlinkSync(localFilePath)
-        return response;
+        return response.url;
     }
     catch(error){
         fs.unlinkSync(localFilePath) // delete the locally saved file as operation failed

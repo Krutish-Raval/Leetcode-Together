@@ -20,6 +20,8 @@ import {
 
 import { verifyJWT}  from '../middlewares/auth.middleware.js';
 
+import { sendVerificationOTP,resendOtp } from '../controllers/auth.controller.js';
+
 const router = Router();
 
 router.route("/register").post(registerUser);
@@ -52,5 +54,9 @@ router.route("/uploaded-solution").get(verifyJWT,uploadedSolution)
 router.route("/save-solution").post(verifyJWT,saveSolutionPost)
 
 router.route("/get-save-solution").get(verifyJWT,getSaveSolutionPost)
+
+router.route("/send-otp").post(sendVerificationOTP);
+
+router.route("/resend-otp").post(resendOtp);
 
 export default router;

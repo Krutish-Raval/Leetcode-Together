@@ -5,6 +5,7 @@ import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import {uploadCloudinary} from "../utils/cloudinary.js"
 
 const postSolution = asyncHandler(async (req, res, next) => {
   const {
@@ -14,10 +15,10 @@ const postSolution = asyncHandler(async (req, res, next) => {
     hint,
     approach,
     implementation,
-    codeSS,
     anyLink,
     title,
   } = req.body;
+  
   // console.log(req.body);
   // console.log(approach.length);
   if (
@@ -37,6 +38,17 @@ const postSolution = asyncHandler(async (req, res, next) => {
   ) {
     throw new ApiError(400, "enter all fields");
   }
+
+  if (!req.files || !req.files.codeSS || req.files.codeSS.length === 0) {
+    throw new ApiError(400, "Please upload at least one screenshot of your code");
+  }
+  const uploadPromises = req.files.codeSS.map(file => uploadCloudinary(file.path));
+  const  codeSSUrls = await Promise.all(uploadPromises);
+   
+  if (!codeSSUrls || codeSSUrls.length === 0) {
+    throw new ApiError(500, "Failed to upload screenshots to Cloudinary");
+  }
+
 
   let contestSolution = await ContestSolution.findOne({
     contestType,
@@ -58,7 +70,7 @@ const postSolution = asyncHandler(async (req, res, next) => {
     hint: hint,
     approach: approach,
     implementation: implementation,
-    codeSS: codeSS,
+    codeSS: codeSSUrls,
     anyLink: anyLink,
   });
 
@@ -154,10 +166,10 @@ const editSolution = asyncHandler(async (req, res, next) => {
     hint,
     approach,
     implementation,
-    codeSS,
     anyLink,
     title,
     solutionId,
+    deleteSSIndices 
   } = req.body;
   // console.log(req.body);
   // console.log(approach.length);
@@ -173,8 +185,7 @@ const editSolution = asyncHandler(async (req, res, next) => {
     title.trim() === "" ||
     hint.length === 0 ||
     approach.length === 0 ||
-    implementation.length === 0 ||
-    codeSS.length === 0
+    implementation.length === 0
   ) {
     throw new ApiError(400, "enter all fields");
   }
@@ -189,9 +200,19 @@ const editSolution = asyncHandler(async (req, res, next) => {
   if (!solution) {
     throw new ApiError(404, "Solution not found");
   }
-  
+
   if (solution.postedBy.toString() !== req.user._id.toString()) {
     throw new ApiError(403, "You are not authorized to edit this solution");
+  }
+
+  if (deleteSSIndexes?.length) {
+    solution.codeSS = solution.codeSS.filter((_, index) => !deleteSSIndexes.includes(index));
+  }
+
+  if (req.files?.codeSS?.length) {
+    const uploadPromises = req.files.codeSS.map(file => uploadCloudinary(file.path));
+    const newUrls = await Promise.all(uploadPromises);
+    solution.codeSS.push(...newUrls);
   }
 
   const newSolution = await SolutionPost.findByIdAndUpdate(

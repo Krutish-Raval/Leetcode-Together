@@ -6,14 +6,10 @@ const friendsSchema = new Schema({
   leetcodeId: {
     type: String,
     required: [true, "Leetcode Id is required"],
-    unique: true,
-    index: true,
   },
   friendName: {
     type: String,
     required: [true, "Name is required"],
-    index: true,
-    unique: true,
   },
 });
 
@@ -21,24 +17,20 @@ const userSchema = new Schema(
   {
     name: {
       type: String,
-      index: true,
     },
 
     leetcodeId: {
       type: String,
-      index: true,
     },
 
     email: {
       type: String,
       required: [true, "Email is required"],
       unique: true,
-      index: true,
     },
 
     password: {
       type: String,
-      unique: true,
       required: [true, "Password is required"],
     },
 

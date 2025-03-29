@@ -7,11 +7,19 @@ import{
     editSolution
 } from '../controllers/solutionPost.controller.js';
 
+import {upload} from "../middlewares/multer.middleware.js"
+
+
 import { verifyJWT } from '../middlewares/auth.middleware.js';
 
 const router = Router();
 
-router.route("/post-solution").post(verifyJWT, postSolution);
+router.route("/post-solution").post(verifyJWT,
+    upload.fields([
+        {
+            name: "codeSS"
+        },
+    ]), postSolution);
 
 router.route("/get-solution-posts").get(verifyJWT, getSolutionPosts);
 

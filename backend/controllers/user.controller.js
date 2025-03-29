@@ -4,7 +4,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { SolutionPost } from "../models/solutionPost.model.js";
-
+import { OTP } from "../models/OTP.model.js";
 const generateAccessTokenAndRefreshToken = async (userId) => {
   try {
     const user = await User.findById(userId);
@@ -27,7 +27,9 @@ const registerUser = asyncHandler(async (req, res, next) => {
   // remove password and refresh token from response
   // check for user creation
 
-  const { email, password, confirmPassword, OTP } = req.body;
+
+  const { email, password, confirmPassword,otp } = req.body;
+  // console.log("Body: ",req.body);
 
   if (
     [email, password, confirmPassword].some((field) => field?.trim() === "")
@@ -39,7 +41,12 @@ const registerUser = asyncHandler(async (req, res, next) => {
     throw new ApiError(400, "Passwords do not match");
   }
   const existedUser = await User.findOne({ email });
-
+  
+  const latestOtp = await OTP.findOne({ email }).sort({ createdAt: -1 }).limit(1);
+  console.log(latestOtp);
+  if (!latestOtp || latestOtp.otp !== otp) {
+    throw new ApiError(401, "Invalid or expired OTP");
+  }
   // console.log("existedUser: ", existedUser);
   if (existedUser) {
     throw new ApiError(402, "User already exists");
@@ -457,6 +464,7 @@ const getSaveSolutionPost=asyncHandler(async(req,res)=>{
     ],
   });
 })
+
 export {
   addFriend,
   addUserDetails,

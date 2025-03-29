@@ -4,18 +4,34 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { sendEmail } from "../utils/emailService.js";
-
+import { OTP } from "../models/OTP.model.js";
 const sendVerificationOTP = asyncHandler(async (req, res, next) => {
-  const user = await User.findById(req.user._id);
-
-  if (user.isVerified) {
-    throw new ApiError(400, "User is already verified");
-  }
-
+  const {email}=req.body
+  // console.log(email);
   const otp = crypto.randomInt(100000, 999999).toString();
-  user.otp = otp;
-  user.otpExpires = Date.now() + 5 * 60 * 1000;
-  await user.save({ validateBeforeSave: false });
+  OTP.create({
+    email:email,
+    otp:otp
+  })
+
+  await sendEmail(
+    email,
+    "Email Verification OTP",
+    `Your OTP for email verification is: ${otp}`
+  );
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "OTP sent successfully to your email"));
+});
+
+const resendOtp=asyncHandler(async(req,res,next)=>{
+  const {email}=req.body
+  const otp = crypto.randomInt(100000, 999999).toString();
+  OTP.create({
+    email:email,
+    otp:otp
+  })
 
   await sendEmail(
     user.email,
@@ -26,34 +42,7 @@ const sendVerificationOTP = asyncHandler(async (req, res, next) => {
   return res
     .status(200)
     .json(new ApiResponse(200, {}, "OTP sent successfully to your email"));
-});
-
-const verifyEmail = asyncHandler(async (req, res) => {
-  const { otp } = req.body;
-  const user = await User.findById(req.user._id);
-
-  
-  if (!user) {
-    throw new ApiError(404, "User not found");
-  }
-
-  if (!user.otp || user.otpExpires < Date.now()) {
-    throw new ApiError(400, "OTP expired or invalid. Please request again.");
-  }
-
-  if (user.otp !== otp) {
-    throw new ApiError(400, "Invalid OTP");
-  }
-
-  user.isVerified = true;
-  user.otp = undefined;
-  user.otpExpires = undefined;
-  await user.save({ validateBeforeSave: false });
-
-  return res
-    .status(200)
-    .json(new ApiResponse(200, {}, "Email verified successfully"));
-});
+})
 
 const sendPasswordResetOTP = asyncHandler(async (req, res) => {
     const { email } = req.body;
@@ -106,7 +95,7 @@ const resetPassword = asyncHandler(async (req, res) => {
   
 export{
     sendVerificationOTP,
-    verifyEmail,
     sendPasswordResetOTP,
-    resetPassword
+    resetPassword,
+    resendOtp
 }
