@@ -10,6 +10,10 @@ import validator from "validator";
 const sendVerificationOTP = asyncHandler(async (req, res, next) => {
   const {email}=req.body
   const otp = crypto.randomInt(100000, 999999).toString();
+  const user=await User.findOne({email});
+  if(user){
+    throw new ApiError(400,"User already exists")
+  }
   if(!validator.isEmail(email)){
     throw new ApiError(400,"write correct email format")
   }
@@ -79,7 +83,7 @@ const resetPassword = asyncHandler(async (req, res) => {
     const { email, otp, newPassword } = req.body;
     if (!email || !otp || !newPassword) {
       throw new ApiError(400, "Email, OTP, and New Password are required");
-    }
+    } 
   
     const user = await User.findOne({ email });
   

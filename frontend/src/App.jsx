@@ -1,44 +1,60 @@
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { TypeAnimation } from 'react-type-animation';
 
-function App() {
+const HomePage = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-[#1c1c1c] text-white font-sans">
+    <div className="min-h-screen bg-black text-white relative overflow-hidden">
+
       {/* Header Section */}
-      <header className="flex justify-between items-center p-5 border-b border-gray-700">
-        <h1 className="text-3xl font-bold text-[#FFA116]">LeetCode Together</h1>
+      <div className="bg-[#1e1e1e] py-4 px-8 flex items-center justify-between ">
+      <h1 className="text-white text-2xl font-bold">
+          <span className="text-yellow-500">&lt;/&gt;</span> LeetCode Together
+        </h1>
         <div>
           <button
-            className="bg-[#FFA116] text-black px-4 py-2 rounded-lg mr-4"
-            onClick={() => navigate('/login')}
-          >
-            Login
-          </button>
-          <button
-            className="bg-transparent text-[#FFA116] px-4 py-2 rounded-lg border border-[#FFA116]"
+            className="text-white border border-yellow-500 px-6 py-2 rounded-lg mr-4 hover:bg-yellow-500 hover:text-black transition-all cursor-pointer"
             onClick={() => navigate('/register')}
           >
             Register
           </button>
+          <button
+            className="bg-yellow-500 text-black px-6 py-2 rounded-lg hover:bg-yellow-600 transition-all cursor-pointer"
+            onClick={() => navigate('/login')}
+          >
+            Login
+          </button>
+          
         </div>
-      </header>
+        
+      </div>
+      <section className="flex flex-col justify-center items-center text-center h-[calc(100vh-80px)]">
+        <h2 className="text-5xl font-bold mb-4">
+          Code. <span className="text-yellow-500">Compete.</span> Collaborate.
+        </h2>
+        <TypeAnimation
+          sequence={[
+            'Connect with friends, track standings, share solutions, and discuss LeetCode contests in one collaborative platform.',
+            3000,
+          ]}
+          wrapper="p"
+          speed={60}
+          className="text-lg text-gray-400 max-w-3xl"
+        />
 
-      {/* Hero Section */}
-      <section className="text-center py-20">
-        <h2 className="text-5xl font-bold mb-6">Welcome to LeetCode Together 🚀</h2>
-        <p className="text-gray-400 text-lg mb-8">
-          Track your friends' progress, share solutions, and discuss challenges — all in one place!
-        </p>
-        <button
-          className="bg-[#FFA116] text-black px-8 py-3 text-xl rounded-lg"
-          onClick={() => navigate('/login')}
-        >
-          Get Started
-        </button>
+        <div className="mt-8 space-x-4">
+          <button
+            className="bg-yellow-500 text-black font-bold px-8 py-3 rounded-lg hover:bg-yellow-600 transition-all cursor-pointer"
+            onClick={() => navigate('/register')}
+          >
+            Get Started
+          </button>
+        </div>
       </section>
     </div>
   );
-}
+};
 
-export default App;
+export default HomePage;

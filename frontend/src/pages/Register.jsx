@@ -33,13 +33,17 @@ const Register = () => {
     try {
       await otpSend({ email: formData.email });
       setOtp(true);
-      toast.dismiss(); // Remove any existing toast
+      toast.dismiss(); 
 
       toast.success('OTP sent! Please check your email.');
     } catch (error) {
         toast.dismiss(); // Remove any existing toast
-
+      if(error!=="User already exists"){
       toast.error(error?.response?.data?.message || 'Failed to send OTP. Please try again.');
+      }
+      else{
+        toast.error("User already exists. Please Login");
+      }
     } finally {
       setLoading(false);
     }
@@ -84,20 +88,13 @@ const Register = () => {
         <h1 className="text-white text-2xl font-bold">
           <span className="text-yellow-500">&lt;/&gt;</span> LeetCode Together
         </h1>
-        <button 
-          className="bg-yellow-500 text-black font-bold py-2 px-4 rounded-lg hover:bg-yellow-600 cursor-pointer"
-          onClick={() => navigate('/login')}
-        >
-          Login
-        </button>
+        <button
+            className="bg-yellow-500 text-black px-6 py-2 rounded-lg hover:bg-yellow-600 transition-all cursor-pointer"
+            onClick={() => navigate('/login')}
+          >
+            Login
+          </button>
       </div>
-
-      {/* Back Navigation Button */}
-      {/* <div className="flex justify-center items-center m-10">
-        <button className="text-yellow-500 flex items-center cursor-pointer" onClick={() => (otp ? goBackToRegister() : navigate('/'))}>
-          <FaArrowLeft className="mr-2" /> {otp ? 'Back to Register' : 'Back to Home'}
-        </button>
-      </div> */}
 
       {!otp ? (
         <div className="flex justify-center items-center m-25">
