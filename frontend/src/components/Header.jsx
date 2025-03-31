@@ -24,6 +24,7 @@ const Header = () => {
   };
 
   return (
+    <div>
     <header className="bg-[#1e1e1e] text-white py-4 px-8 shadow-md">
       <div className="flex justify-between items-center">
         {/* Brand Logo */}
@@ -38,21 +39,21 @@ const Header = () => {
         <nav className="flex gap-6">
           <button
             onClick={() => navigate("/home")}
-            className="text-lg font-semibold hover:text-yellow-400 transition-all"
+            className="text-lg font-semibold hover:text-yellow-400 cursor-pointer transition-all"
           >
             Home
           </button>
           <button
             onClick={() => navigate("/add-friends")}
-            className="text-lg font-semibold hover:text-yellow-400 transition-all"
+            className="text-lg font-semibold hover:text-yellow-400 cursor-pointer transition-all"
           >
-            Add Friends
+            Friends
           </button>
           <button
-            onClick={() => navigate("/profile")}
-            className="text-lg font-semibold hover:text-yellow-400 transition-all"
+            onClick={() => navigate("/contest-standing")}
+            className="text-lg font-semibold hover:text-yellow-400 cursor-pointer transition-all"
           >
-            Profile
+            Contest Standing
           </button>
         </nav>
 
@@ -67,10 +68,10 @@ const Header = () => {
           </button>
         </div>
       </div>
-
-      {/* Orange Line for Separation */}
-      <div className="h-1 w-full bg-yellow-500 mt-4"></div>
     </header>
+    {/* Orange Line for Separation */}
+    <div className="h-1 w-full bg-yellow-500 "></div>
+</div>
   );
 };
 

@@ -3,6 +3,7 @@ import { toast, ToastContainer } from "react-toastify";
 import { addFriend, removeFriend, getFriendsList } from "../services/api.js";
 import "react-toastify/dist/ReactToastify.css";
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 const AddFriends = () => {
   const [username, setUsername] = useState("");
@@ -10,10 +11,9 @@ const AddFriends = () => {
   const [friends, setFriends] = useState([]);
   const [page, setPage] = useState(1);
   const [totalFriends, setTotalFriends] = useState(0);
-  const limit = 10;
+  const limit = 7;
   const leetcodeIdRef = useRef(null);
 
-  // Fetch friends on initial load or when page changes
   const fetchFriends = async () => {
     try {
       const { data } = await getFriendsList(page, limit);
@@ -37,13 +37,12 @@ const AddFriends = () => {
     }
     try {
       const newFriend = await addFriend({ friendName: username, leetcodeId });
-    //   console.log(newFriend.data)
-      setFriends((prev) => [...prev, newFriend.data]); // Update UI directly
-    //   fetchFriends();
-      toast.success(`${username} added successfully!`);
+      setFriends((prev) => [...prev, newFriend.data]); 
       setUsername("");
       setLeetcodeId("");
+
     } catch (error) {
+      console.log(error)
       toast.error(error?.response?.data?.message || "Failed to add friend.");
     }
   };
@@ -54,7 +53,7 @@ const AddFriends = () => {
       await removeFriend(leetcodeId);
       setFriends((prev) => prev.filter((friend) => friend.leetcodeId !== leetcodeId));
       setTotalFriends((prev) => prev - 1);
-      toast.success("Friend removed successfully!");
+      // toast.success("Friend removed successfully!");
     } catch (error) {
       toast.error(error?.response?.data?.message || "Failed to remove friend.");
     }
@@ -75,17 +74,16 @@ const AddFriends = () => {
 
   return (
     <div className="min-h-screen bg-[#0e0e10] text-white p-4">
-      <ToastContainer autoClose={1000} theme="dark" limit={1} />
+      {/* <ToastContainer autoClose={1000} theme="dark" limit={1} /> */}
       
       {/* Header Section */}
-      <header className="text-center mb-8">
+      <header className="text-center mb-4">
         <h1 className="text-4xl font-bold text-yellow-500">LeetCode Friends</h1>
-        <p className="text-gray-400">Manage your friends and share your coding journey.</p>
+        <p className="text-gray-400">Add or remove friends to personalize your contest standings.</p>
       </header>
 
       {/* Add Friend Section */}
-      <div className="max-w-lg mx-auto bg-[#1e1e1e] p-6 rounded-lg shadow-lg mb-8">
-        <h2 className="text-2xl font-semibold text-yellow-500 mb-4">Add a Friend</h2>
+      <div className="max-w-lg mx-auto bg-[#1e1e1e] p-6 rounded-lg shadow-lg mb-5">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <input
             type="text"
@@ -107,7 +105,7 @@ const AddFriends = () => {
         </div>
         <button
           onClick={handleAddFriend}
-          className="mt-4 w-full bg-yellow-500 text-black font-bold py-3 rounded-lg hover:bg-yellow-600 transition-all cursor-pointer"
+          className="mt-4 w-full bg-yellow-500 text-black font-bold py-3 rounded-lg hover:bg-yellow-400 transition-all cursor-pointer"
         >
           Add Friend
         </button>
@@ -115,48 +113,47 @@ const AddFriends = () => {
 
       {/* Friends List Section */}
       <div className="max-w-lg mx-auto">
-        <h2 className="text-2xl font-semibold text-yellow-500 mb-4">Your Friends</h2>
+        <h2 className="text-2xl font-semibold text-yellow-400 mb-4">Your Friends</h2>
         {friends.length === 0 ? (
           <p className="text-gray-500 text-center">No friends added yet.</p>
         ) : (
           <ul className="space-y-4">
-            {friends.map((friend) => (
-              <li
-                key={friend.leetcodeId}
-                className="flex justify-between items-center p-4 bg-[#1e1e1e] rounded-lg shadow-md hover:bg-[#2e2e30] transition-all"
-              >
-                <div>
-                  <div className="text-lg font-semibold text-yellow-500">
-                  <Link
-                    to={`https://leetcode.com/${friend.leetcodeId}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm text-whi-400  "
-                  >
-                  
-                    {friend.friendNam}
-                    </Link> 
-                  </div>
-                  <div>
-                  <Link
-                    to={`https://leetcode.com/${friend.leetcodeId}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm text-whi-400  "
-                  >
-                    LeetcodeID :{friend.leetcodeId}
-                  </Link>
-                  </div>
-                </div>
-                <button
-                  onClick={() => handleRemoveFriend(friend.leetcodeId)}
-                  className="text-sm px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all"
-                >
-                  Remove
-                </button>
-              </li>
-            ))}
-          </ul>
+  {friends.map((friend) => (
+    <li
+      key={friend.leetcodeId}
+      className="flex justify-between items-center p-4 bg-[#1e1e1e] rounded-lg shadow-md hover:bg-[#2e2e30] transition-all"
+    >
+      <div>
+        <div className="text-lg font-semibold text-yellow-400">
+          <Link
+            to={`https://leetcode.com/${friend.leetcodeId}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-m text-yellow-300"
+          >
+            {friend.friendName}
+          </Link>
+        </div>
+        <div>
+          <Link
+            to={`https://leetcode.com/${friend.leetcodeId}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-m text-gray-400 "
+          >
+            Leetcode ID: {friend.leetcodeId}
+          </Link>
+        </div>
+      </div>
+      <button
+        onClick={() => handleRemoveFriend(friend.leetcodeId)}
+        className="text-sm px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all"
+      >
+        Remove
+      </button>
+    </li>
+  ))}
+</ul>
         )}
 
         {/* Pagination Section */}

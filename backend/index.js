@@ -60,6 +60,3 @@ connectDB()
 //     res.send(jokes)
 // }
 // )
-app.post('/login',(req,res)=>{
-    res.send('<h2>Login Page</h2>')
-})

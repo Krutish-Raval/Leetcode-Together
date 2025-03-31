@@ -12,6 +12,7 @@ import Register from "./pages/Register.jsx";
 import { persistor, store } from './store/store.js';
 import Layout from "./Layout.jsx";
 import AddFriends from "./pages/Friend.jsx";
+import ContestStanding from "./pages/ContestStandings.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <Provider store={store}>
@@ -27,7 +28,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             <Route path="/" element={<Layout />}>
               <Route path="/home" element={<HomePage />} />
               <Route path="/add-friends" element={<AddFriends/>} />
-              <Route path="/profile" element={<h2 className="text-white">Profile Page (Coming Soon)</h2>} />
+              <Route path="/contest-standing" element={<ContestStanding/>} />
             </Route>
           </Route>
         </Routes>

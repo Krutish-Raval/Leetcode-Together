@@ -92,3 +92,5 @@ export const getFriendsList=async(page,limit)=>{
     throw error?.response?.data?.message || 'unable to fetch friend';
   }
 }
+export const addContest = async(contest) => await axios.post('/api/contests', contest);
+export const getContests = async(page, limit) => await axios.get(`/api/contests?page=${page}&limit=${limit}`)
