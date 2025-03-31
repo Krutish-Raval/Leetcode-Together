@@ -26,6 +26,16 @@ export const loginUser = async (userData) => {
   }
 };
 
+export const logOutUser=async(userData)=>{
+  try {
+    const response=await axios.post(`${API_URL}/logout`,userData,{
+      withCredentials: true,
+    })
+    return response.data;
+  } catch (error) {
+    throw error?.response?.data?.message || 'Log Out failed';
+  }
+}
 export const otpSend=async(userData) =>{
   try {
     const response= await axios.post(`${API_URL}/send-otp`,userData,{
@@ -37,4 +47,48 @@ export const otpSend=async(userData) =>{
   }
 }
 
-export const resendOtp = async (data) => axios.post('${API_URL)/resend-otp', data);
+export const resendOtp = async (data) =>{
+  try {
+    const response= axios.post('${API_URL)/resend-otp', data,{
+      withCredentials:true,
+    });
+    return response.data;
+  } catch (error) {
+    throw error?.response?.data?.message || 'something went wrong';
+  }  
+}
+
+export const addFriend=async(userData)=>{
+  try {
+    const response=await axios.post(`${API_URL}/add-friend`,userData,{
+      withCredentials:true,
+    });
+    return response.data;
+  } catch (error) {
+    throw error?.response?.data?.message || 'something went wrong';
+  }
+}
+export const removeFriend=async(leetcodeId)=>{
+  try {
+    const response=await axios.delete(`${API_URL}/remove-friend`,{
+      params: { leetcodeId },
+      withCredentials:true,
+    });
+      return response.data;
+    } catch (error) {
+      throw error?.response?.data?.message || 'something went wrong';
+    }
+  }
+
+export const getFriendsList=async(page,limit)=>{
+  try {
+    const response=await axios.get(`${API_URL}/get-friend-list`,{
+      params: { page, limit },
+      withCredentials:true,
+    });
+    console.log(response)
+      return response.data;
+  } catch (error) {
+    throw error?.response?.data?.message || 'unable to fetch friend';
+  }
+}

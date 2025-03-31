@@ -1,187 +1,8 @@
 import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import { asyncHandler } from "../utils/asyncHandler.js";
-import { SolutionPost } from "../models/solutionPost.model.js";
-import { OTP } from "../models/OTP.model.js";
-
-const generateAccessTokenAndRefreshToken = async (userId) => {
-  try {
-    const user = await User.findById(userId);
-    const accessToken = await user.generateAccessToken();
-    const refreshToken = await user.generateRefreshToken();
-    user.refreshToken = refreshToken;
-    await user.save({ validateBeforeSave: false });
-    return { accessToken, refreshToken };
-  } catch (err) {
-    console.log(err);
-    throw new ApiError(500, "Something went wrong while generating tokens");
-  }
-};
-
-const registerUser = asyncHandler(async (req, res, next) => {
-  // get user details
-  // validation email in correct format and all required non empty
-  // check if user already exists email,leetcodeId
-  // create user object - create entry db
-  // remove password and refresh token from response
-  // check for user creation
-
-
-  const { email, password, confirmPassword,otp } = req.body;
-  // console.log("Body: ",req.body);
-
-  if (
-    [email, password, confirmPassword].some((field) => field?.trim() === "")
-  ) {
-    throw new ApiError(400, "All fields are required");
-  } 
-  const existedUser = await User.findOne({ email });
-  
-  const latestOtp = await OTP.findOne({ email }).sort({ createdAt: -1 }).limit(1);
-  // console.log(latestOtp);
-  if (!latestOtp || latestOtp.otp !== otp) {
-    throw new ApiError(401, "Invalid or expired OTP");
-  }
-  if (existedUser) {
-    throw new ApiError(402, "User already exists");
-  }
-
-  const user = await User.create({
-    email,
-    password,
-  });
-
-  const createdUser = await User.findById(user._id).select(
-    "-password -refreshToken"
-  );
-  // console.log("createdUser: ", createdUser);
-
-  if (!createdUser) {
-    throw new ApiError(500, "Something went wrong while registering user");
-  }
-
-  return res
-    .status(201)
-    .json(new ApiResponse(200, "User registered successfully", createdUser));
-  // res.status(200).json({
-  //     success: true,
-  //     message: "ok"
-  // })
-});
-
-const loginUser = asyncHandler(async (req, res, next) => {
-  // take email and password
-  // check if user exists
-  // check if password or email is correct
-  // generate access token and refresh token
-  // send cookies
-
-  const { email, password } = req.body;
-  if (!(email && password)) {
-    throw new ApiError(400, "Email and password are required");
-  }
-  const user = await User.findOne({ email });
-  if (!user) {
-    throw new ApiError(404, "User does not exist");
-  }
-  const isPasswordCorrect = await user.verifyPassword(password);
-  if (!isPasswordCorrect) {
-    throw new ApiError(401, "Incorrect password");
-  }
-  const { accessToken, refreshToken } =
-    await generateAccessTokenAndRefreshToken(user._id);
-
-  const loggedInUser = await User.findById(user._id).select(
-    "-password -refreshToken"
-  );
-  const options = {
-    httpOnly: true,
-    secure: true,
-  };
-  return res
-    .status(200)
-    .cookie("AccessToken", accessToken, options)
-    .cookie("RefreshToken", refreshToken, options)
-    .json(
-      new ApiResponse(
-        200,
-        {
-          user: loggedInUser,
-          accessToken,
-          refreshToken,
-        },
-        "User logged in successfully"
-      )
-    );
-});
-
-const logOutUser = asyncHandler(async (req, res, next) => {
-  // clear cookies
-
-  await User.findByIdAndUpdate(
-    req.user._id,
-    {
-      $unset: {
-        RefreshToken: 1,
-      },
-    },
-    {
-      new: true,
-    }
-  );
-  const options = {
-    httpOnly: true,
-    secure: true,
-  };
-
-  return res
-    .status(200)
-    .clearCookie("AccessToken", options)
-    .clearCookie("RefreshToken", options)
-    .json(new ApiResponse(200, {}, "User logged Out"));
-});
-
-const refreshAccessToken = asyncHandler(async (req, res, next) => {
-  const incomingRefreshToken =
-    req.cookies?.RefreshToken || req.body.refreshToken;
-  if (!incomingRefreshToken) {
-    throw new ApiError(401, "Unauthorized request");
-  }
-
-  try {
-    const decodedToken = jwt.verify(
-      incomingRefreshToken,
-      process.env.REFRESH_TOKEN_SECRET
-    );
-    const user = await User.findById(decodedToken._id);
-    if (!user) {
-      throw new ApiError(401, "Invalid Refresh Token");
-    }
-    if (user.refreshToken !== incomingRefreshToken) {
-      throw new ApiError(401, "Refresh Token is invalid");
-    }
-    const options = {
-      httpOnly: true,
-      secure: true,
-    };
-    const { accessToken, newRefreshToken } =
-      await generateAccessTokenAndRefreshToken(user._id);
-    return res
-      .status(200)
-      .cookie("AccessToken", accessToken, options)
-      .cookie("RefreshToken", newRefreshToken, options)
-      .json(
-        new ApiResponse(
-          200,
-          { accessToken, refreshToken: newRefreshToken },
-          "Access Token refreshed successfully"
-        )
-      );
-  } catch (err) {
-    throw new ApiError(401, error?.message || "Invalid Refresh Token");
-  }
-});
+import { asyncHandler } from "../utils/asyncHandler.js";;
+import {SolutionPost} from "../models/solutionPost.model.js"
 
 const changeCurrentPassword = asyncHandler(async (req, res, next) => {
   const { currentPassword, newPassword, confirmPassword } = req.body;
@@ -314,7 +135,10 @@ const addFriend = asyncHandler(async (req, res, next) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, user, "Friend added successfully"));
+    .json(new ApiResponse(200, {
+      friendName,
+      leetcodeId,
+    }, "Friend added successfully"));
 });
 
 const removeFriend = asyncHandler(async (req, res, next) => {
@@ -323,17 +147,9 @@ const removeFriend = asyncHandler(async (req, res, next) => {
   // check if this leetcodeId is already in friends array
   // if not throw error
   // remove from friends array
-  const { leetcodeId } = req.body;
-  if (!leetcodeId) {
-    throw new ApiError(400, "Leetcode Id is required");
-  }
-  const friend = await User.findOne({
-    _id: req.user._id,
-    "friends.leetcodeId": leetcodeId,
-  });
-  if (!friend) {
-    throw new ApiError(401, "Not in Friends list");
-  }
+  const { leetcodeId } = req.query;
+
+  // console.log(leetcodeId);
   const user = await User.findByIdAndUpdate(
     req.user._id,
     {
@@ -353,11 +169,22 @@ const removeFriend = asyncHandler(async (req, res, next) => {
 });
 
 const getFriendsList = asyncHandler(async (req, res, next) => {
-  const user = await User.findById(req.user._id).select("friends");
+  const { page = 1, limit = 10 } = req.query;
+  
+  const user = await User.findById(req.user._id);
+  // console.log(user);
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  const totalFriends = user.friends.length;
+  const friends = user.friends.slice((page - 1) * limit, page * limit);
+  // console.log(friends,page)
   return res
     .status(200)
-    .json(new ApiResponse(200, user, "Friends list fetched successfully"));
+    .json(new ApiResponse(200, { friends, totalFriends, page }, "Friends list fetched successfully"));
 });
+
 
 //Need to change this
 const updateFriendProfile = asyncHandler(async (req, res, next) => {
@@ -466,10 +293,6 @@ export {
   changeCurrentPassword,
   getCurrentUser,
   getFriendsList,
-  loginUser,
-  logOutUser,
-  refreshAccessToken,
-  registerUser,
   removeFriend,
   updateFriendProfile,
   updateUserDetails,

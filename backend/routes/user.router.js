@@ -1,9 +1,5 @@
 import Router from 'express';
 import { 
-    registerUser,
-    loginUser ,
-    logOutUser ,
-    refreshAccessToken,
     changeCurrentPassword,
     addFriend,
     removeFriend,
@@ -20,7 +16,14 @@ import {
 
 import { verifyJWT}  from '../middlewares/auth.middleware.js';
 
-import { sendVerificationOTP,resendOtp } from '../controllers/auth.controller.js';
+import { 
+    sendVerificationOTP,
+    resendOtp,
+    registerUser,
+    loginUser ,
+    logOutUser ,
+    refreshAccessToken
+ } from '../controllers/auth.controller.js';
 
 const router = Router();
 
