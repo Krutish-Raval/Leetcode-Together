@@ -11,7 +11,7 @@ const ContestStanding = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const navigate = useNavigate();
-  const inputRefs = useRef([]);
+  const inputRefs = useRef(null);
 
   useEffect(() => {
     const loadContests = async () => {
@@ -36,13 +36,22 @@ const ContestStanding = () => {
     navigate(`/contest/${contestType}-${contestNumber}`);
   };
   
+  const handleKeyDown = (e, index) => {
+    if (e.key === 'Enter') {
+      if (index < 2) {
+        inputRefs.current[index + 1]?.focus();
+      } else {
+        handleRegister(e);
+      }
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#0e0e10] text-white p-4">
       <ToastContainer position="top-center" autoClose={2000} theme="dark" limit={1} />
 
       <header className="text-center mb-4">
-        <h1 className="text-4xl font-bold text-yellow-500">LeetCode Contest Friends Standings</h1>
+        <h1 className="text-4xl font-bold text-[#ffa116]">LeetCode Contest Friends Standings</h1>
         <p className="text-gray-400">View your friends' Leetcode standings!</p>
       </header>
 
@@ -52,6 +61,12 @@ const ContestStanding = () => {
           <select
             value={contestType}
             onChange={(e) => setContestType(e.target.value)}
+            onKeyDown={(e) => {
+              if(e.key==='Enter'){
+                e.preventDefault()
+                inputRefs.current.focus();
+              }
+            }}
             className="w-full p-3 bg-[#2e2e30] text-white rounded-lg focus:ring-2 focus:ring-yellow-500"
           >
             <option value="">Select Contest Type</option>
@@ -61,14 +76,21 @@ const ContestStanding = () => {
           <input
             type="number"
             value={contestNumber}
+            ref={inputRefs}
             onChange={(e) => setContestNumber(e.target.value)}
             placeholder="Contest Number"
             className="w-full p-3 bg-[#2e2e30] text-white rounded-lg focus:ring-2 focus:ring-yellow-500"
+            onKeyDown={(e)=>{
+              if(e.key==="Enter"){
+                e.preventDefault()
+                handleButtonViewStanding(e);
+              }
+            }}
           />
         </div>
         <button
           onClick={handleButtonViewStanding}
-          className="mt-4 w-full bg-yellow-500 text-black font-bold py-3 rounded-lg hover:bg-yellow-600 transition-all"
+          className="mt-4 w-full bg-[#ffa116] text-black font-bold py-3 rounded-lg hover:bg-yellow-600 transition-all"
         >
           View Standings
         </button>
@@ -98,7 +120,7 @@ const ContestStanding = () => {
                     </p>
                   </div>
                   <Link
-                    to={`/contest/${contest.contestType}-${contest.contestId}`}
+                    to={`/contest/${contest.contestType.toLowerCase()}-${contest.contestId}`}
                     className="text-sm px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all"
                   >
                     View Standing
