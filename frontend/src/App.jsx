@@ -15,13 +15,13 @@ const HomePage = () => {
         </h1>
         <div>
           <button
-            className="text-white border border-yellow-500 px-6 py-2 rounded-lg mr-4 hover:bg-yellow-500 hover:text-black transition-all cursor-pointer"
+            className="text-white border border-yellow-500 px-6 py-2 rounded-lg mr-4 hover:bg-[#ffa116] hover:text-black transition-all cursor-pointer"
             onClick={() => navigate('/register')}
           >
             Register
           </button>
           <button
-            className="bg-yellow-500 text-black px-6 py-2 rounded-lg hover:bg-yellow-600 transition-all cursor-pointer"
+            className="bg-[#ffa116] text-black px-6 py-2 rounded-lg hover:bg-yellow-600 transition-all cursor-pointer"
             onClick={() => navigate('/login')}
           >
             Login
@@ -46,7 +46,7 @@ const HomePage = () => {
 
         <div className="mt-8 space-x-4">
           <button
-            className="bg-yellow-500 text-black font-bold px-8 py-3 rounded-lg hover:bg-yellow-600 transition-all cursor-pointer"
+            className="bg-[#ffa116] text-black font-bold px-8 py-3 rounded-lg hover:bg-yellow-600 transition-all cursor-pointer"
             onClick={() => navigate('/register')}
           >
             Get Started

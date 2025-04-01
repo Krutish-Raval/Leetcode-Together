@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { toast, ToastContainer } from "react-toastify";
-import { addFriend, removeFriend, getFriendsList } from "../services/api.js";
+import { addFriend, removeFriend, getFriendsList } from "../services/api_user.js";
 import "react-toastify/dist/ReactToastify.css";
 import { Link } from "react-router-dom";
 import axios from "axios";
@@ -24,12 +24,9 @@ const AddFriends = () => {
     }
   };
 
-  useEffect(() => {
-    fetchFriends();
-  }, [page]);
-
-  // Add a friend
+  
   const handleAddFriend = async () => {
+    // e.preventDefault();
     // console.log(friends);                                                                
     if (!username.trim() || !leetcodeId.trim()) {
       toast.error("Please enter both Username and LeetCode ID!");
@@ -37,13 +34,12 @@ const AddFriends = () => {
     }
     try {
       const newFriend = await addFriend({ friendName: username, leetcodeId });
-      setFriends((prev) => [...prev, newFriend.data]); 
+      setFriends((prev) => [newFriend.data, ...prev]);  
       setUsername("");
       setLeetcodeId("");
 
     } catch (error) {
-      console.log(error)
-      toast.error(error?.response?.data?.message || "Failed to add friend.");
+      
     }
   };
 
@@ -55,20 +51,13 @@ const AddFriends = () => {
       setTotalFriends((prev) => prev - 1);
       // toast.success("Friend removed successfully!");
     } catch (error) {
-      toast.error(error?.response?.data?.message || "Failed to remove friend.");
+      toast.error(error || "Failed to remove friend.");
     }
   };
 
-  // Handle Enter for input navigation
-  const handleKeyDown = (e, nextRef) => {
-    if (e.key === "Enter") {
-      if (nextRef) {
-        nextRef.current.focus();
-      } else {
-        handleAddFriend();
-      }
-    }
-  };
+  useEffect(() => {
+    fetchFriends();
+  }, [page]);
 
   const totalPages = Math.ceil(totalFriends / limit);
 
@@ -78,8 +67,8 @@ const AddFriends = () => {
       
       {/* Header Section */}
       <header className="text-center mb-4">
-        <h1 className="text-4xl font-bold text-yellow-500">LeetCode Friends</h1>
-        <p className="text-gray-400">Add or remove friends to personalize your contest standings.</p>
+        <h1 className="text-4xl font-bold text-[#ffa116]">LeetCode Friends</h1>
+        <p className="text-gray-400">Add or remove friends to personalize your contest standings. Enter correct LeetcodeID.</p>
       </header>
 
       {/* Add Friend Section */}
@@ -91,7 +80,11 @@ const AddFriends = () => {
             onChange={(e) => setUsername(e.target.value)}
             placeholder="Username"
             className="w-full p-3 bg-[#2e2e30] text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
-            onKeyDown={(e) => handleKeyDown(e, leetcodeIdRef)}
+            onKeyDown={(e) => {
+              if(e.key==='Enter'){
+                leetcodeIdRef.current.focus();
+              }
+            }}
           />
           <input
             ref={leetcodeIdRef}
@@ -100,12 +93,16 @@ const AddFriends = () => {
             onChange={(e) => setLeetcodeId(e.target.value)}
             placeholder="LeetCode ID"
             className="w-full p-3 bg-[#2e2e30] text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
-            onKeyDown={(e) => handleKeyDown(e)}
+            onKeyDown={(e) => {
+              // e.preventDefault()
+              if(e.key==='Enter')
+              handleAddFriend();
+            }}
           />
         </div>
         <button
           onClick={handleAddFriend}
-          className="mt-4 w-full bg-yellow-500 text-black font-bold py-3 rounded-lg hover:bg-yellow-400 transition-all cursor-pointer"
+          className="mt-4 w-full bg-[#ffa116] text-black font-bold py-3 rounded-lg hover:bg-yellow-600 transition-all cursor-pointer"
         >
           Add Friend
         </button>
@@ -113,23 +110,23 @@ const AddFriends = () => {
 
       {/* Friends List Section */}
       <div className="max-w-lg mx-auto">
-        <h2 className="text-2xl font-semibold text-yellow-400 mb-4">Your Friends</h2>
+        <h2 className="text-2xl font-semibold text-[#ffa116] mb-4">Your Friends</h2>
         {friends.length === 0 ? (
           <p className="text-gray-500 text-center">No friends added yet.</p>
         ) : (
           <ul className="space-y-4">
-  {friends.map((friend) => (
+        {friends.map((friend) => (
     <li
       key={friend.leetcodeId}
       className="flex justify-between items-center p-4 bg-[#1e1e1e] rounded-lg shadow-md hover:bg-[#2e2e30] transition-all"
     >
       <div>
-        <div className="text-lg font-semibold text-yellow-400">
+        <div>
           <Link
             to={`https://leetcode.com/${friend.leetcodeId}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-m text-yellow-300"
+            className="text-lg text-[#ffa116]"
           >
             {friend.friendName}
           </Link>
@@ -162,7 +159,7 @@ const AddFriends = () => {
             <button
               disabled={page <= 1}
               onClick={() => setPage(page - 1)}
-              className={`px-4 py-2 rounded-lg ${page <= 1 ? "bg-gray-600 cursor-not-allowed" : "bg-yellow-500 hover:bg-yellow-600"}`}
+              className={`px-4 py-2 rounded-lg ${page <= 1 ? "bg-gray-600 cursor-not-allowed" : "bg-[#ffa116] hover:bg-yellow-600"}`}
             >
               Previous
             </button>
@@ -170,7 +167,7 @@ const AddFriends = () => {
             <button
               disabled={page >= totalPages}
               onClick={() => setPage(page + 1)}
-              className={`px-4 py-2 rounded-lg ${page >= totalPages ? "bg-gray-600 cursor-not-allowed" : "bg-yellow-500 hover:bg-yellow-600"}`}
+              className={`px-4 py-2 rounded-lg ${page >= totalPages ? "bg-gray-600 cursor-not-allowed" : "bg-[#ffa116] hover:bg-yellow-600"}`}
             >
               Next
             </button>

@@ -3,8 +3,8 @@ import { FaArrowLeft, FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import VerifyOtp from '../components/VerifyOtp';
-import { otpSend } from '../services/api';
+import VerifyOtp from '../components/VerifyOtp.jsx';
+import { otpSend } from '../services/api_user.js';
 
 const Register = () => {
   const [formData, setFormData] = useState({ email: '', password: '', confirmPassword: '' });
@@ -13,9 +13,11 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
-  const inputRefs = useRef([]);
+  const emailRef = useRef(null);
+  const passwordRef = useRef(null);
+  const confirmPasswordRef = useRef(null);
 
-  const handleChange = (e) => {
+  const handleChange = (e) => { 
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
@@ -34,12 +36,11 @@ const Register = () => {
       await otpSend({ email: formData.email });
       setOtp(true);
       toast.dismiss(); 
-
       toast.success('OTP sent! Please check your email.');
     } catch (error) {
         toast.dismiss(); // Remove any existing toast
-      if(error!=="User already exists"){
-      toast.error(error?.response?.data?.message || 'Failed to send OTP. Please try again.');
+      if(error!=="Login from this ID"){
+        toast.error(error?.response?.data?.message || 'Failed to send OTP. Please try again.');
       }
       else{
         toast.error("User already exists. Please Login");
@@ -59,15 +60,6 @@ const Register = () => {
       : setShowConfirmPassword((prev) => !prev);
   };
 
-  const handleKeyDown = (e, index) => {
-    if (e.key === 'Enter') {
-      if (index < 2) {
-        inputRefs.current[index + 1]?.focus();
-      } else {
-        handleRegister(e);
-      }
-    }
-  };
 
   return (
     <div className="min-h-screen bg-[#0e0e10] text-white">
@@ -89,7 +81,7 @@ const Register = () => {
           <span className="text-yellow-500">&lt;/&gt;</span> LeetCode Together
         </h1>
         <button
-            className="bg-yellow-500 text-black px-6 py-2 rounded-lg hover:bg-yellow-600 transition-all cursor-pointer"
+            className="bg-[#ffa116] text-black px-6 py-2 rounded-lg hover:bg-yellow-600 transition-all cursor-pointer"
             onClick={() => navigate('/login')}
           >
             Login
@@ -119,12 +111,17 @@ const Register = () => {
           <input
             type="email"
             name="email"
+            ref={emailRef}
             placeholder="you@example.com"
             className="w-full p-3 mb-4 bg-[#2e2e2e] border border-gray-600 rounded-lg text-white"
             value={formData.email}
             onChange={handleChange}
-            onKeyDown={(e) => handleKeyDown(e, 0)}
-            ref={(el) => (inputRefs.current[0] = el)}
+            onKeyDown={(e) => {
+              if(e.key==='Enter'){
+                e.preventDefault()
+                passwordRef.current?.focus();
+              }
+            }}
             required
           />
     
@@ -133,12 +130,17 @@ const Register = () => {
             <input
               type={showPassword ? 'text' : 'password'}
               name="password"
+              ref={passwordRef}
               placeholder="Password"
               className="w-full p-3 mb-4 bg-[#2e2e2e] border border-gray-600 rounded-lg text-white pr-10"
               value={formData.password}
               onChange={handleChange}
-              onKeyDown={(e) => handleKeyDown(e, 1)}
-              ref={(el) => (inputRefs.current[1] = el)}
+              onKeyDown={(e) =>{
+                if(e.key==='Enter'){
+                  e.preventDefault()
+                  confirmPasswordRef.current?.focus(); 
+                }
+              }}
               required
             />
             <button
@@ -155,12 +157,17 @@ const Register = () => {
             <input
               type={showConfirmPassword ? 'text' : 'password'}
               name="confirmPassword"
+              ref={confirmPasswordRef} 
               placeholder="Confirm Password"
               className="w-full p-3 mb-4 bg-[#2e2e2e] border border-gray-600 rounded-lg text-white pr-10"
               value={formData.confirmPassword}
               onChange={handleChange}
-              onKeyDown={(e) => handleKeyDown(e, 2)}
-              ref={(el) => (inputRefs.current[2] = el)}
+              onKeyDown={(e) =>{
+                if(e.key==='Enter'){
+                  e.preventDefault()
+                  handleRegister(e);
+                }
+              }}
               required
             />
             <button
@@ -174,9 +181,10 @@ const Register = () => {
     
           {/* Sign-Up Button with Loading Effect */}
           <button
-            className={`w-full p-3 ${loading ? 'bg-yellow-400' : 'bg-yellow-500'} text-black font-bold rounded-lg hover:bg-yellow-600 cursor-pointer`}
+            className={`w-full p-3 ${loading ? 'bg-yellow-400' : 'bg-[#ffa116]'} text-black font-bold rounded-lg hover:bg-yellow-600 cursor-pointer`}
             disabled={loading}
           >
+           { /*disabled is used to prevent duplicate submission*/}
             {loading ? (
               <div className="flex items-center justify-center">
                 <svg className="animate-spin h-5 w-5 mr-3 text-black" viewBox="0 0 24 24">

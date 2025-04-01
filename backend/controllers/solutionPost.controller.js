@@ -36,7 +36,7 @@ const postSolution = asyncHandler(async (req, res, next) => {
     implementation.length === 0 ||
     codeSS.length === 0
   ) {
-    throw new ApiError(400, "enter all fields");
+    throw new ApiError(400,{}, "enter all fields");
   }
 
   if (!req.files || !req.files.codeSS || req.files.codeSS.length === 0) {
@@ -46,7 +46,7 @@ const postSolution = asyncHandler(async (req, res, next) => {
   const  codeSSUrls = await Promise.all(uploadPromises);
    
   if (!codeSSUrls || codeSSUrls.length === 0) {
-    throw new ApiError(500, "Failed to upload screenshots to Cloudinary");
+    throw new ApiError(500, {},"Failed to upload screenshots to Cloudinary");
   }
 
 
@@ -60,7 +60,7 @@ const postSolution = asyncHandler(async (req, res, next) => {
       postedBy: req.user._id,
     });
     if (existSolutionByUser) {
-      throw new ApiError(400, "Already Posted Solution Edit if You Want");
+      throw new ApiError(400,"Already Posted Solution Edit if You Want");
     }
   }
 
@@ -155,7 +155,7 @@ const deleteSolutionPost = asyncHandler(async (req, res, next) => {
   await SolutionPost.findByIdAndDelete(solutionId);
   return res
     .status(200)
-    .json(new ApiResponse(200, "Solution deleted successfully"));
+    .json(new ApiResponse(200,{}, "Solution deleted successfully"));
 });
 
 const editSolution = asyncHandler(async (req, res, next) => {

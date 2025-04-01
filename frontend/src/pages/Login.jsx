@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { loginUser } from "../services/api";
+import { loginUser } from "../services/api_user.js";
 import { login } from '../store/authSlice.js';
 const Login = () => {
   const navigate = useNavigate();
@@ -50,7 +50,7 @@ const Login = () => {
           <span className="text-yellow-500">&lt;/&gt;</span> LeetCode Together
         </h1>
         <button
-          className="bg-yellow-500 text-black px-6 py-2 rounded-lg hover:bg-yellow-600 transition-all cursor-pointer"
+          className="bg-[#ffa116] text-black px-6 py-2 rounded-lg hover:bg-yellow-600 transition-all cursor-pointer"
           onClick={() => navigate('/register')}
         >
           Register

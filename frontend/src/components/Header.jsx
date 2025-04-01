@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { logout } from "../store/authSlice"; 
 import { toast } from "react-toastify";
-import { logOutUser } from "../services/api"; 
+import { logOutUser } from "../services/api_user.js"; 
 
 const Header = () => {
   const navigate = useNavigate();
@@ -13,8 +13,8 @@ const Header = () => {
     e.preventDefault();
     try {
       await logOutUser({});
-      toast.dismiss();
-      toast.success('Logged Out successfully');
+      // toast.dismiss();
+      // toast.success('Logged Out successfully');
       dispatch(logout());
       navigate('/');
     } catch (error) {
@@ -70,7 +70,7 @@ const Header = () => {
       </div>
     </header>
     {/* Orange Line for Separation */}
-    <div className="h-1 w-full bg-yellow-500 "></div>
+    <div className="h-1 w-full bg-[#ffa116] "></div>
 </div>
   );
 };

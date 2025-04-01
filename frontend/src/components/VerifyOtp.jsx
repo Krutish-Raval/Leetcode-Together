@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import { FaArrowLeft } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { toast ,ToastContainer } from 'react-toastify';
-import { otpSend, registerUser } from '../services/api';
+import { otpSend, registerUser } from '../services/api_user.js';
 
 const VerifyOtp = ({ email, password, confirmPassword, goBack }) => {
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
@@ -117,7 +117,7 @@ const VerifyOtp = ({ email, password, confirmPassword, goBack }) => {
 
         {/* Verify OTP Button */}
         <button
-          className={`w-full p-3 ${loading ? 'bg-yellow-400' : 'bg-yellow-500'} text-black font-bold rounded-lg hover:bg-yellow-600 cursor-pointer`}
+          className={`w-full p-3 ${loading ? 'bg-yellow-400' : 'bg-yellow-500'} text-black font-bold rounded-lg hover:bg-yellow-500 cursor-pointer`}
           onClick={handleVerifyOtp}
           disabled={loading}
         >

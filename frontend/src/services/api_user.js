@@ -8,7 +8,7 @@ export const registerUser = async (userData) => {
     const response = await axios.post(`${API_URL}/register`, userData, {
       withCredentials: true,
     });
-    console.log("Register res: ",response)
+    // console.log("Register res: ",response)
     return response.data;
   } catch (error) {
     throw error?.response?.data?.message || 'Registration failed';
@@ -86,7 +86,7 @@ export const getFriendsList=async(page,limit)=>{
       params: { page, limit },
       withCredentials:true,
     });
-    console.log(response)
+      // console.log(response)
       return response.data;
   } catch (error) {
     throw error?.response?.data?.message || 'unable to fetch friend';

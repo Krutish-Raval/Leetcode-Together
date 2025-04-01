@@ -51,4 +51,8 @@ import uploadRouter from "./routes/codeUpload.router.js"
 
 app.use("/api/v1/standing-solution",uploadRouter)
 
+import contestRouter from "./routes/contest.router.js"
+
+app.use("/api/v1/contest",contestRouter)
+
 export { app }

@@ -116,22 +116,6 @@ const addFriend = asyncHandler(async (req, res, next) => {
   ).select("-password -refreshToken");
 
   // Add the user to the friend's friendOf list
-  const addedFriend = await User.findOne({ leetcodeId });
-
-  if (addedFriend) {
-    await User.findByIdAndUpdate(
-      addedFriend._id,
-      {
-        $addToSet: {
-          friendOf: {
-            leetcodeId: req.user.leetcodeId,
-            friendName: req.user.name,
-          },
-        },
-      },
-      { new: true }
-    );
-  }
 
   return res
     .status(200)
@@ -178,7 +162,7 @@ const getFriendsList = asyncHandler(async (req, res, next) => {
   }
 
   const totalFriends = user.friends.length;
-  const friends = user.friends.slice((page - 1) * limit, page * limit);
+  const friends = user.friends.reverse().slice((page - 1) * limit, page * limit);
   // console.log(friends,page)
   return res
     .status(200)

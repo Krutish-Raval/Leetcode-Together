@@ -1,42 +1,49 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import React, { useState, useEffect,useRef } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { fetchContests } from "../services/api_contest.js"; 
 
 const ContestStanding = () => {
-  const [contestType, setContestType] = useState('');
-  const [contestNumber, setContestNumber] = useState('');
+  const [contestType, setContestType] = useState("");
+  const [contestNumber, setContestNumber] = useState("");
   const [contests, setContests] = useState([]);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const navigate = useNavigate();
+  const inputRefs = useRef([]);
 
-  const handleButtonViewStanding= () => {
+  useEffect(() => {
+    const loadContests = async () => {
+      const realData = await fetchContests(page,7);
+      const data=realData.data
+      if (data && Array.isArray(data.contests)) {
+        setContests(data.contests);
+        setTotalPages(data.totalPages);
+      } else {
+        setContests([]);
+      }
+    };
+    loadContests();
+  }, [page]);
+
+  const handleButtonViewStanding = (e) => {
+    e.preventDefault();
     if (!contestType.trim() || !contestNumber.trim()) {
-      toast.error('Please enter valid Contest Type and Contest Number');
+      toast.error("Please enter valid Contest Type and Contest Number");
       return;
     }
     navigate(`/contest/${contestType}-${contestNumber}`);
   };
-
-  const handleViewStanding = (contest) => {
-    navigate(`/contest/${contest.contestType}-${contest.contestNumber}`);
-  };
+  
 
   return (
     <div className="min-h-screen bg-[#0e0e10] text-white p-4">
-      <ToastContainer
-            position="top-center"
-            autoClose={2000}
-            hideProgressBar={false}
-            newestOnTop
-            closeOnClick
-            rtl={false}
-            draggable
-            theme="dark"
-            limit={1}
-            />
+      <ToastContainer position="top-center" autoClose={2000} theme="dark" limit={1} />
+
       <header className="text-center mb-4">
-        <h1 className="text-4xl font-bold text-yellow-500">LeetCode Contest Standings</h1>
-        <p className="text-gray-400">Add contests and view your friends' standings!</p>
+        <h1 className="text-4xl font-bold text-yellow-500">LeetCode Contest Friends Standings</h1>
+        <p className="text-gray-400">View your friends' Leetcode standings!</p>
       </header>
 
       {/* Add Contest Section */}
@@ -45,7 +52,7 @@ const ContestStanding = () => {
           <select
             value={contestType}
             onChange={(e) => setContestType(e.target.value)}
-            className="w-full p-3 bg-[#2e2e30] text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
+            className="w-full p-3 bg-[#2e2e30] text-white rounded-lg focus:ring-2 focus:ring-yellow-500"
           >
             <option value="">Select Contest Type</option>
             <option value="Weekly">Weekly</option>
@@ -56,11 +63,11 @@ const ContestStanding = () => {
             value={contestNumber}
             onChange={(e) => setContestNumber(e.target.value)}
             placeholder="Contest Number"
-            className="w-full p-3 bg-[#2e2e30] text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
+            className="w-full p-3 bg-[#2e2e30] text-white rounded-lg focus:ring-2 focus:ring-yellow-500"
           />
         </div>
         <button
-         onClick={() => handleButtonViewStanding()}
+          onClick={handleButtonViewStanding}
           className="mt-4 w-full bg-yellow-500 text-black font-bold py-3 rounded-lg hover:bg-yellow-600 transition-all"
         >
           View Standings
@@ -72,26 +79,57 @@ const ContestStanding = () => {
         {contests.length === 0 ? (
           <p className="text-gray-500 text-center">No contests added yet.</p>
         ) : (
-          <ul className="space-y-4">
-            {contests.map((contest, index) => (
-              <li
-                key={index}
-                className="flex justify-between items-center p-4 bg-[#1e1e1e] rounded-lg shadow-md hover:bg-[#2e2e30] transition-all"
-              >
-                <div>
-                  <div className="text-lg font-semibold text-yellow-500 cursor-pointer" onClick={() => handleViewStanding(contest)}>
-                    {contest.contestType} Contest {contest.contestNumber}
-                  </div>
-                </div>
-                <Link
-                  to={`/contest/${contest.contestType}-${contest.contestNumber}`}
-                  className="text-sm px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all"
+          <>
+            <ul className="space-y-4">
+              {contests.map((contest) => (
+                <li
+                  key={contest._id}
+                  className="flex justify-between items-center p-4 bg-[#1e1e1e] rounded-lg shadow-md hover:bg-[#2e2e30] transition-all"
                 >
-                  View Standing
-                </Link>
-              </li>
-            ))}
-          </ul>
+                  <div>
+                    <div
+                      className="text-lg font-semibold text-yellow-500 cursor-pointer"
+                      onClick={() => navigate(`/contest/${contest.contestType}-${contest.contestId}`)}
+                    >
+                      {contest.contestType} Contest {contest.contestId}
+                    </div>
+                    <p className="text-gray-400 text-sm">
+                    {new Date(contest.date).toLocaleDateString("en-US", {weekday: 'long',year: 'numeric',month: 'long',day: 'numeric', timeZone: 'UTC',})}
+                    </p>
+                  </div>
+                  <Link
+                    to={`/contest/${contest.contestType}-${contest.contestId}`}
+                    className="text-sm px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all"
+                  >
+                    View Standing
+                  </Link>
+                </li>
+              ))}
+            </ul>
+
+            {/* Pagination Controls */}
+            <div className="flex justify-between items-center mt-6">
+              <button
+                onClick={() => setPage(page - 1)}
+                disabled={page === 1}
+                className={`px-4 py-2 text-white rounded-lg transition-all ${
+                  page === 1 ? "bg-gray-600 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"
+                }`}
+              >
+                Previous
+              </button>
+              <span className="text-gray-300">Page {page} of {totalPages}</span>
+              <button
+                onClick={() => setPage(page + 1)}
+                disabled={page === totalPages}
+                className={`px-4 py-2 text-white rounded-lg transition-all ${
+                  page === totalPages ? "bg-gray-600 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"
+                }`}
+              >
+                Next
+              </button>
+            </div>
+          </>
         )}
       </div>
     </div>
