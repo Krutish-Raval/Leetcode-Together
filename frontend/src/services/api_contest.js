@@ -8,7 +8,7 @@ export const fetchContests = async (page = 1, limit = 10) => {
             params:{page,limit},
             withCredentials:true,
         });
-        // console.log(response);
+        console.log(response);
         return response.data;
     } catch (error) {
         console.log(error);

@@ -92,5 +92,58 @@ export const getFriendsList=async(page,limit)=>{
     throw error?.response?.data?.message || 'unable to fetch friend';
   }
 }
-export const addContest = async(contest) => await axios.post('/api/contests', contest);
-export const getContests = async(page, limit) => await axios.get(`/api/contests?page=${page}&limit=${limit}`)
+
+export const fetchAllFriends=async()=>{
+    try {
+      const response=await axios.get(`${API_URL}/fetch-all-friends`,{
+        withCredentials:true,
+      })
+      return response.data
+    } catch (error) {
+      throw error
+    }
+}
+
+export const addUserDetail=async(userData)=>{
+  try {
+    const response =await axios.post(`${API_URL}/add-user-details`,userData,{
+      withCredentials:true,
+    })
+    return response.data
+  } catch (error) {
+    throw error || '404';
+  }
+}
+
+export const getUserDetails=async()=>{
+  try {
+    const response=await axios.get(`${API_URL}/current-user`,{
+      withCredentials:true,
+    })
+    return response.data
+  } catch (error) {
+    throw error || 'unable to fetch current user';
+  }
+}
+
+export const deleteUser= async()=>{
+  try {
+    const response=await axios.delete(`${API_URL}/delete-account`,{
+      withCredentials:true,
+    })
+    return response.data
+  } catch (error) {
+    throw error;
+  }
+}
+
+export const updatePassword=async()=>{
+  try {
+    const response=await axios.patch(`${API_URL}/change-password`,{
+      withCredentials:true,
+    })
+    return response.data
+  } catch (error) {
+    
+  }
+}

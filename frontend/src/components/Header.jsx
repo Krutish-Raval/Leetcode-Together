@@ -32,7 +32,7 @@ const Header = () => {
           className="text-3xl font-bold cursor-pointer text-white"
           onClick={() => navigate("/home")}
         >
-          <span className="text-yellow-500">&lt;/&gt;</span> LeetCode Together
+          <span className="text-[#ffa116]">&lt;/&gt;</span> LeetCode Together
         </h1>
 
         {/* Navigation Links */}

@@ -43,7 +43,7 @@ const getSolution = asyncHandler(async (req, res) => {
     contestType,
   });
   if (!existingSolution) {
-    throw new ApiError(400, "some issue");
+    throw new ApiError(400, "could not find solution");
   }
   return res
     .status(200)

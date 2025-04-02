@@ -12,23 +12,7 @@ app.use(express.urlencoded({extended: true},{limit: "16kb"}))
 app.use(express.static("public"))
 app.use(cookieParser())
 app.use(express.json()); // Enable JSON body parsing
-app.post('/check-profile', async (req, res) => {
-    const { leetcodeId } = req.body;
-    const url = `https://leetcode.com/${leetcodeId}`;
-  
-    try {
-      const response = await axios.get(url);
-      if (response.status === 200) {
-        return res.json({ exists: true });
-      }
-    } catch (error) {
-      if (error.response?.status === 404) {
-        return res.json({ exists: false });
-      }
-      console.error("Error checking profile:", error.message);
-      return res.status(500).json({ error: "Failed to check profile" });
-    }
-  });
+
   
 //routes import
 
@@ -54,5 +38,9 @@ app.use("/api/v1/standing-solution",uploadRouter)
 import contestRouter from "./routes/contest.router.js"
 
 app.use("/api/v1/contest",contestRouter)
+
+import codeUpload from "./routes/codeUpload.router.js"
+
+app.use("/api/v1/code-upload",codeUpload)
 
 export { app }

@@ -5,7 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { fetchContests } from "../services/api_contest.js"; 
 
 const ContestStanding = () => {
-  const [contestType, setContestType] = useState("");
+  let [contestType, setContestType] = useState("");
   const [contestNumber, setContestNumber] = useState("");
   const [contests, setContests] = useState([]);
   const [page, setPage] = useState(1);
@@ -33,18 +33,10 @@ const ContestStanding = () => {
       toast.error("Please enter valid Contest Type and Contest Number");
       return;
     }
-    navigate(`/contest/${contestType}-${contestNumber}`);
+    contestType= contestType.toLowerCase();
+    navigate(`/contest-standing/${contestType}-contest-${contestNumber}`);
   };
   
-  const handleKeyDown = (e, index) => {
-    if (e.key === 'Enter') {
-      if (index < 2) {
-        inputRefs.current[index + 1]?.focus();
-      } else {
-        handleRegister(e);
-      }
-    }
-  };
 
   return (
     <div className="min-h-screen bg-[#0e0e10] text-white p-4">
@@ -110,8 +102,8 @@ const ContestStanding = () => {
                 >
                   <div>
                     <div
-                      className="text-lg font-semibold text-yellow-500 cursor-pointer"
-                      onClick={() => navigate(`/contest/${contest.contestType}-${contest.contestId}`)}
+                      className="text-lg font-semibold text-[#ffa116] cursor-pointer"
+                      onClick={() => navigate(`/contest-standing/${contest.contestType}-contest-${contest.contestId}`)}
                     >
                       {contest.contestType} Contest {contest.contestId}
                     </div>
@@ -120,7 +112,7 @@ const ContestStanding = () => {
                     </p>
                   </div>
                   <Link
-                    to={`/contest/${contest.contestType.toLowerCase()}-${contest.contestId}`}
+                    to={`/contest-standing/${contest.contestType.toLowerCase()}-contest-${contest.contestId}`}
                     className="text-sm px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all"
                   >
                     View Standing

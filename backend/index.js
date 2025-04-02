@@ -5,7 +5,7 @@ import { DB_NAME } from './constants.js';
 import { app } from './app.js'
 import connectDB from './db/index.js';
 dotenv.config({path: './.env'})
-
+import axios from "axios"
 const port = process.env.PORT || 7000
 
 connectDB()
@@ -18,7 +18,20 @@ connectDB()
     console.log("MONGO db connection failed !!! ", err);
 })
 
-  
+app.get("/api/friends-performance", async (req, res) => {
+    const { contestName, friendName } = req.query;
+
+    try {
+        // https://lccn.lbao.site/api/v1/contest-records/user?contest_name=weekly-contest-442&username=flicktoss&archived=false
+        const response = await axios.get(`https://lccn.lbao.site/api/v1/contest-records/user?contest_name=${contestName}&username=${friendName}&archived=false`);
+        // console.log(response.data)
+        res.json(response.data);
+    } catch (error) {
+        console.error("Error fetching contest data:", error);
+        res.status(500).json({ error: "Failed to fetch contest data" });
+    }
+});
+
 // ;(async () => {
 //    try{
 //       await mongoose.connect(`${process.env.MONGO_URI}/${DB_NAME}`)

@@ -6,11 +6,12 @@ import {
     getFriendsList,
     updateFriendProfile,
     getCurrentUser,
-    updateUserDetails,
     addUserDetails,
     uploadedSolution,
     saveSolutionPost,
-    getSaveSolutionPost
+    getSaveSolutionPost,
+    deleteAccount,
+    fetchAllFriends
 
  } from '../controllers/user.controller.js';
 
@@ -40,8 +41,6 @@ router.route("/change-password").patch(verifyJWT, changeCurrentPassword)
 
 router.route("/current-user").get(verifyJWT, getCurrentUser)
 
-router.route("/update-user-details").patch(verifyJWT, updateUserDetails)
-
 router.route("/add-friend").post(verifyJWT, addFriend)
 
 router.route("/remove-friend").delete(verifyJWT, removeFriend)
@@ -61,5 +60,9 @@ router.route("/get-save-solution").get(verifyJWT,getSaveSolutionPost)
 router.route("/send-otp").post(sendVerificationOTP);
 
 router.route("/resend-otp").post(resendOtp);
+
+router.route("/delete-account").post(verifyJWT,deleteAccount)
+
+router.route("/fetch-all-friends").get(verifyJWT,fetchAllFriends)
 
 export default router;

@@ -28,7 +28,7 @@ const changeCurrentPassword = asyncHandler(async (req, res, next) => {
 });
 
 const addUserDetails = asyncHandler(async (req, res, next) => {
-  const { name, leetcodeId } = req.body;
+  const { name, leetcodeId ,email} = req.body;
   if (!(name && leetcodeId)) {
     throw new ApiError(400, "All fields are required");
   }
@@ -52,32 +52,10 @@ const addUserDetails = asyncHandler(async (req, res, next) => {
 });
 
 const getCurrentUser = asyncHandler(async (req, res, next) => {
+  // console.log(req.user)
   return res
     .status(200)
     .json(new ApiResponse(200, req.user, "User details fetched successfully"));
-});
-
-const updateUserDetails = asyncHandler(async (req, res, next) => {
-  const { name, leetcodeId, email } = req.body;
-  if (!(name && leetcodeId && email)) {
-    throw new ApiError(400, "All fields are required");
-  }
-  const user = await User.findByIdAndUpdate(
-    req.user?._id,
-    {
-      $set: {
-        name: name,
-        leetcodeId: leetcodeId,
-        email: email,
-      },
-    },
-    {
-      new: true,
-    }
-  ).select("-password -refreshToken");
-  return res
-    .status(200)
-    .json(new ApiResponse(200, user, "User details updated successfully"));
 });
 
 const addFriend = asyncHandler(async (req, res, next) => {
@@ -169,6 +147,13 @@ const getFriendsList = asyncHandler(async (req, res, next) => {
     .json(new ApiResponse(200, { friends, totalFriends, page }, "Friends list fetched successfully"));
 });
 
+const fetchAllFriends=asyncHandler(async(req,res,next)=>{
+  const user = await User.findById(req.user._id);
+  const friends = user.friends
+  return res
+    .status(200)
+    .json(new ApiResponse(200, { friends }, "Friends list fetched successfully"));
+})
 
 //Need to change this
 const updateFriendProfile = asyncHandler(async (req, res, next) => {
@@ -271,6 +256,9 @@ const getSaveSolutionPost=asyncHandler(async(req,res)=>{
   });
 })
 
+const deleteAccount=asyncHandler(async(req,res)=>{
+
+})
 export {
   addFriend,
   addUserDetails,
@@ -279,8 +267,9 @@ export {
   getFriendsList,
   removeFriend,
   updateFriendProfile,
-  updateUserDetails,
   uploadedSolution,
   saveSolutionPost,
-  getSaveSolutionPost
+  getSaveSolutionPost,
+  deleteAccount,
+  fetchAllFriends
 };
