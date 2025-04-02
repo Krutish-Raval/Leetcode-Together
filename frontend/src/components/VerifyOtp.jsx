@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { FaArrowLeft } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-import { toast ,ToastContainer } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import { otpSend, registerUser } from '../services/api_user.js';
 
 const VerifyOtp = ({ email, password, confirmPassword, goBack }) => {

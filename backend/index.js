@@ -31,7 +31,7 @@ app.get("/api/friends-performance", async (req, res) => {
         res.status(500).json({ error: "Failed to fetch contest data" });
     }
 });
-
+ 
 // ;(async () => {
 //    try{
 //       await mongoose.connect(`${process.env.MONGO_URI}/${DB_NAME}`)

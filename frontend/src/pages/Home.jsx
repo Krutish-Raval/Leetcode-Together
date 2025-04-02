@@ -1,10 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { addUserDetail, getUserDetails } from '../services/api_user.js';
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { addUserDetail, getUserDetails } from "../services/api_user.js";
 
 const HomePage = () => {
   const navigate = useNavigate();
-  const [userData, setUserData] = useState({ name: '', leetcodeId: '', email: '' });
+  const [userData, setUserData] = useState({
+    name: "",
+    leetcodeId: "",
+    email: "",
+  });
   const [isSubmitted, setIsSubmitted] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
 
@@ -12,22 +16,23 @@ const HomePage = () => {
     const fetchUserData = async () => {
       try {
         const responseData = await getUserDetails();
-        const response=responseData.data
-        if (response.name !== '') {  // Fix condition
+        const response = responseData.data;
+        if (response.name !== "") {
+          // Fix condition
           setUserData({
             name: response.name,
             leetcodeId: response.leetcodeId,
-            email: response.email
+            email: response.email,
           });
           setIsSubmitted(true);
         } else {
           setIsSubmitted(false);
         }
       } catch (error) {
-        console.error('Error fetching user data:', error);
+        console.error("Error fetching user data:", error);
       }
     };
-  
+
     fetchUserData();
   }, []);
 
@@ -44,7 +49,7 @@ const HomePage = () => {
         setIsEditing(false);
       }
     } catch (error) {
-      console.error('Error saving user data:', error);
+      console.error("Error saving user data:", error);
     }
   };
 
@@ -56,14 +61,19 @@ const HomePage = () => {
           Welcome to <span className="text-[#ffa116]">LeetCode Together</span>
         </h1>
         <p className="text-gray-400 text-lg max-w-2xl">
-          Track your friends' LeetCode contest standings, discuss solutions, and code together!
+          Track your friends' LeetCode contest standings, discuss solutions, and
+          code together!
         </p>
-         
+
         {/* User Details Section */}
         {isSubmitted && !isEditing ? (
           <div className="bg-[#1a1a1d] p-3 rounded-xl shadow-lg w-full max-w-90 text-center">
-            <h3 className="text-2xl font-semibold text-[#ffa116]">Welcome, {userData.name}!</h3>
-            <p className="text-gray-300 mt-1">LeetCode ID: {userData.leetcodeId}</p>
+            <h3 className="text-2xl font-semibold text-[#ffa116]">
+              Welcome, {userData.name}!
+            </h3>
+            <p className="text-gray-300 mt-1">
+              LeetCode ID: {userData.leetcodeId}
+            </p>
             <p className="text-gray-300 mt-1">Email: {userData.email}</p>
             <button
               className="mt-3 bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-6 rounded-lg transition-all"
@@ -78,7 +88,7 @@ const HomePage = () => {
             className="bg-[#1a1a1d] p-6 rounded-xl shadow-lg w-full max-w-md text-center space-y-4"
           >
             <h3 className="text-2xl font-semibold text-[#ffa116]">
-              {isEditing ? 'Edit Your Details' : 'Enter Your Details'}
+              {isEditing ? "Edit Your Details" : "Enter Your Details"}
             </h3>
             <input
               type="text"
@@ -110,7 +120,7 @@ const HomePage = () => {
               type="submit"
               className="bg-[#ffa116] hover:bg-[#e69500] text-black font-bold py-2 px-6 rounded-lg transition-all w-full"
             >
-              {isEditing ? 'Update' : 'Submit'}
+              {isEditing ? "Update" : "Submit"}
             </button>
           </form>
         )}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { toast, ToastContainer } from "react-toastify";
-import { addFriend, removeFriend, getFriendsList } from "../services/api_user.js";
+import { addFriend, removeFriend, getFriendsList, getUserDetails } from "../services/api_user.js";
 import "react-toastify/dist/ReactToastify.css";
 import { Link } from "react-router-dom";
 import axios from "axios";
@@ -8,6 +8,7 @@ import axios from "axios";
 const AddFriends = () => {
   const [username, setUsername] = useState("");
   const [leetcodeId, setLeetcodeId] = useState("");
+  const [userLeetcodeId,setUserLeetcodeId]=useState("");
   const [friends, setFriends] = useState([]);
   const [page, setPage] = useState(1);
   const [totalFriends, setTotalFriends] = useState(0);
@@ -23,8 +24,15 @@ const AddFriends = () => {
       toast.error(error?.response?.data?.message || "Failed to fetch friends.");
     }
   };
-
-  
+  const getCurrentUserLeetcodeId=async()=>{
+    const user=await getUserDetails();
+    setUserLeetcodeId(user.data.leetcodeId)
+    // console.log(user.data.leetcodeId)
+    return user.data.leetcodeId;
+  }
+  useEffect(()=>{
+      getCurrentUserLeetcodeId()
+  },[])
   const handleAddFriend = async () => {
     // e.preventDefault();
     // console.log(friends);                                                                
@@ -33,10 +41,16 @@ const AddFriends = () => {
       return;
     }
     try {
-      const newFriend = await addFriend({ friendName: username, leetcodeId });
-      setFriends((prev) => [newFriend.data, ...prev]);  
-      setUsername("");
-      setLeetcodeId("");
+      console.log(userLeetcodeId);
+      if(leetcodeId!==userLeetcodeId){
+          const newFriend = await addFriend({ friendName: username, leetcodeId });
+          setFriends((prev) => [newFriend.data, ...prev]);  
+          setUsername("");
+          setLeetcodeId("");
+      }
+      else{
+        toast.error("You cannot enter your leetcodeId")
+      }
 
     } catch (error) {
       
@@ -63,7 +77,17 @@ const AddFriends = () => {
 
   return (
     <div className="min-h-screen bg-[#0e0e10] text-white p-4">
-      {/* <ToastContainer autoClose={1000} theme="dark" limit={1} /> */}
+      <ToastContainer
+            position="top-center"
+            autoClose={3000}
+            hideProgressBar={false}
+            newestOnTop
+            closeOnClick
+            rtl={false}
+            draggable
+            theme="dark"
+            limit={1}
+            />
       
       {/* Header Section */}
       <header className="text-center mb-4">

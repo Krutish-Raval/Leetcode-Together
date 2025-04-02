@@ -1,8 +1,8 @@
-import React, { useState, useEffect,useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { fetchContests } from "../services/api_contest.js"; 
+import { fetchContests } from "../services/api_contest.js";
 
 const ContestStanding = () => {
   let [contestType, setContestType] = useState("");
@@ -12,11 +12,11 @@ const ContestStanding = () => {
   const [totalPages, setTotalPages] = useState(1);
   const navigate = useNavigate();
   const inputRefs = useRef(null);
-
+  
   useEffect(() => {
     const loadContests = async () => {
-      const realData = await fetchContests(page,7);
-      const data=realData.data
+      const realData = await fetchContests(page, 7);
+      const data = realData.data;
       if (data && Array.isArray(data.contests)) {
         setContests(data.contests);
         setTotalPages(data.totalPages);
@@ -33,17 +33,23 @@ const ContestStanding = () => {
       toast.error("Please enter valid Contest Type and Contest Number");
       return;
     }
-    contestType= contestType.toLowerCase();
+    contestType = contestType.toLowerCase();
     navigate(`/contest-standing/${contestType}-contest-${contestNumber}`);
   };
-  
 
   return (
     <div className="min-h-screen bg-[#0e0e10] text-white p-4">
-      <ToastContainer position="top-center" autoClose={2000} theme="dark" limit={1} />
+      <ToastContainer
+        position="top-center"
+        autoClose={2000}
+        theme="dark"
+        limit={1}
+      />
 
       <header className="text-center mb-4">
-        <h1 className="text-4xl font-bold text-[#ffa116]">LeetCode Contest Friends Standings</h1>
+        <h1 className="text-4xl font-bold text-[#ffa116]">
+          LeetCode Contest Friends Standings
+        </h1>
         <p className="text-gray-400">View your friends' Leetcode standings!</p>
       </header>
 
@@ -54,8 +60,8 @@ const ContestStanding = () => {
             value={contestType}
             onChange={(e) => setContestType(e.target.value)}
             onKeyDown={(e) => {
-              if(e.key==='Enter'){
-                e.preventDefault()
+              if (e.key === "Enter") {
+                e.preventDefault();
                 inputRefs.current.focus();
               }
             }}
@@ -72,9 +78,9 @@ const ContestStanding = () => {
             onChange={(e) => setContestNumber(e.target.value)}
             placeholder="Contest Number"
             className="w-full p-3 bg-[#2e2e30] text-white rounded-lg focus:ring-2 focus:ring-yellow-500"
-            onKeyDown={(e)=>{
-              if(e.key==="Enter"){
-                e.preventDefault()
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
                 handleButtonViewStanding(e);
               }
             }}
@@ -103,16 +109,28 @@ const ContestStanding = () => {
                   <div>
                     <div
                       className="text-lg font-semibold text-[#ffa116] cursor-pointer"
-                      onClick={() => navigate(`/contest-standing/${contest.contestType}-contest-${contest.contestId}`)}
+                      onClick={() =>
+                        navigate(
+                          `/contest-standing/${contest.contestType}-contest-${contest.contestId}`
+                        )
+                      }
                     >
                       {contest.contestType} Contest {contest.contestId}
                     </div>
                     <p className="text-gray-400 text-sm">
-                    {new Date(contest.date).toLocaleDateString("en-US", {weekday: 'long',year: 'numeric',month: 'long',day: 'numeric', timeZone: 'UTC',})}
+                      {new Date(contest.date).toLocaleDateString("en-US", {
+                        weekday: "long",
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                        timeZone: "UTC",
+                      })}
                     </p>
                   </div>
                   <Link
-                    to={`/contest-standing/${contest.contestType.toLowerCase()}-contest-${contest.contestId}`}
+                    to={`/contest-standing/${contest.contestType.toLowerCase()}-contest-${
+                      contest.contestId
+                    }`}
                     className="text-sm px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all"
                   >
                     View Standing
@@ -127,17 +145,23 @@ const ContestStanding = () => {
                 onClick={() => setPage(page - 1)}
                 disabled={page === 1}
                 className={`px-4 py-2 text-white rounded-lg transition-all ${
-                  page === 1 ? "bg-gray-600 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"
+                  page === 1
+                    ? "bg-gray-600 cursor-not-allowed"
+                    : "bg-blue-500 hover:bg-blue-600"
                 }`}
               >
                 Previous
               </button>
-              <span className="text-gray-300">Page {page} of {totalPages}</span>
+              <span className="text-gray-300">
+                Page {page} of {totalPages}
+              </span>
               <button
                 onClick={() => setPage(page + 1)}
                 disabled={page === totalPages}
                 className={`px-4 py-2 text-white rounded-lg transition-all ${
-                  page === totalPages ? "bg-gray-600 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"
+                  page === totalPages
+                    ? "bg-gray-600 cursor-not-allowed"
+                    : "bg-blue-500 hover:bg-blue-600"
                 }`}
               >
                 Next
