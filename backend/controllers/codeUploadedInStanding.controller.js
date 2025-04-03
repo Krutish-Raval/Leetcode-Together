@@ -4,14 +4,14 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
 const uploadSolution = asyncHandler(async (req, res) => {
-  if (!contestId || !questionNo || !contestType || !code) {
+  const {questionNo,contestName,leetcodeId,code}=req.body;
+  if (!questionNo || !contestName || !code) {
     throw new ApiError(400, "All fields are required.");
   }
   const existingSolution = await CodeUpload.findOne({
-    uploadedBy: req.user._id,
-    contestId,
+    uploadedBy: leetcodeId,
+    contestName,
     questionNo,
-    contestType,
   });
 
   if (existingSolution) {
@@ -22,7 +22,7 @@ const uploadSolution = asyncHandler(async (req, res) => {
   }
 
   const newUpload = await CodeUpload.create({
-    uploadedBy: req.user._id,
+    uploadedBy: leetcodeId,
     contestId: contestId,
     questionNo: questionNo,
     contestType: contestType,
@@ -35,12 +35,11 @@ const uploadSolution = asyncHandler(async (req, res) => {
 });
 
 const getSolution = asyncHandler(async (req, res) => {
-  const { contestId, questionNo, contestType, id } = req.body;
+  const {  questionNo, contestName, id } = req.body;
   const existingSolution = await CodeUpload.findOne({
     uploadedBy: id,
-    contestId,
     questionNo,
-    contestType,
+    contestName
   });
   if (!existingSolution) {
     throw new ApiError(400, "could not find solution");
@@ -51,8 +50,8 @@ const getSolution = asyncHandler(async (req, res) => {
 });
 
 const deleteSolution = asyncHandler(async (req, res) => {
-  const { solutionId } = req.body;
-  const solution = await CodeUpload.findById(solutionId);
+  const { leetcodeId } = req.body;
+  const solution = await CodeUpload.findOne({leetcodeId});
   if (!solution) {
     throw new ApiError(404, "Solution not found.");
   }
@@ -68,10 +67,8 @@ const deleteSolution = asyncHandler(async (req, res) => {
 });
 
 const editSolution = asyncHandler(async (req, res) => {
-  const { solutionId, code } = req.body;
-  const solution = await CodeUpload.findById(solutionId).populate({
-	path:"uploadedBy"
-  });
+  const { leetcodeId, code } = req.body;
+  const solution = await CodeUpload.findOne({uploadedBy: leetcodeId})
   if (!solution) {
     throw new ApiError(404, "Solution not found.");
   }

@@ -3,8 +3,8 @@ import mongoose, { Schema } from "mongoose";
 const codeUploadSchema= new Schema({
 
     uploadedBy:{
-       type:Schema.Types.ObjectId,
-       ref:"User"
+       type:String,
+       required:true
     },
 
     code:{
@@ -17,16 +17,10 @@ const codeUploadSchema= new Schema({
         required: true
     },
 
-    contestId:{
+    contestName:{
         type:String,
-        required: true
-    },
-
-    contestType:{
-        type:String,
-        enum:["weekly","biweekly"],
-        required: true
-    },
+        required:true
+    }
 
 },
 {
