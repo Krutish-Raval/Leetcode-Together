@@ -4,83 +4,76 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
 const uploadSolution = asyncHandler(async (req, res) => {
-  const {questionNo,contestName,leetcodeId,code}=req.body;
-  if (!questionNo || !contestName || !code) {
+  const {question,contestName,userLeetcodeId,solution}=req.body;
+  // console.log(question,contestName,userLeetcodeId,);
+  if (!question || !contestName || !solution) {
     throw new ApiError(400, "All fields are required.");
   }
   const existingSolution = await CodeUpload.findOne({
-    uploadedBy: leetcodeId,
+    uploadedBy: userLeetcodeId,
     contestName,
-    questionNo,
+    questionNo:question,
+    code: solution
   });
-
+  //  console.log(question,contestName,userLeetcodeId,);
   if (existingSolution) {
     throw new ApiError(
       400,
       "You have already uploaded a solution for this contest question."
     );
   }
-
+  
   const newUpload = await CodeUpload.create({
-    uploadedBy: leetcodeId,
-    contestId: contestId,
-    questionNo: questionNo,
-    contestType: contestType,
-    code: code,
+    uploadedBy: userLeetcodeId.trim(),
+    contestName: contestName.trim(),
+    questionNo: question.trim(),
+    code: solution
   });
-
+  console.log(newUpload);
   res
-    .status(201)
-    .json(new ApiResponse(201, newUpload, "Solution uploaded successfully"));
+    .status(200)
+    .json(new ApiResponse(200, newUpload, "Solution uploaded successfully"));
 });
 
 const getSolution = asyncHandler(async (req, res) => {
-  const {  questionNo, contestName, id } = req.body;
+  //console.log(req.body);
+  const {contestName, q, userLeetcodeId} = req.query;
+  // console.log("GetSolution Query: ",req.query);
+  //console.log(contestName, q, userLeetcodeId);
   const existingSolution = await CodeUpload.findOne({
-    uploadedBy: id,
-    questionNo,
-    contestName
+    uploadedBy: userLeetcodeId.trim(),
+    questionNo:q.trim(),
+    contestName:contestName.trim(),
   });
-  if (!existingSolution) {
-    throw new ApiError(400, "could not find solution");
-  }
+  
   return res
     .status(200)
     .json(new ApiResponse(200, existingSolution, "solution fetched"));
 });
 
 const deleteSolution = asyncHandler(async (req, res) => {
-  const { leetcodeId } = req.body;
-  const solution = await CodeUpload.findOne({leetcodeId});
-  if (!solution) {
-    throw new ApiError(404, "Solution not found.");
-  }
-
-  if (solution.uploadedBy.toString() !== req.user._id.toString()) {
-    throw new ApiError(403, "You are not authorized to delete this solution.");
-  }
-
-  await CodeUpload.findByIdAndDelete(solutionId);
+  const { contestName,userLeetcodeId,question } = req.body;
+  const solution = await CodeUpload.findOne({
+    uploadedBy:userLeetcodeId,
+    contestName,
+    questionNo:question,
+  });
+  await CodeUpload.findByIdAndDelete(solution._id);
   res
     .status(200)
     .json(new ApiResponse(200, {}, "Solution deleted successfully"));
 });
 
 const editSolution = asyncHandler(async (req, res) => {
-  const { leetcodeId, code } = req.body;
-  const solution = await CodeUpload.findOne({uploadedBy: leetcodeId})
-  if (!solution) {
-    throw new ApiError(404, "Solution not found.");
-  }
-
-  if (solution.uploadedBy.toString() !== req.user._id.toString()) {
-    throw new ApiError(403, "You are not authorized to delete this solution.");
-  }
+  const { userLeetcodeId, solution:code,question,contestName } = req.body;
+  // console.log(req.body);
+  const solution = await CodeUpload.findOne({uploadedBy: userLeetcodeId,contestName, questionNo:question});
+  // console.log(solution);
   solution.code = code;
   await solution.save({ validateBeforeSave: false });
   return res
     .status(200)
-    .json(new ApiResponse(200, {}, "Solution edited successfully"));
+    .json(new ApiResponse(200, {code}, "Solution edited successfully"));
 });
 
 export { deleteSolution, editSolution, getSolution, uploadSolution };

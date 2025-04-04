@@ -13,7 +13,7 @@ const codeUploadSchema= new Schema({
     },
 
     questionNo:{
-        type:Number,
+        type:String,
         required: true
     },
 
