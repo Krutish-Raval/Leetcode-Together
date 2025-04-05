@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { addUserDetail, getUserDetails } from "../services/api_user.js";
+// import { set } from "mongoose";
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -17,13 +18,18 @@ const HomePage = () => {
       try {
         const responseData = await getUserDetails();
         const response = responseData.data;
+        // console.log("User Data:", response.email);
+        setUserData({
+          name: response.name || "",
+          leetcodeId: response.leetcodeId || "",
+          email: response.email || "",
+        });
         if (response.name !== "") {
           // Fix condition
-          setUserData({
-            name: response.name,
-            leetcodeId: response.leetcodeId,
-            email: response.email,
-          });
+          // setUserData({
+          //   name: response.name,
+          //   leetcodeId: response.leetcodeId,
+          // });
           setIsSubmitted(true);
         } else {
           setIsSubmitted(false);

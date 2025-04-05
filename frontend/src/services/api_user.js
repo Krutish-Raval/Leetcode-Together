@@ -148,3 +148,18 @@ export const updatePassword=async()=>{
     
   }
 }
+
+export const updateFriend=async({beforeleetcodeid,leetcodeId,friendName})=>{
+  try {
+    const response=await axios.patch(`${API_URL}/update-friend-profile`,{
+      beforeleetcodeid,
+      leetcodeId,
+      friendName,
+    },{
+      withCredentials:true,
+    })
+    return response.data
+  } catch (error) {
+    throw error;
+  }
+}

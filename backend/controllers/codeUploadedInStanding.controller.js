@@ -53,6 +53,7 @@ const getSolution = asyncHandler(async (req, res) => {
 
 const deleteSolution = asyncHandler(async (req, res) => {
   const { contestName,userLeetcodeId,question } = req.body;
+  console.log(req.body);
   const solution = await CodeUpload.findOne({
     uploadedBy:userLeetcodeId,
     contestName,

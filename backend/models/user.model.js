@@ -17,10 +17,12 @@ const userSchema = new Schema(
   {
     name: {
       type: String,
+      default: "",
     },
 
     leetcodeId: {
       type: String,
+      default: "",
     },
 
     email: {

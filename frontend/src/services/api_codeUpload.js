@@ -30,10 +30,11 @@ export const uploadSolution = async (userData) => {
 
 export const deleteSolution = async (userData) => {
   try {
+    console.log("userData", userData);
     const response = await axios.delete(
       `${API_URL}/delete-solution`,
-      userData,
       {
+        data: userData,
         withCredentials: true,
       }
     );

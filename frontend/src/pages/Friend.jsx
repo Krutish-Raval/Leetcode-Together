@@ -1,20 +1,28 @@
-import React, { useState, useEffect, useRef } from "react";
-import { toast, ToastContainer } from "react-toastify";
-import { addFriend, removeFriend, getFriendsList, getUserDetails } from "../services/api_user.js";
-import "react-toastify/dist/ReactToastify.css";
+import React, { useEffect, useRef, useState } from "react";
+import { FaTrash,FaCheck,FaTimes,FaEdit } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import {
+  addFriend,
+  getFriendsList,
+  getUserDetails,
+  removeFriend,
+  updateFriend
+} from "../services/api_user.js";
 
 const AddFriends = () => {
   const [username, setUsername] = useState("");
   const [leetcodeId, setLeetcodeId] = useState("");
-  const [userLeetcodeId,setUserLeetcodeId]=useState("");
+  const [userLeetcodeId, setUserLeetcodeId] = useState("");
   const [friends, setFriends] = useState([]);
   const [page, setPage] = useState(1);
   const [totalFriends, setTotalFriends] = useState(0);
   const limit = 7;
   const leetcodeIdRef = useRef(null);
-
+  const [editingFriendId, setEditingFriendId] = useState(null);
+  const [editedFriendName, setEditedFriendName] = useState("");
+  const [editedFriendId, setEditedFriendId] = useState("");
   const fetchFriends = async () => {
     try {
       const { data } = await getFriendsList(page, limit);
@@ -24,44 +32,75 @@ const AddFriends = () => {
       toast.error(error?.response?.data?.message || "Failed to fetch friends.");
     }
   };
-  const getCurrentUserLeetcodeId=async()=>{
-    const user=await getUserDetails();
-    setUserLeetcodeId(user.data.leetcodeId)
+  const getCurrentUserLeetcodeId = async () => {
+    const user = await getUserDetails();
+    setUserLeetcodeId(user.data.leetcodeId);
     // console.log(user.data.leetcodeId)
     return user.data.leetcodeId;
-  }
-  useEffect(()=>{
-      getCurrentUserLeetcodeId()
-  },[])
+  };
+  useEffect(() => {
+    getCurrentUserLeetcodeId();
+  }, []);
   const handleAddFriend = async () => {
     // e.preventDefault();
-    // console.log(friends);                                                                
+    // console.log(friends);
     if (!username.trim() || !leetcodeId.trim()) {
       toast.error("Please enter both Username and LeetCode ID!");
       return;
     }
     try {
-      console.log(userLeetcodeId);
-      if(leetcodeId!==userLeetcodeId){
-          const newFriend = await addFriend({ friendName: username, leetcodeId });
-          setFriends((prev) => [newFriend.data, ...prev]);  
-          setUsername("");
-          setLeetcodeId("");
+      // console.log(userLeetcodeId);
+      if (leetcodeId !== userLeetcodeId) {
+        const newFriend = await addFriend({ friendName: username, leetcodeId });
+        setFriends((prev) => [newFriend.data, ...prev]);
+        setUsername("");
+        setLeetcodeId("");
+      } else {
+        toast.error("You cannot enter your leetcodeId");
       }
-      else{
-        toast.error("You cannot enter your leetcodeId")
-      }
-
-    } catch (error) {
-      
-    }
+    } catch (error) {}
   };
 
+    // Update a friend's details (name and LeetCode ID)
+    const handleUpdateFriend =async () => {
+      if (!editedFriendName.trim() || !editedFriendId.trim()) {
+        toast.error("Both friend name and LeetCode ID are required.");
+        return;
+      }
+      try {
+        // Call your API endpoint to update the friend
+        const response =  await updateFriend({
+          beforeLeetcodeId: editingFriendId,
+          friendName: editedFriendName,
+          leetcodeId: editedFriendId,
+        });
+        console.log(response);
+        // Update the friend in the state list
+        setFriends((prev) =>
+          prev.map((friend) =>
+
+            friend.leetcodeId === editingFriendId ? response.data : friend.leetcodeId
+          )
+        );
+        // Reset editing states
+        setEditingFriendId(null);
+        setEditedFriendName("");
+        setEditedFriendId("");
+      } catch (error) {
+        toast.error(
+          error?.response?.data?.message || "Failed to update friend."
+        );
+      }
+    };
+
+    
   // Remove a friend
   const handleRemoveFriend = async (leetcodeId) => {
     try {
       await removeFriend(leetcodeId);
-      setFriends((prev) => prev.filter((friend) => friend.leetcodeId !== leetcodeId));
+      setFriends((prev) =>
+        prev.filter((friend) => friend.leetcodeId !== leetcodeId)
+      );
       setTotalFriends((prev) => prev - 1);
       // toast.success("Friend removed successfully!");
     } catch (error) {
@@ -78,21 +117,24 @@ const AddFriends = () => {
   return (
     <div className="min-h-screen bg-[#0e0e10] text-white p-4">
       <ToastContainer
-            position="top-center"
-            autoClose={3000}
-            hideProgressBar={false}
-            newestOnTop
-            closeOnClick
-            rtl={false}
-            draggable
-            theme="dark"
-            limit={1}
-            />
-      
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        draggable
+        theme="dark"
+        limit={1}
+      />
+
       {/* Header Section */}
       <header className="text-center mb-4">
         <h1 className="text-4xl font-bold text-[#ffa116]">LeetCode Friends</h1>
-        <p className="text-gray-400">Add or remove friends to personalize your contest standings. Enter correct LeetcodeID.</p>
+        <p className="text-gray-400">
+          Add or remove friends to personalize your contest standings. Enter
+          correct LeetcodeID.
+        </p>
       </header>
 
       {/* Add Friend Section */}
@@ -105,7 +147,7 @@ const AddFriends = () => {
             placeholder="Username"
             className="w-full p-3 bg-[#2e2e30] text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
             onKeyDown={(e) => {
-              if(e.key==='Enter'){
+              if (e.key === "Enter") {
                 leetcodeIdRef.current.focus();
               }
             }}
@@ -119,8 +161,7 @@ const AddFriends = () => {
             className="w-full p-3 bg-[#2e2e30] text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
             onKeyDown={(e) => {
               // e.preventDefault()
-              if(e.key==='Enter')
-              handleAddFriend();
+              if (e.key === "Enter") handleAddFriend();
             }}
           />
         </div>
@@ -134,47 +175,114 @@ const AddFriends = () => {
 
       {/* Friends List Section */}
       <div className="max-w-lg mx-auto">
-        <h2 className="text-2xl font-semibold text-[#ffa116] mb-4">Your Friends</h2>
+        <h2 className="text-2xl font-semibold text-[#ffa116] mb-4">
+          Your Friends
+        </h2>
         {friends.length === 0 ? (
           <p className="text-gray-500 text-center">No friends added yet.</p>
         ) : (
           <ul className="space-y-4">
-        {friends.map((friend) => (
-    <li
-      key={friend.leetcodeId}
-      className="flex justify-between items-center p-4 bg-[#1e1e1e] rounded-lg shadow-md hover:bg-[#2e2e30] transition-all"
-    >
-      <div>
-        <div>
-          <Link
-            to={`https://leetcode.com/${friend.leetcodeId}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-lg text-[#ffa116]"
-          >
-            {friend.friendName}
-          </Link>
-        </div>
-        <div>
-          <Link
-            to={`https://leetcode.com/${friend.leetcodeId}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-m text-gray-400 "
-          >
-            Leetcode ID: {friend.leetcodeId}
-          </Link>
-        </div>
-      </div>
-      <button
-        onClick={() => handleRemoveFriend(friend.leetcodeId)}
-        className="text-sm px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all"
-      >
-        Remove
-      </button>
-    </li>
-  ))}
-</ul>
+            {friends.map((friend) => (
+              console.log(friend),
+              <li
+                key={friend.leetcodeId}
+                className="flex justify-between items-center p-4 bg-[#1e1e1e] rounded-lg shadow-md hover:bg-[#2e2e30] transition-all"
+              >
+                <div>
+                  {editingFriendId === friend.leetcodeId ? (
+                    <div className="space-y-2">
+                      <input
+                        type="text"
+                        value={editedFriendName}
+                        onChange={(e) => setEditedFriendName(e.target.value)}
+                        placeholder="Friend Name"
+                        className="w-full p-2 bg-[#2e2e30] text-white rounded focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") handleUpdateFriend();
+                          if (e.key === "Escape")
+                            setEditingFriendId(null);
+                        }}
+                      />
+                      {/* Editable input for LeetCode ID */}
+                      <input
+                        type="text"
+                        value={editedFriendId}
+                        onChange={(e) => setEditedFriendId(e.target.value)}
+                        placeholder="LeetCode ID"
+                        className="w-full p-2 bg-[#2e2e30] text-white rounded focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") handleUpdateFriend();
+                          if (e.key === "Escape")
+                            setEditingFriendId(null);
+                        }}
+                      />
+                    </div>
+                  ) : (
+                    <div className="space-y-1">
+                      <div className="flex items-center space-x-2">
+                        <Link
+                          to={`https://leetcode.com/${friend.leetcodeId}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-lg text-[#ffa116]"
+                        >
+                          {friend.friendName}
+                        </Link>
+                        <button
+                          onClick={() => {
+                            // Enter editing mode by setting current values
+                            setEditingFriendId(friend.leetcodeId);
+                            setEditedFriendName(friend.friendName);
+                            setEditedFriendId(friend.leetcodeId);
+                          }}
+                          className="text-m text-gray-400 hover:text-white"
+                        >
+                          <FaEdit />
+                        </button>
+                      </div>
+                      <div>
+                        <Link
+                          to={`https://leetcode.com/${friend.leetcodeId}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm text-gray-400"
+                        >
+                          LeetCode ID: {friend.leetcodeId}
+                        </Link>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                {editingFriendId === friend.leetcodeId ? (
+                  <div className="flex flex-col space-y-2">
+                    <button
+                      onClick={handleUpdateFriend}
+                      className="text-xl text-green-400 hover:text-green-500 transition-all"
+                    >
+                      <FaCheck />
+                    </button>
+                    <button
+                      onClick={() => {
+                        setEditingFriendId(null);
+                        setEditedFriendName("");
+                        setEditedFriendId("");
+                      }}
+                      className="text-xl text-red-400 hover:text-red-500 transition-all"
+                    >
+                      <FaTimes />
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => handleRemoveFriend(friend.leetcodeId)}
+                    className="text-xl px-4 py-2 text-[#ffa116] rounded-lg hover:text-gray-400 transition-all"
+                  >
+                    <FaTrash />
+                  </button>
+                )}
+              </li>
+            ))}
+          </ul>
         )}
 
         {/* Pagination Section */}
@@ -183,15 +291,25 @@ const AddFriends = () => {
             <button
               disabled={page <= 1}
               onClick={() => setPage(page - 1)}
-              className={`px-4 py-2 rounded-lg ${page <= 1 ? "bg-gray-600 cursor-not-allowed" : "bg-[#ffa116] hover:bg-yellow-600"}`}
+              className={`px-4 py-2 rounded-lg ${
+                page <= 1
+                  ? "bg-gray-600 cursor-not-allowed"
+                  : "bg-[#ffa116] hover:bg-yellow-600"
+              }`}
             >
               Previous
             </button>
-            <span className="text-gray-400">Page {page} of {totalPages}</span>
+            <span className="text-gray-400">
+              Page {page} of {totalPages}
+            </span>
             <button
               disabled={page >= totalPages}
               onClick={() => setPage(page + 1)}
-              className={`px-4 py-2 rounded-lg ${page >= totalPages ? "bg-gray-600 cursor-not-allowed" : "bg-[#ffa116] hover:bg-yellow-600"}`}
+              className={`px-4 py-2 rounded-lg ${
+                page >= totalPages
+                  ? "bg-gray-600 cursor-not-allowed"
+                  : "bg-[#ffa116] hover:bg-yellow-600"
+              }`}
             >
               Next
             </button>

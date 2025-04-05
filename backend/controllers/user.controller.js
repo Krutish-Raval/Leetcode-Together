@@ -157,27 +157,15 @@ const fetchAllFriends=asyncHandler(async(req,res,next)=>{
 
 //Need to change this
 const updateFriendProfile = asyncHandler(async (req, res, next) => {
-  const { leetcodeId, friendName } = req.body;
+  const {beforeleetcodeId, leetcodeId, friendName } = req.body;
+   console.log(req.body);
   if (!leetcodeId || !friendName) {
     throw new ApiError(400, "Leetcode Id and friendName is required");
-  }
-  const existingFriend = await User.findOne({
-    _id: req.user._id,
-    $or: [
-      { "friends.leetcodeId": leetcodeId },
-      { "friends.friendName": friendName },
-    ],
-  });
-
-  if (existingFriend) {
-    throw new ApiError(
-      402,
-      "LeetcodeId or friendName already exists in your friends list"
-    );
   }
   const user = await User.findOneAndUpdate(
     {
       _id: req.user._id,
+      "friends.leetcodeId": beforeleetcodeId,
     },
     {
       $set: {
@@ -189,7 +177,7 @@ const updateFriendProfile = asyncHandler(async (req, res, next) => {
   ).select("-password -refreshToken");
   return res
     .status(200)
-    .json(new ApiResponse(200, user, "Friend profile updated successfully"));
+    .json(new ApiResponse(200, {friendName,leetcodeId}, "Friend profile updated successfully"));
 });
 
 const uploadedSolution = asyncHandler(async (req, res) => {

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { FaPlusCircle, FaRedo, FaUpload } from "react-icons/fa";
+import { FaMinusCircle, FaPlusCircle, FaRedo, FaUpload } from "react-icons/fa";
 import { Link, useParams } from "react-router-dom";
 import SolutionModal from "../components/SolutionModal.jsx";
 import Spinner from "../components/Spinner.jsx";
@@ -23,6 +23,7 @@ const FriendStanding = () => {
   const [userLeetcodeId, setUserLeetcodeId] = useState(null);
   const [userName, setUserName] = useState("");
   const [uploadedSolutions, setUploadedSolutions] = useState({});
+  const [allSolutions, setAllSolutions] = useState({});
 
   useEffect(() => {
     (async () => {
@@ -53,7 +54,7 @@ const FriendStanding = () => {
           ];
         }
         setFriends(friendsList);
-
+        // console.log("Friends List:", friendsList);
         const standingsData = await Promise.allSettled(
           friendsList.map((friend) =>
             fetchFriendsPerformance(contestName, friend.leetcodeId)
@@ -74,21 +75,37 @@ const FriendStanding = () => {
         setStandings(mergedStandings);
         // Fetch solutions for the user
         const solutionData = await Promise.allSettled(
-          ["Q1", "Q2", "Q3", "Q4"].map(
-            async (q) =>await fetchSolution({ contestName, q, userLeetcodeId })
+          friendsList.flatMap((friend) =>
+            ["Q1", "Q2", "Q3", "Q4"].map((q) =>
+              fetchSolution({
+                contestName,
+                q,
+                userLeetcodeId: friend.leetcodeId,
+              }).then((res) => ({
+                userLeetcodeId: friend.leetcodeId,
+                question: q,
+                code: res?.data?.code || null,
+              }))
+            )
           )
         );
-      // console.log(solutionData);  
-        const solutionStatus = {};
-        solutionData.forEach((res, index) => {
-          if (res.status === "fulfilled" && res.value?.data?.code) {
-
-            solutionStatus[`Q${index + 1}`] =res.value.data.code;
-            console.log(solutionStatus[`Q${index + 1}`]);
+        // console.log(solutionData);
+        const allSolutionsMap = {};
+        solutionData.forEach((res) => {
+          // console.log(res);
+          if (res.status === "fulfilled" && res.value) {
+            const {userLeetcodeId, question, code } = res.value;
+            if (!allSolutionsMap[userLeetcodeId]) {
+              allSolutionsMap[userLeetcodeId] = {};
+            }
+            allSolutionsMap[userLeetcodeId][question] = code;
           }
         });
 
-        setUploadedSolutions(solutionStatus);
+        setAllSolutions(allSolutionsMap);
+        // console.log(allSolutionsMap);
+        setUploadedSolutions(allSolutionsMap[userLeetcodeId] || {});
+        // console.log(uploadedSolutions)
         // console.log(solutionStatus);
       } catch (err) {
         console.error("Error loading data:", err);
@@ -118,9 +135,9 @@ const FriendStanding = () => {
     [contestName, userLeetcodeId]
   );
 
-  const openModal = useCallback((question, existingSolution = "") => {
-    console.log(existingSolution);
-    setSelectedQuestion({ q: question, solution: existingSolution });
+  const openModal = useCallback((question, existingSolution = "",leetcodeId) => {
+    // console.log(existingSolution);
+    setSelectedQuestion({ q: question, solution: existingSolution ,leetcodeId});
     setIsModalOpen(true);
   }, []);
 
@@ -149,7 +166,9 @@ const FriendStanding = () => {
         <p className="text-red-500 text-lg">{error}</p>
         <button
           className="mt-4 bg-yellow-500 text-black px-4 py-2 rounded flex items-center gap-2"
-          onClick={() => fetchData()}
+          onClick={() => {
+            window.location.reload();
+          }}
         >
           <FaRedo /> Retry
         </button>
@@ -216,7 +235,9 @@ const FriendStanding = () => {
                       uploadedSolutions[q] ? (
                         <FaPlusCircle
                           className="text-green-400 cursor-pointer"
-                          onClick={() => openModal(q,uploadedSolutions[q] || "")}
+                          onClick={() =>
+                            openModal(q, uploadedSolutions[q] || "",friendData.username)
+                          }
                         />
                       ) : (
                         <FaUpload
@@ -225,7 +246,19 @@ const FriendStanding = () => {
                         />
                       )
                     ) : (
-                      "-"
+                      allSolutions[friendData.username]?.[q] ? (
+                        <FaPlusCircle
+                          className="text-green-400 cursor-pointer"
+                          onClick={() =>
+                            openModal(
+                              q,
+                              allSolutions[friendData.username][q] || "",friendData.username
+                            )
+                          }
+                        />
+                      ) : (
+                        <FaMinusCircle/>
+                      )
                     )}
                   </td>
                 ))}
@@ -248,39 +281,43 @@ const FriendStanding = () => {
 
       {isModalOpen && (
         <SolutionModal
-        question={selectedQuestion?.q}
-        existingSolution={selectedQuestion?.solution || ""}
-        onClose={closeModal}
-        onUpload={handleUpload}
-        onEdit={async (question, solution) => {
-          try {
-           await editSolution({
-              userLeetcodeId,
-              solution,
-              question,
-              contestName,
-            });
+          userLeetcodeId={userLeetcodeId}
+          otherUserLeetcodeId={selectedQuestion?.leetcodeId}
+          question={selectedQuestion?.q}
+          existingSolution={selectedQuestion?.solution || ""}
+          onClose={closeModal}
+          onUpload={handleUpload}
+          onEdit={async (question, solution) => {
+            try {
+              await editSolution({
+                userLeetcodeId,
+                solution,
+                question,
+                contestName,
+              });
 
-            setUploadedSolutions((prev) => ({ ...prev, [question]: solution }));
-          } catch (error) {
-            console.error("Error uploading solution:", error);
-          }
-        }
-        }
-        onDelete={async (question) => {
-          try {
-            await deleteSolution({ contestName, question, userLeetcodeId });
-            setUploadedSolutions((prev) => {
-              const newState = { ...prev };
-              delete newState[question];
-              return newState;
-            });
-          } catch (error) {
-            console.error("Error deleting solution:", error);
-          }
-        }}
-      />
-      
+              setUploadedSolutions((prev) => ({
+                ...prev,
+                [question]: solution,
+              }));
+            } catch (error) {
+              console.error("Error uploading solution:", error);
+            }
+          }}
+          onDelete={async (question) => {
+            try {
+              console.log(contestName, question, userLeetcodeId);
+              await deleteSolution({ contestName, question, userLeetcodeId });
+              setUploadedSolutions((prev) => {
+                const newState = { ...prev };
+                delete newState[question];
+                return newState;
+              });
+            } catch (error) {
+              console.error("Error deleting solution:", error);
+            }
+          }}
+        />
       )}
     </div>
   );
