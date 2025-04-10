@@ -4,7 +4,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { fetchContests } from "../services/api_contest.js";
 
-const ContestStanding = () => {
+const ContestLists = () => {
   let [contestType, setContestType] = useState("");
   const [contestNumber, setContestNumber] = useState("");
   const [contests, setContests] = useState([]);
@@ -12,7 +12,7 @@ const ContestStanding = () => {
   const [totalPages, setTotalPages] = useState(1);
   const navigate = useNavigate();
   const inputRefs = useRef(null);
-  
+
   useEffect(() => {
     const loadContests = async () => {
       const realData = await fetchContests(page, 7);
@@ -36,7 +36,15 @@ const ContestStanding = () => {
     contestType = contestType.toLowerCase();
     navigate(`/contest-standing/${contestType}-contest-${contestNumber}`);
   };
-
+  const handleButtonViewSolution = (e) => {
+    e.preventDefault();
+    if (!contestType.trim() || !contestNumber.trim()) {
+      toast.error("Please enter valid Contest Type and Contest Number");
+      return;
+    }
+    contestType = contestType.toLowerCase();
+    navigate(`/contest-solution/${contestType}-contest-${contestNumber}`);
+  };
   return (
     <div className="min-h-screen bg-[#0e0e10] text-white p-4">
       <ToastContainer
@@ -86,12 +94,20 @@ const ContestStanding = () => {
             }}
           />
         </div>
-        <button
-          onClick={handleButtonViewStanding}
-          className="mt-4 w-full bg-[#ffa116] text-black font-bold py-3 rounded-lg hover:bg-yellow-600 transition-all"
-        >
-          View Standings
-        </button>
+        <div className="mt-4 flex gap-4">
+          <button
+            onClick={handleButtonViewStanding}
+            className="w-1/2 bg-[#ffa116] text-black font-bold py-3 rounded-lg hover:bg-yellow-600 transition-all"
+          >
+            View Standings
+          </button>
+          <button
+            onClick={handleButtonViewSolution}
+            className="w-1/2 bg-[#ffa116] text-black font-bold py-3 rounded-lg hover:bg-yellow-600 transition-all"
+          >
+            Contest Solution
+          </button>
+        </div>
       </div>
 
       {/* Contests List Section */}
@@ -111,7 +127,7 @@ const ContestStanding = () => {
                       className="text-lg font-semibold text-[#ffa116] cursor-pointer"
                       onClick={() =>
                         navigate(
-                          `/contest-standing/${contest.contestType}-contest-${contest.contestId}`
+                          `/contest-lists/${contest.contestType}-contest-${contest.contestId}`
                         )
                       }
                     >
@@ -127,14 +143,24 @@ const ContestStanding = () => {
                       })}
                     </p>
                   </div>
-                  <Link
-                    to={`/contest-standing/${contest.contestType.toLowerCase()}-contest-${
-                      contest.contestId
-                    }`}
-                    className="text-sm px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all"
-                  >
-                    View Standing
-                  </Link>
+                  <div className="flex gap-2 pt-2">
+                    <Link
+                      to={`/contest-lists/${contest.contestType.toLowerCase()}-contest-${
+                        contest.contestId
+                      }`}
+                      className="text-sm px-3 py-2 bg-slate-600 text-white rounded-md hover:bg-slate-700 transition-all"
+                    >
+                      View Standing
+                    </Link>
+                    <Link
+                      to={`/contest-solution/${contest.contestType.toLowerCase()}-contest-${
+                        contest.contestId
+                      }`}
+                      className="text-sm px-3 py-2 bg-slate-600 text-white rounded-md hover:bg-slate-700 transition-all"
+                    >
+                      Contest Solution  
+                    </Link>
+                  </div>
                 </li>
               ))}
             </ul>
@@ -174,4 +200,4 @@ const ContestStanding = () => {
   );
 };
 
-export default ContestStanding;
+export default ContestLists;

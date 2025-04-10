@@ -50,7 +50,7 @@ const Header = () => {
               Friends
             </button>
             <button
-              onClick={() => navigate("/contest-standing")}
+              onClick={() => navigate("/contest-lists")}
               className="text-lg font-semibold hover:text-yellow-400 cursor-pointer transition-all"
             >
               Contest Standing
