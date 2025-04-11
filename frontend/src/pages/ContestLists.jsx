@@ -56,9 +56,12 @@ const ContestLists = () => {
 
       <header className="text-center mb-4">
         <h1 className="text-4xl font-bold text-[#ffa116]">
-          LeetCode Contest Friends Standings
+          LeetCode Contest Dashboard
         </h1>
-        <p className="text-gray-400">View your friends' Leetcode standings!</p>
+        <p className="text-gray-400 text-xl">
+          {" "}
+          Explore contest solutions and track standings of your friends.
+        </p>
       </header>
 
       {/* Add Contest Section */}
@@ -97,13 +100,13 @@ const ContestLists = () => {
         <div className="mt-4 flex gap-4">
           <button
             onClick={handleButtonViewStanding}
-            className="w-1/2 bg-[#ffa116] text-black font-bold py-3 rounded-lg hover:bg-yellow-600 transition-all"
+            className="w-1/2  bg-[#ffa116] text-black font-bold py-3 rounded-lg hover:bg-yellow-600 transition-all cursor-pointer"
           >
             View Standings
           </button>
           <button
             onClick={handleButtonViewSolution}
-            className="w-1/2 bg-[#ffa116] text-black font-bold py-3 rounded-lg hover:bg-yellow-600 transition-all"
+            className="w-1/2 bg-[#ffa116] text-black font-bold py-3 rounded-lg hover:bg-yellow-600 transition-all cursor-pointer"
           >
             Contest Solution
           </button>
@@ -158,7 +161,7 @@ const ContestLists = () => {
                       }`}
                       className="text-sm px-3 py-2 bg-slate-600 text-white rounded-md hover:bg-slate-700 transition-all"
                     >
-                      Contest Solution  
+                      Contest Solution
                     </Link>
                   </div>
                 </li>
