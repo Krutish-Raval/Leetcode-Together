@@ -13,7 +13,7 @@ const solutionPostSchema = new Schema({
 
     implementation:[String],
 
-    codeSS:[String],      // cloudinary image url
+    codeSS:[String], 
     
     anyLink:[String],
 

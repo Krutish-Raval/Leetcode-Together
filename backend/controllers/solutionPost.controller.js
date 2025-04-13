@@ -9,8 +9,7 @@ import {uploadCloudinary} from "../utils/cloudinary.js"
 
 const postSolution = asyncHandler(async (req, res, next) => {
   const {
-    contestType,
-    contestId,
+    contestName,
     questionNo,
     hint,
     approach,
@@ -21,14 +20,6 @@ const postSolution = asyncHandler(async (req, res, next) => {
   
   // console.log(req.body);
   // console.log(approach.length);
-  if (
-    contestType.trim() === "" ||
-    (contestType !== "weekly" && contestType !== "biweekly") ||
-    questionNo === 0 ||
-    contestId.trim() === ""
-  ) {
-    throw new ApiError(400, "enter all fields");
-  }
   if (
     title.trim() === "" ||
     hint.length === 0 ||
@@ -94,23 +85,18 @@ const postSolution = asyncHandler(async (req, res, next) => {
 });
 
 const getSolutionPosts = asyncHandler(async (req, res, next) => {
-  const { contestType, contestId, questionNo } = req.body;
+  const { contestName, questionNo, page = 1, limit = 10 } = req.query;
 
-  if (
-    (contestType.trim() !== "weekly" && contestType.trim() !== "biweekly") ||
-    contestType === "" ||
-    questionNo === 0 ||
-    contestId.trim() === ""
-  ) {
-    console.log(contestId, contestType, questionNo);
-    throw new ApiError(400, "enter all fields");
-  }
   const contestSolution = await ContestSolution.findOne({
-    contestType,
-    contestId,
+    contestName,
     questionNo,
   }).populate({
     path: "solutions",
+    options: {
+      skip: (page - 1) * limit,
+      limit: parseInt(limit),
+      sort: { createdAt: -1 }, 
+    },
     populate: [
       {
         path: "postedBy",
@@ -126,12 +112,32 @@ const getSolutionPosts = asyncHandler(async (req, res, next) => {
       },
     ],
   });
-  return res
-    .status(200)
-    .json(
-      new ApiResponse(200, contestSolution, "Solution posted successfully")
-    );
+
+  if (!contestSolution) {
+    return res.status(404).json(new ApiResponse(404, null, "No such contest solution found"));
+  }
+
+  // Get total number of solutions for pagination
+  const totalSolutions = await ContestSolution.aggregate([
+    { $match: { contestName, questionNo } },
+    {
+      $project: {
+        totalSolutions: { $size: "$solutions" },
+      },
+    },
+  ]);
+
+  const total = totalSolutions[0]?.totalSolutions || 0;
+  const totalPages = Math.ceil(total / limit);
+
+  return res.status(200).json(
+    new ApiResponse(200, {
+      posts: contestSolution.solutions,
+      totalPages,
+    }, "Solution posts fetched successfully")
+  );
 });
+
 
 const deleteSolutionPost = asyncHandler(async (req, res, next) => {
   const { solutionId } = req.body;

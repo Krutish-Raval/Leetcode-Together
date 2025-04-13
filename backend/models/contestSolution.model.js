@@ -2,22 +2,13 @@ import mongoose,{Schema} from "mongoose";
 
 const contestSolutionSchema = new Schema({
 
-    contestType:{
-        type: String,
-        enum:["weekly","biweekly"],
-        required: [true, "Contest type is required"],
+    contestName:{
+        type:String,
+        required:true
     },
-
-    contestId:{
-        type: String,
-        required: [true, "Contest Id is required"],
-    },
-
     questionNo:{
-        type:Number,
+        type:String,
         required: [true, "Question number is required"],
-        min:1,
-        max:4,
     },
     
     solutions:{

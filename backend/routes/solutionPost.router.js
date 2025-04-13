@@ -14,12 +14,7 @@ import { verifyJWT } from '../middlewares/auth.middleware.js';
 
 const router = Router();
 
-router.route("/post-solution").post(verifyJWT,
-    upload.fields([
-        {
-            name: "codeSS"
-        },
-    ]), postSolution);
+router.route("/post-solution").post(verifyJWT, postSolution);
 
 router.route("/get-solution-posts").get(verifyJWT, getSolutionPosts);
 
