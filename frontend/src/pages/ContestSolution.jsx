@@ -65,14 +65,16 @@ const ContestSolution = () => {
     if (!form.title.trim()) return;
 
     try {
+      // console.log(form.hint.filter(Boolean));
       await postSolution({
         contestName,
         question: activeQuestion,
-        ...form,
+        
         hint: form.hint.filter(Boolean),
         approach: form.approach.filter(Boolean),
         implementation: form.implementation.filter(Boolean),
         anyLink: form.anyLink.filter(Boolean),
+        title:form.title,
       });
       setForm({
         title: '',

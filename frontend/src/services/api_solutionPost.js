@@ -24,12 +24,27 @@ export const getSolutionPosts = async ({
   }
 };
 
-export const postSolution = async (formData) => {
+export const postSolution = async ({
+  contestName,
+  question,
+  hint,
+  approach,
+  implementation,
+  anyLink,
+  title
+}) => {
   try {
-    const response = await axios.post(`${API_URL}/post-solution`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
+    const response = await axios.post(`${API_URL}/post-solution`
+      ,{
+      contestName,
+      question,
+      hint,
+      approach,
+      implementation,
+      anyLink,
+      title
+    }, {
+      
       withCredentials: true,
     });
     return response.data;

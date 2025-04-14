@@ -10,7 +10,7 @@ import {uploadCloudinary} from "../utils/cloudinary.js"
 const postSolution = asyncHandler(async (req, res, next) => {
   const {
     contestName,
-    questionNo,
+    question,
     hint,
     approach,
     implementation,
@@ -20,40 +20,20 @@ const postSolution = asyncHandler(async (req, res, next) => {
   
   // console.log(req.body);
   // console.log(approach.length);
-  if (
-    title.trim() === "" ||
-    hint.length === 0 ||
-    approach.length === 0 ||
-    implementation.length === 0 ||
-    codeSS.length === 0
-  ) {
-    throw new ApiError(400,{}, "enter all fields");
-  }
-
-  if (!req.files || !req.files.codeSS || req.files.codeSS.length === 0) {
-    throw new ApiError(400, "Please upload at least one screenshot of your code");
-  }
-  const uploadPromises = req.files.codeSS.map(file => uploadCloudinary(file.path));
-  const  codeSSUrls = await Promise.all(uploadPromises);
-   
-  if (!codeSSUrls || codeSSUrls.length === 0) {
-    throw new ApiError(500, {},"Failed to upload screenshots to Cloudinary");
-  }
 
 
   let contestSolution = await ContestSolution.findOne({
-    contestType,
-    contestId,
-    questionNo,
+    contestName,
+    questionNo:question,
   });
-  if (contestSolution) {
-    let existSolutionByUser = await SolutionPost.findOne({
-      postedBy: req.user._id,
-    });
-    if (existSolutionByUser) {
-      throw new ApiError(400,"Already Posted Solution Edit if You Want");
-    }
-  }
+  // if (contestSolution) {
+  //   let existSolutionByUser = await SolutionPost.findOne({
+  //     postedBy: req.user._id,
+  //   });
+  //   if (existSolutionByUser) {
+  //     throw new ApiError(400,"Already Posted Solution Edit if You Want");
+  //   }
+  // }
 
   const newSolution = await SolutionPost.create({
     postedBy: req.user._id,
@@ -61,15 +41,15 @@ const postSolution = asyncHandler(async (req, res, next) => {
     hint: hint,
     approach: approach,
     implementation: implementation,
-    codeSS: codeSSUrls,
+    // codeSS: codeSSUrls,
     anyLink: anyLink,
   });
-
+  // console.log(newSolution)
+  // console.log(contestSolution);
   if (!contestSolution) {
     contestSolution = await ContestSolution.create({
-      contestType,
-      contestId,
-      questionNo,
+      contestName,
+      questionNo:question,
       solutions: [newSolution],
     });
   } else {
