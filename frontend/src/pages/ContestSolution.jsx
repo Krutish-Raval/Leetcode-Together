@@ -1,22 +1,23 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import Spinner from "../components/Spinner";
 import {
   getSolutionPosts,
-  postSolution,
-} from '../services/api_solutionPost.js';
+  post_Solution,
+} from "../services/api_solutionPost.js";
 
 const ContestSolution = () => {
-  const { contestName } = useParams();
-  const [activeQuestion, setActiveQuestion] = useState('Q1');
+  const { "contest-name": contestName } = useParams();
+  const [activeQuestion, setActiveQuestion] = useState("Q1");
   const [solutions, setSolutions] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState({
-    title: '',
-    hint: [''],
-    approach: [''],
-    implementation: [''],
-    anyLink: ['']
+    title: "",
+    hint: [""],
+    approach: [""],
+    implementation: [""],
+    anyLink: [""],
   });
   const [showForm, setShowForm] = useState(false);
 
@@ -33,10 +34,11 @@ const ContestSolution = () => {
         page: currentPage,
         limit: POSTS_PER_PAGE,
       });
+      // console.log(res);
       setSolutions(res.data.posts);
       setTotalPages(res.data.totalPages);
     } catch (err) {
-      console.error('Error fetching solutions:', err);
+      console.error("Error fetching solutions:", err);
     } finally {
       setLoading(false);
     }
@@ -57,7 +59,7 @@ const ContestSolution = () => {
   const addField = (field) => {
     setForm((prev) => ({
       ...prev,
-      [field]: [...prev[field], '']
+      [field]: [...prev[field], ""],
     }));
   };
 
@@ -66,50 +68,56 @@ const ContestSolution = () => {
 
     try {
       // console.log(form.hint.filter(Boolean));
-      await postSolution({
+      await post_Solution({
         contestName,
         question: activeQuestion,
-        
+
         hint: form.hint.filter(Boolean),
         approach: form.approach.filter(Boolean),
         implementation: form.implementation.filter(Boolean),
         anyLink: form.anyLink.filter(Boolean),
-        title:form.title,
+        title: form.title,
       });
       setForm({
-        title: '',
-        hint: [''],
-        approach: [''],
-        implementation: [''],
-        anyLink: ['']
+        title: "",
+        hint: [""],
+        approach: [""],
+        implementation: [""],
+        anyLink: [""],
       });
       setShowForm(false);
       setCurrentPage(1);
       fetchSolutions();
     } catch (err) {
-      console.error('Error posting solution:', err);
+      console.error("Error posting solution:", err);
     }
   };
 
   return (
     <div className="bg-[#1A1A1C] text-white min-h-screen px-6 py-10">
-      <h1 className="text-3xl font-bold mb-6 text-[#FFA116]">{contestName} Solutions</h1>
+      <h1 className="text-3xl font-bold mb-6 text-[#FFA116]">
+        {contestName} Solutions
+      </h1>
 
       {/* Tabs */}
-      <div className="flex space-x-4 mb-6">
-        {['Q1', 'Q2', 'Q3', 'Q4'].map((q) => (
-          <button
-            key={q}
-            className={`px-4 py-2 font-semibold rounded ${activeQuestion === q
-              ? 'bg-[#FFA116] text-black'
-              : 'bg-[#2A2A2E] hover:bg-[#333] text-white'}`}
-            onClick={() => {
-              setActiveQuestion(q);
-              setCurrentPage(1);
-            }}
-          >
-            {q}
-          </button>
+      <div className="flex items-center space-x-4 mb-6 text-lg font-semibold text-white">
+        {["Q1", "Q2", "Q3", "Q4"].map((q, idx) => (
+          <div key={q} className="flex items-center">
+            <button
+              className={`px-3 py-1 rounded transition duration-200 ${
+                activeQuestion === q
+                  ? "bg-[#FFA116] text-black shadow-lg"
+                  : "bg-[#2A2A2E] text-white hover:bg-[#333]"
+              }`}
+              onClick={() => {
+                setActiveQuestion(q);
+                setCurrentPage(1);
+              }}
+            >
+              {q}
+            </button>
+            {idx < 3 && <span className="mx-2 text-gray-500">|</span>}
+          </div>
         ))}
       </div>
 
@@ -118,7 +126,7 @@ const ContestSolution = () => {
         className="mb-6 bg-[#FFA116] text-black font-semibold px-4 py-2 rounded hover:opacity-90"
         onClick={() => setShowForm((prev) => !prev)}
       >
-        {showForm ? 'Cancel' : 'Post Your Solution'}
+        {showForm ? "Cancel" : "Post Your Solution"}
       </button>
 
       {/* Solution Form */}
@@ -133,10 +141,10 @@ const ContestSolution = () => {
           />
 
           {[
-            { key: 'hint', label: 'Hint' },
-            { key: 'approach', label: 'Approach' },
-            { key: 'implementation', label: 'Implementation' },
-            { key: 'anyLink', label: 'Any Link (optional)' },
+            { key: "hint", label: "Hint" },
+            { key: "approach", label: "Approach" },
+            { key: "implementation", label: "Implementation" },
+            { key: "anyLink", label: "Any Link (optional)" },
           ].map(({ key, label }) => (
             <div key={key}>
               <p className="text-sm font-semibold mb-1">{label}</p>
@@ -169,7 +177,9 @@ const ContestSolution = () => {
 
       {/* Display Solutions */}
       {loading ? (
-        <p className="text-center text-gray-400">Loading...</p>
+        <p className="text-center text-gray-400">
+          <Spinner />
+        </p>
       ) : solutions.length === 0 ? (
         <p className="text-center text-gray-500">No solutions posted yet.</p>
       ) : (
@@ -185,34 +195,90 @@ const ContestSolution = () => {
                 )
               }
             >
-              {post.title} <span className="text-sm text-gray-400 ml-2">by {post.postedBy?.username || 'Anonymous'}</span>
+              {post.title}{" "}
+              <span className="text-sm text-gray-400 ml-2">
+                by {post.postedBy?.username || "Anonymous"}
+              </span>
             </div>
             {post.expanded && (
-              <div className="px-5 py-4 border-t border-gray-700 text-sm text-gray-300 space-y-2 whitespace-pre-wrap">
-                {post.hint?.length > 0 && (
-                  <div>
-                    <p className="font-bold text-[#FFA116]">Hint:</p>
-                    <ul className="list-disc ml-5">{post.hint.map((h, i) => <li key={i}>{h}</li>)}</ul>
-                  </div>
+              <div className="px-5 py-4 border-t border-gray-700 text-sm text-gray-300 space-y-4">
+                {["hint", "approach", "implementation"].map(
+                  (field) =>
+                    post[field]?.length > 0 && (
+                      <div key={field}>
+                        {/* Section Heading */}
+                        <p
+                          className="font-bold text-[#FFA116] cursor-pointer hover:underline"
+                          onClick={() =>
+                            setSolutions((prev) =>
+                              prev.map((s) =>
+                                s._id === post._id
+                                  ? {
+                                      ...s,
+                                      [field + "Expanded"]:
+                                        !s[field + "Expanded"],
+                                    }
+                                  : s
+                              )
+                            )
+                          }
+                        >
+                          {field.charAt(0).toUpperCase() + field.slice(1)}:
+                        </p>
+
+                        {/* Show collapsible entries */}
+                        {post[field + "Expanded"] && (
+                          <ul className="ml-4 mt-2 space-y-2">
+                            {post[field].map((item, idx) => (
+                              <li key={idx}>
+                                <div
+                                  className="text-[#FFA116] font-semibold cursor-pointer hover:underline"
+                                  onClick={() =>
+                                    setSolutions((prev) =>
+                                      prev.map((s) => {
+                                        if (s._id !== post._id) return s;
+                                        const active = s[field + "_active"];
+                                        return {
+                                          ...s,
+                                          [field + "_active"]:
+                                            active === idx ? null : idx,
+                                        };
+                                      })
+                                    )
+                                  }
+                                >
+                                  {field.charAt(0).toUpperCase() +
+                                    field.slice(1)}{" "}
+                                  {idx + 1}
+                                </div>
+                                {post[field + "_active"] === idx && (
+                                  <div className="mt-1 p-2 bg-[#1A1A1C] border border-gray-600 rounded text-gray-200">
+                                    {item}
+                                  </div>
+                                )}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    )
                 )}
-                {post.approach?.length > 0 && (
-                  <div>
-                    <p className="font-bold text-[#FFA116]">Approach:</p>
-                    <ul className="list-disc ml-5">{post.approach.map((a, i) => <li key={i}>{a}</li>)}</ul>
-                  </div>
-                )}
-                {post.implementation?.length > 0 && (
-                  <div>
-                    <p className="font-bold text-[#FFA116]">Implementation:</p>
-                    <ul className="list-disc ml-5">{post.implementation.map((imp, i) => <li key={i}>{imp}</li>)}</ul>
-                  </div>
-                )}
+
                 {post.anyLink?.length > 0 && (
                   <div>
                     <p className="font-bold text-[#FFA116]">Links:</p>
-                    <ul className="list-disc ml-5">
+                    <ul className="list-disc ml-6 mt-2 space-y-1">
                       {post.anyLink.map((l, i) => (
-                        <li key={i}><a href={l} target="_blank" rel="noopener noreferrer" className="text-blue-400 underline">{l}</a></li>
+                        <li key={i}>
+                          <a
+                            href={l}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-400 underline hover:text-blue-300 transition"
+                          >
+                            {l}
+                          </a>
+                        </li>
                       ))}
                     </ul>
                   </div>
@@ -230,9 +296,11 @@ const ContestSolution = () => {
             <button
               key={i}
               onClick={() => setCurrentPage(i + 1)}
-              className={`w-8 h-8 rounded-full text-sm font-semibold ${currentPage === i + 1
-                ? 'bg-[#FFA116] text-black'
-                : 'bg-[#2A2A2E] text-white hover:bg-[#3A3A3E]'}`}
+              className={`w-8 h-8 rounded-full text-sm font-semibold ${
+                currentPage === i + 1
+                  ? "bg-[#FFA116] text-black"
+                  : "bg-[#2A2A2E] text-white hover:bg-[#3A3A3E]"
+              }`}
             >
               {i + 1}
             </button>

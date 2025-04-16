@@ -24,31 +24,32 @@ export const getSolutionPosts = async ({
   }
 };
 
-export const postSolution = async ({
-  contestName,
-  question,
-  hint,
-  approach,
-  implementation,
-  anyLink,
-  title
-}) => {
-  try {
-    const response = await axios.post(`${API_URL}/post-solution`
-      ,{
-      contestName,
-      question,
-      hint,
-      approach,
-      implementation,
-      anyLink,
-      title
-    }, {
-      
-      withCredentials: true,
-    });
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-};
+      export const post_Solution = async ({
+        contestName,
+        question,
+        hint,
+        approach,
+        implementation,
+        anyLink,
+        title
+      }) => {
+        try {
+          const response = await axios.post(`${API_URL}/post-solution`
+            ,{
+            contestName,
+            question,
+            hint,
+            approach,
+            implementation,
+            anyLink,
+            title
+          }, {
+            
+            withCredentials: true,
+          });
+          return response.data;
+        } catch (error) {
+          console.log(error);
+          throw error;
+        }
+      };

@@ -18,7 +18,7 @@ const postSolution = asyncHandler(async (req, res, next) => {
     title,
   } = req.body;
   
-  // console.log(req.body);
+  console.log(req.body);
   // console.log(approach.length);
 
 
@@ -44,16 +44,17 @@ const postSolution = asyncHandler(async (req, res, next) => {
     // codeSS: codeSSUrls,
     anyLink: anyLink,
   });
-  // console.log(newSolution)
-  // console.log(contestSolution);
+  console.log(newSolution)
+  console.log(contestSolution);
   if (!contestSolution) {
     contestSolution = await ContestSolution.create({
-      contestName,
+      contestName:contestName,
       questionNo:question,
-      solutions: [newSolution],
+      solutions: [newSolution._id],
     });
+    // console.log(contestSolution);
   } else {
-    contestSolution.solutions.push(newSolution);
+    contestSolution.solutions.push(newSolution._id);
     await contestSolution.save({ validateBeforeSave: false });
   }
   const user = req.user;
@@ -65,7 +66,7 @@ const postSolution = asyncHandler(async (req, res, next) => {
 });
 
 const getSolutionPosts = asyncHandler(async (req, res, next) => {
-  const { contestName, questionNo, page = 1, limit = 10 } = req.query;
+  const { contestName, questionNo, page = 1, limit = 12 } = req.query;
 
   const contestSolution = await ContestSolution.findOne({
     contestName,
@@ -82,19 +83,19 @@ const getSolutionPosts = asyncHandler(async (req, res, next) => {
         path: "postedBy",
         select: "name email _id",
       },
-      {
-        path: "comments",
-        select: "commentText commentBy",
-        populate: {
-          path: "commentBy",
-          select: "name _id",
-        },
-      },
+      // {
+      //   path: "comments",
+      //   select: "commentText commentBy",
+      //   populate: {
+      //     path: "commentBy",
+      //     select: "name _id",
+      //   },
+      // },
     ],
   });
 
   if (!contestSolution) {
-    return res.status(404).json(new ApiResponse(404, null, "No such contest solution found"));
+    return res.status(200).json(new ApiResponse(200, {posts:[],totalPages:0}, "No such contest solution found"));
   }
 
   // Get total number of solutions for pagination
