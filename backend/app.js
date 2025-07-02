@@ -31,16 +31,12 @@ import solutionPostRouter from "./routes/solutionPost.router.js"
 
 app.use("/api/v1/contest-solution", solutionPostRouter)
 
-import uploadRouter from "./routes/codeUpload.router.js"
 
-app.use("/api/v1/standing-solution",uploadRouter)
 
 import contestRouter from "./routes/contest.router.js"
 
 app.use("/api/v1/contest",contestRouter)
 
-import codeUpload from "./routes/codeUpload.router.js"
 
-app.use("/api/v1/code-upload",codeUpload)
 
 export { app }
