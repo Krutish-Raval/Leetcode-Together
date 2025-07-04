@@ -7,9 +7,6 @@ import {
     updateFriendProfile,
     getCurrentUser,
     addUserDetails,
-    uploadedSolution,
-    saveSolutionPost,
-    getSaveSolutionPost,
     deleteAccount,
     fetchAllFriends
 
@@ -50,12 +47,6 @@ router.route("/get-friend-list").get(verifyJWT, getFriendsList)
 router.route("/update-friend-profile").patch(verifyJWT, updateFriendProfile)
 
 router.route("/add-user-details").post(verifyJWT, addUserDetails)
-
-router.route("/uploaded-solution").get(verifyJWT,uploadedSolution)
-
-router.route("/save-solution").post(verifyJWT,saveSolutionPost)
-
-router.route("/get-save-solution").get(verifyJWT,getSaveSolutionPost)
 
 router.route("/send-otp").post(sendVerificationOTP);
 

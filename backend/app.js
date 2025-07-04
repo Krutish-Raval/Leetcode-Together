@@ -27,9 +27,6 @@ app.use("/api/v1/user", userRouter)
 // app.use("/api/v1/auth", authRouter)
 
 // solutionPost routes
-import solutionPostRouter from "./routes/solutionPost.router.js"
-
-app.use("/api/v1/contest-solution", solutionPostRouter)
 
 
 

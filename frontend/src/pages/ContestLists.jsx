@@ -36,15 +36,7 @@ const ContestLists = () => {
     contestType = contestType.toLowerCase();
     navigate(`/contest-standing/${contestType}-contest-${contestNumber}`);
   };
-  const handleButtonViewSolution = (e) => {
-    e.preventDefault();
-    if (!contestType.trim() || !contestNumber.trim()) {
-      toast.error("Please enter valid Contest Type and Contest Number");
-      return;
-    }
-    contestType = contestType.toLowerCase();
-    navigate(`/contest-solution/${contestType}-contest-${contestNumber}`);
-  };
+  
   return (
     <div className="min-h-screen bg-[#0e0e10] text-white p-4">
       <ToastContainer
@@ -97,18 +89,12 @@ const ContestLists = () => {
             }}
           />
         </div>
-        <div className="mt-4 flex gap-4">
+        <div className="mt-4">
           <button
             onClick={handleButtonViewStanding}
-            className="w-1/2  bg-[#ffa116] text-black font-bold py-3 rounded-lg hover:bg-yellow-600 transition-all cursor-pointer"
+            className="w-full  bg-[#ffa116] text-black text-2m font-bold py-3 rounded-lg hover:bg-yellow-600 transition-all cursor-pointer"
           >
             View Standings
-          </button>
-          <button
-            onClick={handleButtonViewSolution}
-            className="w-1/2 bg-[#ffa116] text-black font-bold py-3 rounded-lg hover:bg-yellow-600 transition-all cursor-pointer"
-          >
-            Contest Solution
           </button>
         </div>
       </div>
@@ -146,23 +132,16 @@ const ContestLists = () => {
                       })}
                     </p>
                   </div>
-                  <div className="flex gap-2 pt-2">
+                  <div className="flex gap-1 pt-2">
                     <Link
                       to={`/contest-lists/${contest.contestType.toLowerCase()}-contest-${
                         contest.contestId
                       }`}
-                      className="text-sm px-3 py-2 bg-slate-600 text-white rounded-md hover:bg-slate-700 transition-all"
+                      className="text-m px-8 py-3 bg-slate-600 text-white rounded-md hover:bg-slate-700 transition-all"
                     >
                       View Standing
                     </Link>
-                    <Link
-                      to={`/contest-solution/${contest.contestType.toLowerCase()}-contest-${
-                        contest.contestId
-                      }`}
-                      className="text-sm px-3 py-2 bg-slate-600 text-white rounded-md hover:bg-slate-700 transition-all"
-                    >
-                      Contest Solution
-                    </Link>
+          
                   </div>
                 </li>
               ))}

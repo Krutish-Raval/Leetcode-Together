@@ -2,7 +2,6 @@ import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";;
-import {SolutionPost} from "../models/solutionPost.model.js"
 
 const changeCurrentPassword = asyncHandler(async (req, res, next) => {
   const { currentPassword, newPassword, confirmPassword } = req.body;
@@ -180,69 +179,7 @@ const updateFriendProfile = asyncHandler(async (req, res, next) => {
     .json(new ApiResponse(200, {friendName,leetcodeId}, "Friend profile updated successfully"));
 });
 
-const uploadedSolution = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.user._id)
-    .select("solutionPosted")
-    .populate({
-      path: "solutionPosted",
-      populate: [
-        {
-          path: "postedBy",
-          select: "name email _id",
-        },
-        {
-          path: "comments",
-          select: "commentText commentBy",
-          populate: {
-            path: "commentBy",
-            select: "name _id",
-          },
-        },
-      ],
-    });
-    return res.status(200).json(new ApiResponse(200,user,"uploaded solution by user"));
-});
 
-const saveSolutionPost= asyncHandler(async(req,res) =>{
-  const {solutionId}=req.body;
-  if (!solutionId) {
-    throw new ApiError(400, "Solution ID is required.");
-  } 
-  const solution = await SolutionPost.findById(solutionId);
-  if (!solution) {
-    throw new ApiError(404, "Solution not found.");
-  }
-  const user = await User.findById(req.user._id);
-  if (user.saved.includes(solutionId)) {
-    throw new ApiError(400, "Solution already saved.");
-  }
-
-  user.saved.push(solutionId);
-  await user.save();
-  res
-    .status(200)
-    .json(new ApiResponse(200, user.saved, "Solution saved successfully."));
-})
-
-const getSaveSolutionPost=asyncHandler(async(req,res)=>{
-  const user=await User.findOne.findById(req.user._id).populate({
-    path:"saved",
-    populate: [
-      {
-        path: "postedBy",
-        select: "name email _id",
-      },
-      {
-        path: "comments",
-        select: "commentText commentBy",
-        populate: {
-          path: "commentBy",
-          select: "name _id",
-        },
-      },
-    ],
-  });
-})
 
 const deleteAccount=asyncHandler(async(req,res)=>{
 
@@ -255,9 +192,6 @@ export {
   getFriendsList,
   removeFriend,
   updateFriendProfile,
-  uploadedSolution,
-  saveSolutionPost,
-  getSaveSolutionPost,
   deleteAccount,
   fetchAllFriends
 };

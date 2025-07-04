@@ -53,7 +53,7 @@ const Header = () => {
               onClick={() => navigate("/contest-lists")}
               className="text-lg font-semibold hover:text-yellow-400 cursor-pointer transition-all"
             >
-              LeetHub
+              Contest Standings
             </button>
           </nav>
 

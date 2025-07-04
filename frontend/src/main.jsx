@@ -14,7 +14,7 @@ import Layout from "./Layout.jsx";
 import AddFriends from "./pages/Friend.jsx";
 import ContestLists from "./pages/ContestLists.jsx";
 import FriendStanding from "./pages/FriendStanding.jsx"
-import ContestSolution from "./pages/ContestSolution.jsx";
+
 ReactDOM.createRoot(document.getElementById("root")).render(
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
@@ -31,7 +31,6 @@ ReactDOM.createRoot(document.getElementById("root")).render(
               <Route path="/add-friends" element={<AddFriends/>} />
               <Route path="/contest-lists" element={<ContestLists/>} />
               <Route path="/contest-lists/:contest-name" element={<FriendStanding/>}/>
-              <Route path="/contest-solution/:contest-name" element={<ContestSolution/>}/>
             </Route>
           </Route>
         </Routes>
