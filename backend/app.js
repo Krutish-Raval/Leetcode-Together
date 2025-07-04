@@ -34,6 +34,8 @@ import contestRouter from "./routes/contest.router.js"
 
 app.use("/api/v1/contest",contestRouter)
 
+import lcStandingsRouter from "./routes/lcstandings.router.js"
 
+app.use("/api/v1/lcstandings", lcStandingsRouter)
 
 export { app }
