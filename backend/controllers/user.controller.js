@@ -1,30 +1,30 @@
-import { User } from "../models/user.model.js";
-import { ApiError } from "../utils/ApiError.js";
-import { ApiResponse } from "../utils/ApiResponse.js";
-import { asyncHandler } from "../utils/asyncHandler.js";;
+  import { User } from "../models/user.model.js";
+  import { ApiError } from "../utils/ApiError.js";
+  import { ApiResponse } from "../utils/ApiResponse.js";
+  import { asyncHandler } from "../utils/asyncHandler.js";;
 
-const changeCurrentPassword = asyncHandler(async (req, res, next) => {
-  const { currentPassword, newPassword, confirmPassword } = req.body;
-  if (!(currentPassword && newPassword && confirmPassword)) {
-    throw new ApiError(
-      400,
-      "Current password ,new password and confirm password are required"
-    );
-  }
-  if (newPassword !== confirmPassword) {
-    throw new ApiError(401, "Passwords do not match");
-  }
-  const user = await User.findById(req.user._id);
-  const isPasswordCorrect = await user.verifyPassword(currentPassword);
-  if (!isPasswordCorrect) {
-    throw new ApiError(401, "Incorrect current password");
-  }
-  user.password = newPassword;
-  await user.save({ validateBeforeSave: false });
-  return res
-    .status(200)
-    .json(new ApiResponse(200, {}, "Password changed successfully"));
-});
+  const changeCurrentPassword = asyncHandler(async (req, res, next) => {
+    const { currentPassword, newPassword, confirmPassword } = req.body;
+    if (!(currentPassword && newPassword && confirmPassword)) {
+      throw new ApiError(
+        400,
+        "Current password ,new password and confirm password are required"
+      );
+    }
+    if (newPassword !== confirmPassword) {
+      throw new ApiError(401, "Passwords do not match");
+    }
+    const user = await User.findById(req.user._id);
+    const isPasswordCorrect = await user.verifyPassword(currentPassword);
+    if (!isPasswordCorrect) {
+      throw new ApiError(401, "Incorrect current password");
+    }
+    user.password = newPassword;
+    await user.save({ validateBeforeSave: false });
+    return res
+      .status(200)
+      .json(new ApiResponse(200, {}, "Password changed successfully"));
+  });
 
 const addUserDetails = asyncHandler(async (req, res, next) => {
   const { name, leetcodeId ,email} = req.body;
