@@ -40,27 +40,11 @@ const userSchema = new Schema(
       type: [friendsSchema],
     },
 
-    friendOf: {
-      type: [friendsSchema],
-    },
-
     isVerified: {
       type: Boolean,
       default: false,
     },
-
-    solutionPosted:{
-      type: [Schema.Types.ObjectId],
-      ref: "SolutionPost",
-      default: [],
-    },
     
-    saved:{
-      type:[Schema.Types.ObjectId],
-      ref:"SolutionPost",
-      default:[],
-    },
-
     refreshToken: {
       type: String,
     },
