@@ -18,19 +18,19 @@ connectDB()
     console.log("MONGO db connection failed !!! ", err);
 })
 
-app.get("/api/friends-performance", async (req, res) => {
-    const { contestName, friendName } = req.query;
+// app.get("/api/friends-performance", async (req, res) => {
+//     const { contestName, friendName } = req.query;
 
-    try {
-        // https://lccn.lbao.site/api/v1/contest-records/user?contest_name=weekly-contest-442&username=flicktoss&archived=false
-        const response = await axios.get(`https://lccn.lbao.site/api/v1/contest-records/user?contest_name=${contestName}&username=${friendName}&archived=false`);
-        // console.log(response.data)
-        res.json(response.data);
-    } catch (error) {
-        console.error("Error fetching contest data:", error);
-        res.status(500).json({ error: "Failed to fetch contest data" });
-    }
-});
+//     try {
+//         // https://lccn.lbao.site/api/v1/contest-records/user?contest_name=weekly-contest-442&username=flicktoss&archived=false
+//         const response = await axios.get(`https://lccn.lbao.site/api/v1/contest-records/user?contest_name=${contestName}&username=${friendName}&archived=false`);
+//         // console.log(response.data)
+//         res.json(response.data);
+//     } catch (error) {
+//         console.error("Error fetching contest data:", error);
+//         res.status(500).json({ error: "Failed to fetch contest data" });
+//     }
+// });
  
 // ;(async () => {
 //    try{

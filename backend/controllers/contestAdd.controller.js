@@ -33,8 +33,8 @@ const removeContest = asyncHandler(async (req, res) => {
 
 const getAllContests = asyncHandler(async (req, res) => {
   let { page = 1, limit = 6 } = req.query;
-  page = parseInt(page) || 1; // Default page = 1
-  limit = parseInt(limit) || 6; // Default limit = 6 contests per page
+  page = parseInt(page) || 1; 
+  limit = parseInt(limit) || 6; 
   // console.log(page);
   const totalContests = await Contest.countDocuments();
   const contests = await Contest.find()
@@ -89,8 +89,8 @@ const populateContests = asyncHandler(async (req, res) => {
 });
 
 const removeOldContests = asyncHandler(async (req, res) => {
-  const weeklyThreshold = 405;
-  const biweeklyThreshold = 134;
+  const weeklyThreshold = 451;
+  const biweeklyThreshold = 157;
 
   const result = await Contest.deleteMany({
     $or: [

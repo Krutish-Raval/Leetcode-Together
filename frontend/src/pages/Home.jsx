@@ -62,8 +62,8 @@ const HomePage = () => {
   return (
     <div className="min-h-screen bg-[#0e0e10] text-white flex flex-col items-center px-6">
       {/* Main Section */}
-      <main className="flex flex-col items-center justify-center text-center space-y-10 flex-grow">
-        <h1 className="text-5xl font-bold mt-3 mb-2">
+      <main className="flex flex-col items-center justify-center text-center space-y-12  flex-grow">
+        <h1 className="text-5xl font-bold mb-4">
           Welcome to <span className="text-[#ffa116]">LeetCode Together</span>
         </h1>
         <p className="text-gray-400 text-lg max-w-2xl">
@@ -141,19 +141,11 @@ const HomePage = () => {
             title="View Friends' Solutions"
             description="Check out your friends' solutions for contests to learn new approaches."
           />
-          <FeatureCard
-            title="Real-time Chat"
-            description="Chat with your coding buddies instantly and discuss problem-solving strategies."
-          />
-          <FeatureCard
-            title="Structured Solutions"
-            description="Upload and view structured contest solutions with proper formatting."
-          />
         </section>
       </main>
 
       {/* Footer */}
-      <footer className="py-4 text-gray-500 text-center">
+      <footer className="py-1 text-gray-500 text-center">
         © 2025 LeetCode Together | Made with ❤️ for Coders
       </footer>
     </div>

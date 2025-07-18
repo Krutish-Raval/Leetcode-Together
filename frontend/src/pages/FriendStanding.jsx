@@ -91,7 +91,7 @@ const FriendStanding = () => {
       }
     })();
   }, [contestName, userLeetcodeId]);
-  console.log("Standings:", standings);
+  //console.log("Standings:", standings);
   const questionIdToLabelMap = useMemo(() => {
     if (!contestMetadata?.questions) return {};
     const map = {};
@@ -113,9 +113,8 @@ const FriendStanding = () => {
     return map;
   }, [contestMetadata]);
 
-  const startTime = contestMetadata?.date || 0;
-
   const processedStandings = useMemo(() => {
+    console.log("standings:", standings);
     return standings
       .map(({ username, friendName, leetcode, lccn }) => ({
         username,
@@ -126,8 +125,12 @@ const FriendStanding = () => {
         submissions: (leetcode.submissions || []).reduce((acc, sub) => {
           const label = questionIdToLabelMap[sub.questionId];
           if (label) {
-            acc[label] = sub;
+            acc[label] = {
+              ...sub,
+              failCount: sub.failCount ?? 0, // make sure it's included
+            };
           }
+          //console.log("Submission:", sub);
           return acc;
         }, {}),
         old_rating: lccn?.old_rating ?? "-",
@@ -162,7 +165,7 @@ const FriendStanding = () => {
     if (isNaN(id)) return null;
 
     const baseTime = {
-      weekly: { id: 445, unix: 1744511400 }, 
+      weekly: { id: 445, unix: 1744511400 },
       biweekly: { id: 154, unix: 1744468200 },
     };
 
@@ -195,9 +198,9 @@ const FriendStanding = () => {
       <h1 className="text-4xl font-bold text-[#ffa116] text-center mb-6">
         {contestName.replace(/-/g, " ").toUpperCase()} - Friends' Standings
       </h1>
-      <div className="text-right text-sm text-gray-400 mb-2">
-        No of friends participated in contest-{processedStandings.length} |
-        Total participants: {contestMetadata?.totalParticipants ?? "N/A"}
+      <div className="text-center text-sm text-gray-100 mb-2">
+        {/* {processedStandings.length} Friend Participated || */}
+        Total Participants : {contestMetadata?.totalParticipants}
       </div>
 
       <div className="max-w-6xl mx-auto overflow-x-auto">
@@ -218,6 +221,7 @@ const FriendStanding = () => {
                         to={`https://leetcode.com/problems/${meta.titleSlug}/description/`}
                         target="_blank"
                         className="text-black hover:underline"
+                        title={`Click to view problem description for question ${label}`}
                       >
                         {label} ({meta.credit})
                       </Link>
@@ -245,6 +249,7 @@ const FriendStanding = () => {
                     to={`https://leetcode.com/contest/${contestName}/ranking/${friend.rankPage}/?region=global_v2`}
                     className="text-[#ffa116] hover:underline"
                     target="_blank"
+                    title={`Click to view ${friend.username}'s rank page`}
                   >
                     {friend.rank}
                   </Link>
@@ -263,6 +268,7 @@ const FriendStanding = () => {
                   <Link
                     to={`https://leetcode.com/${friend.username}`}
                     className="text-[#ffa116] hover:underline"
+                    title={`Click to view ${friend.username}'s profile`}
                     target="_blank"
                   >
                     {friend.username}
@@ -272,34 +278,40 @@ const FriendStanding = () => {
                 {["A", "B", "C", "D"].map((label, qIdx) => {
                   const sub = friend.submissions?.[label];
                   return (
-                    <td key={qIdx} className="p-3 relative">
+                    <td
+                      key={qIdx}
+                      className="p-3 relative text-center align-middle"
+                    >
                       {sub ? (
-                        <>
-                          <Link
-                            to={`https://leetcode.com/submissions/detail/${sub.submissionId}`}
-                            className="text-[#ffa116] hover:underline block hover:bg-[#333] px-1 py-0.5 rounded transition"
-                            target="_blank"
-                            title={`Go to submission (ID: ${sub.submissionId})`}
-                          >
-                            {submissionTime(sub.date, sub.lang)}
-                          </Link>
+                        <div className="flex flex-col items-center">
+                          <div className="flex items-center justify-center space-x-1 text-sm text-[#ffa116]">
+                            <Link
+                              to={`https://leetcode.com/submissions/detail/${sub.submissionId}`}
+                              target="_blank"
+                              className="hover:underline"
+                              title="Click to view the code"
+                            >
+                              {sub.lang || "N/A"}
+                            </Link>
+                          </div>
+                          <span className="text-xs text-gray-400 mt-0.5">
+                            {submissionTime(sub.date, sub.lang).split(" - ")[1]}
+                          </span>
                           {sub.failCount > 0 && (
-                            <span className="absolute top-1 right-2 text-red-500 font-bold">
-                              {sub.failCount}
+                            <span className="text-[12px] text-red-500 font-medium">
+                              {sub.failCount} WA
                             </span>
                           )}
-                        </>
+                        </div>
                       ) : (
-                        <td
-                          key={qIdx}
-                          className="p-3 relative text-center text-gray-500"
-                        >
-                          <FaMinus className="inline-block text-sm opacity-60" />
-                        </td>
+                        <div className="flex justify-center items-center h-full text-gray-500">
+                          <FaMinus className="text-sm opacity-30" />
+                        </div>
                       )}
                     </td>
                   );
                 })}
+
                 <td className="p-3">{Math.round(friend.old_rating)}</td>
                 <td className="p-3">{Math.round(friend.new_rating)}</td>
                 <td

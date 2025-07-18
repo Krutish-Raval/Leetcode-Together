@@ -15,12 +15,12 @@ const headers = {
   "User-Agent": "Mozilla/5.0",
 };
 const fetchAndStoreLeetcodeContests = asyncHandler(async (req, res, next) => {
-  const weeklyRange = { start: 454, end: 455 };
+  const weeklyRange = { start: 458, end: 459 };
   const biweeklyRange = { start: 159, end: 160 };
 
   const contestTasks = [];
 
-  for (let i = weeklyRange.start; i <= weeklyRange.end; i++) {
+  for (let i = weeklyRange.start; i < weeklyRange.end; i++) {
     contestTasks.push(processContest("weekly", i));
   }
 
@@ -188,38 +188,9 @@ function delay(ms) {
 }
 const getFriendsContestPerformance = asyncHandler(async (req, res) => {
   const { contestName: contest_name, friends } = req.body;
-
-  if (!contest_name || !Array.isArray(friends) || friends.length === 0) {
-    throw new ApiError(
-      400,
-      "contest_name and non-empty friends array required"
-    );
-  }
-
-  // Extract contest type and id
   const [type, , idStr] = contest_name.split("-");
   const contestType = type;
   const contestId = parseInt(idStr);
-  if (!["weekly", "biweekly"].includes(contestType) || isNaN(contestId)) {
-    throw new ApiError(400, "Invalid contest name format");
-  }
-
-  // Get metadata for label -> question_id mapping
-  const metadata = await ContestMetadata.findOne({ contestType, contestId });
-  if (!metadata) {
-    throw new ApiError(404, "Contest metadata not found");
-  }
-  //console.log(metadata);
-  const labelMap = {};
-  for (const q of metadata.questions) {
-    labelMap[q.questionId] = q.label;
-  }
-  // console.log(friends);
-  //console.log("contestType:", contestType); // should be "weekly" or "biweekly"
-  //console.log("contestId:", contestId); // should be a number like 458
-  //console.log("friends:", friends); // should be an array of usernames like ["flicktoss", "rahulharpal"]
-
-  // Get participants
   const participants = await ContestantParticipant.find({
     contestType,
     contestId,
@@ -236,7 +207,7 @@ const getFriendsContestPerformance = asyncHandler(async (req, res) => {
       submissions: [],
     };
   }
-
+  //console.log("Participants:", participants);
   for (const p of participants) {
     const friendEntry = friendMap[p.leetcodeId];
     if (!friendEntry) continue;
@@ -244,13 +215,14 @@ const getFriendsContestPerformance = asyncHandler(async (req, res) => {
     friendEntry.rank = p.rank;
     friendEntry.score = p.score;
     friendEntry.finishTime = p.finishTime;
-
+   
     for (const sub of p.submissions || []) {
       friendEntry.submissions.push({
         questionId: sub.questionId,
         submissionId: sub.submissionId,
         lang: sub.lang,
         date: sub.date,
+        failCount: sub.failCount || 0
       });
     }
   }
