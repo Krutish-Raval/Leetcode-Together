@@ -15,7 +15,7 @@ const ContestLists = () => {
 
   useEffect(() => {
     const loadContests = async () => {
-      const realData = await fetchContests(page, 7);
+      const realData = await fetchContests(page, 6);
       const data = realData.data;
       if (data && Array.isArray(data.contests)) {
         setContests(data.contests);

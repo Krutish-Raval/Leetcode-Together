@@ -7,7 +7,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 dotenv.config();
 const MAX_CONCURRENT_PAGES = 4;
 const PAGE_SIZE = 25;
-const MAX_RETRIES = 10;
+const MAX_RETRIES = 20;
 const LEETCODE_SESSION = process.env.LEETCODE_SESSION;
 const headers = {
   Cookie: `LEETCODE_SESSION=${LEETCODE_SESSION}`,
@@ -15,12 +15,12 @@ const headers = {
   "User-Agent": "Mozilla/5.0",
 };
 const fetchAndStoreLeetcodeContests = asyncHandler(async (req, res, next) => {
-  const weeklyRange = { start: 451, end: 452 };
-  const biweeklyRange = { start: 157, end: 158 };
+  const weeklyRange = { start: 454, end: 455 };
+  const biweeklyRange = { start: 159, end: 160 };
 
   const contestTasks = [];
 
-  for (let i = weeklyRange.start; i < weeklyRange.end; i++) {
+  for (let i = weeklyRange.start; i <= weeklyRange.end; i++) {
     contestTasks.push(processContest("weekly", i));
   }
 
@@ -33,7 +33,7 @@ const fetchAndStoreLeetcodeContests = asyncHandler(async (req, res, next) => {
   const failedContests = results
     .map((res, index) => (res.status === "rejected" ? index : null))
     .filter((i) => i !== null);
-
+  //console.log(results);
   return res.status(200).json(
     new ApiResponse(
       200,
@@ -53,7 +53,7 @@ async function processContest(contestType, contestId) {
 
   const response = await fetch(firstPageUrl, { headers });
   const contentType = response.headers.get("content-type") || "";
-  //console.log(contentType);
+  //console.log(contentType.includes("application/json"));
   if (!contentType.includes("application/json")) {
     throw new ApiError(
       403,
@@ -87,7 +87,7 @@ async function processContest(contestType, contestId) {
         )
       )
     );
-    await delay(1000); 
+    await delay(1000);
   }
 
   console.log(`✅ Completed ${slug}`);
@@ -120,13 +120,13 @@ async function fetchPageAndStore(contestType, contestId, page, slug) {
         filter: {
           contestType,
           contestId,
-          leetcodeId: userInfo.username,
+          leetcodeId: userInfo.user_slug,
         },
         update: {
           $set: {
             contestType,
             contestId,
-            leetcodeId: userInfo.username,
+            leetcodeId: userInfo.user_slug,
             rank: userInfo.rank,
             score: userInfo.score,
             finishTime: userInfo.finish_time,
@@ -177,7 +177,7 @@ async function retry(fn, maxRetries) {
     } catch (err) {
       attempt++;
       console.warn(`Retry ${attempt}/${maxRetries} failed: ${err.message}`);
-      await delay(1000 + 500 * attempt);
+      await delay(1000 + 1000 * attempt);
     }
   }
   throw new Error(`Failed after ${maxRetries} retries`);
@@ -190,7 +190,10 @@ const getFriendsContestPerformance = asyncHandler(async (req, res) => {
   const { contestName: contest_name, friends } = req.body;
 
   if (!contest_name || !Array.isArray(friends) || friends.length === 0) {
-    throw new ApiError(400, "contest_name and non-empty friends array required");
+    throw new ApiError(
+      400,
+      "contest_name and non-empty friends array required"
+    );
   }
 
   // Extract contest type and id
@@ -206,11 +209,15 @@ const getFriendsContestPerformance = asyncHandler(async (req, res) => {
   if (!metadata) {
     throw new ApiError(404, "Contest metadata not found");
   }
-
+  //console.log(metadata);
   const labelMap = {};
   for (const q of metadata.questions) {
     labelMap[q.questionId] = q.label;
   }
+  // console.log(friends);
+  //console.log("contestType:", contestType); // should be "weekly" or "biweekly"
+  //console.log("contestId:", contestId); // should be a number like 458
+  //console.log("friends:", friends); // should be an array of usernames like ["flicktoss", "rahulharpal"]
 
   // Get participants
   const participants = await ContestantParticipant.find({
@@ -218,7 +225,7 @@ const getFriendsContestPerformance = asyncHandler(async (req, res) => {
     contestId,
     leetcodeId: { $in: friends },
   });
-
+  // console.log(participants);
   const friendMap = {};
   for (const friend of friends) {
     friendMap[friend] = {
@@ -226,43 +233,48 @@ const getFriendsContestPerformance = asyncHandler(async (req, res) => {
       rank: null,
       score: null,
       finishTime: null,
-      submissions: {
-        A: null,
-        B: null,
-        C: null,
-        D: null,
-      },
+      submissions: [],
     };
   }
 
   for (const p of participants) {
     const friendEntry = friendMap[p.leetcodeId];
     if (!friendEntry) continue;
-
+    //console.log(p);
     friendEntry.rank = p.rank;
     friendEntry.score = p.score;
     friendEntry.finishTime = p.finishTime;
 
     for (const sub of p.submissions || []) {
-      const label = labelMap[sub.questionId];
-      if (label && friendEntry.submissions[label] === null) {
-        friendEntry.submissions[label] = {
-          submissionId: sub.submissionId,
-          lang: sub.lang,
-          date: sub.date,
-        };
-      }
+      friendEntry.submissions.push({
+        questionId: sub.questionId,
+        submissionId: sub.submissionId,
+        lang: sub.lang,
+        date: sub.date,
+      });
     }
   }
-
-  const sorted = Object.values(friendMap).sort((a, b) => {
-    if (a.rank == null && b.rank == null) return 0;
-    if (a.rank == null) return 1;
-    if (b.rank == null) return -1;
-    return a.rank - b.rank;
-  });
-
-  return res.status(200).json(new ApiResponse(200, sorted, "Friends ranked"));
+  //console.log(friendMap);
+  const friendData = Object.values(friendMap).filter((f) => f.rank !== null);
+  //console.log(friendData);
+  return res
+    .status(200)
+    .json(new ApiResponse(200, friendData, "Friends ranked"));
 });
 
-export { fetchAndStoreLeetcodeContests,getFriendsContestPerformance };
+const getContestData = asyncHandler(async (req, res) => {
+  const { contestName } = req.query;
+  const [type, , idStr] = contestName.split("-");
+  const contestType = type;
+  const contestId = parseInt(idStr);
+  const metadata = await ContestMetadata.findOne({ contestType, contestId });
+  return res
+    .status(200)
+    .json(new ApiResponse(200, metadata, "Contest metadata retrieved"));
+});
+
+export {
+  fetchAndStoreLeetcodeContests,
+  getContestData,
+  getFriendsContestPerformance,
+};

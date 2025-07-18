@@ -137,11 +137,12 @@ async function retry(fn, maxRetries) {
     if (!contest_name || !Array.isArray(friends) || friends.length === 0) {
       throw new ApiError(400, "contest_name and non-empty friends array are required");
     }
-
+   
     // Extract contestType and contestId
     const [type, , idStr] = contest_name.split("-");
     const contestType = type;
     const contestId = parseInt(idStr);
+    //console.log(contestType, contestId, friends);
     if (!["weekly", "biweekly"].includes(contestType) || isNaN(contestId)) {
       throw new ApiError(400, "Invalid contest name format");
     }
@@ -164,7 +165,7 @@ async function retry(fn, maxRetries) {
         delta_rating: null,
       };
     }
-
+    
     for (const p of participants) {
       if (friendMap[p.username]) {
         friendMap[p.username] = {
@@ -178,14 +179,9 @@ async function retry(fn, maxRetries) {
       }
     }
 
-    const sorted = Object.values(friendMap).sort((a, b) => {
-      if (a.rank == null && b.rank == null) return 0;
-      if (a.rank == null) return 1;
-      if (b.rank == null) return -1;
-      return a.rank - b.rank;
-    });
-    
-    return res.status(200).json(new ApiResponse(200, sorted, "LCCN Friends Ranking"));
+    const friendData = Object.values(friendMap)
+
+    return res.status(200).json(new ApiResponse(200, friendData, "LCCN Friends Ranking"));
   });
 
 export { fetchAndStoreLCCNContests,getFriendsLCCNPerformance  };

@@ -1,188 +1,9 @@
-// import React, { useEffect, useMemo, useState } from "react";
-// import { FaMinusCircle } from "react-icons/fa";
-// import { Link, useParams } from "react-router-dom";
-// import Spinner from "../components/Spinner.jsx";
-// import { fetchFriendsPerformance } from "../services/api_standing.js";
-// import { fetchAllFriends, getUserDetails } from "../services/api_user.js";
-
-// const FriendStanding = () => {
-//   const { "contest-name": contestName } = useParams();
-//   const [friends, setFriends] = useState([]);
-//   const [standings, setStandings] = useState([]);
-//   const [loading, setLoading] = useState(true);
-//   const [error, setError] = useState(null);
-//   const [userLeetcodeId, setUserLeetcodeId] = useState(null);
-//   const [userName, setUserName] = useState("");
-
-//   useEffect(() => {
-//     (async () => {
-//       try {
-//         const user = await getUserDetails();
-//         setUserLeetcodeId(user.data.leetcodeId);
-//         setUserName(user.data.name);
-//       } catch (err) {
-//         console.error("Error fetching user details:", err);
-//         setError("Failed to fetch user details.");
-//       }
-//     })();
-//   }, []);
-
-//   useEffect(() => {
-//     if (!userLeetcodeId) return;
-//     (async () => {
-//       try {
-//         setLoading(true);
-//         setError(null);
-
-//         const friendsData = await fetchAllFriends();
-//         let friendsList = friendsData?.data?.friends || [];
-//         if (userLeetcodeId) {
-//           friendsList = [
-//             ...friendsList,
-//             { leetcodeId: userLeetcodeId, friendName: userName },
-//           ];
-//         }
-//         setFriends(friendsList);
-
-//         const standingsData = await Promise.allSettled(
-//           friendsList.map((friend) =>
-//             fetchFriendsPerformance(contestName, friend.leetcodeId)
-//           )
-//         );
-
-//         const validStandings = standingsData
-//           .filter((res) => res.status === "fulfilled" && res.value !== null)
-//           .map((res) => res.value);
-
-//         const mergedStandings = validStandings.map((stand) => {
-//           const friend = friendsList.find(
-//             (f) => f.leetcodeId === stand.username
-//           );
-//           return { ...stand, friendName: friend ? friend.friendName : "N/A" };
-//         });
-
-//         setStandings(mergedStandings);
-//       } catch (err) {
-//         console.error("Error loading data:", err);
-//         setError("Failed to load standings. Please try again.");
-//       } finally {
-//         setLoading(false);
-//       }
-//     })();
-//   }, [contestName, userLeetcodeId]);
-
-//   const processedStandings = useMemo(() => {
-//     return standings
-//       .map((friendData) => ({
-//         ...friendData,
-//         rankPage: Math.floor(friendData.rank / 25) + 1,
-//         deltaSign:
-//           friendData.delta_rating > 0
-//             ? `+${friendData.delta_rating}`
-//             : friendData.delta_rating,
-//       }))
-//       .sort((a, b) => a.rank - b.rank);
-//   }, [standings]);
-
-//   if (loading) return <Spinner />;
-//   if (error) {
-//     return (
-//       <div className="min-h-screen flex flex-col justify-center items-center bg-[#0e0e10]">
-//         <p className="text-red-500 text-lg">{error}</p>
-//         <button
-//           className="mt-4 bg-yellow-500 text-black px-4 py-2 rounded"
-//           onClick={() => window.location.reload()}
-//         >
-//           Retry
-//         </button>
-//       </div>
-//     );
-//   }
-
-//   return (
-//     <div className="min-h-screen bg-[#0e0e10] text-white p-6">
-//       <h1 className="text-4xl font-bold text-[#ffa116] text-center mb-6">
-//         {contestName.replace(/-/g, " ").toUpperCase()} - Friends' Standings
-//       </h1>
-
-//       <div className="max-w-4xl mx-auto overflow-x-auto">
-//         <table className="w-full border-collapse bg-[#1e1e1e] text-gray-300">
-//           <thead>
-//             <tr className="text-black bg-[#ffa116]">
-//               <th className="p-3">Rank</th>
-//               <th className="p-3">Username</th>
-//               <th className="p-3">LeetCode ID</th>
-//               <th className="p-3">Q1</th>
-//               <th className="p-3">Q2</th>
-//               <th className="p-3">Q3</th>
-//               <th className="p-3">Q4</th>
-//               <th className="p-3">Old Rating</th>
-//               <th className="p-3">New Rating</th>
-//               <th className="p-3">Delta</th>
-//             </tr>
-//           </thead>
-//           <tbody>
-//             {processedStandings.map((friendData, idx) => (
-//               <tr
-//                 key={idx}
-//                 className="border-b border-gray-700 text-center hover:bg-[#252525]"
-//               >
-//                 <td className="p-3">
-//                   <Link
-//                     to={`https://leetcode.com/contest/${contestName}/ranking/${friendData.rankPage}/?region=global_v2`}
-//                     className="text-[#ffa116] hover:underline"
-//                   >
-//                     {friendData.rank}
-//                   </Link>
-//                 </td>
-//                 <td className="p-3">
-//                   <Link
-//                     to={`https://leetcode.com/${friendData.username}`}
-//                     className="text-[#ffa116] hover:underline"
-//                   >
-//                     {friendData.friendName}
-//                   </Link>
-//                 </td>
-//                 <td className="p-3">
-//                   <Link
-//                     to={`https://leetcode.com/${friendData.username}`}
-//                     className="text-[#ffa116] hover:underline"
-//                     target="_blank"
-//                   >
-//                     {friendData.username}
-//                   </Link>
-//                 </td>
-//                 {["Q1", "Q2", "Q3", "Q4"].map((q) => (
-//                   <td key={q} className="p-3">
-//                     <FaMinusCircle />
-//                   </td>
-//                 ))}
-//                 <td className="p-3">{Math.round(friendData.old_rating)}</td>
-//                 <td className="p-3">{Math.round(friendData.new_rating)}</td>
-//                 <td
-//                   className={`p-3 font-bold ${
-//                     friendData.delta_rating > 0
-//                       ? "text-green-400"
-//                       : "text-red-400"
-//                   }`}
-//                 >
-//                   {Math.round(friendData.deltaSign * 100) / 100}
-//                 </td>
-//               </tr>
-//             ))}
-//           </tbody>
-//         </table>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default FriendStanding;
 import { useEffect, useMemo, useState } from "react";
-import { FaMinusCircle } from "react-icons/fa";
+import { FaMinus } from "react-icons/fa";
 import { Link, useParams } from "react-router-dom";
 import Spinner from "../components/Spinner.jsx";
 import {
+  fetchContestMetadata,
   fetchFriendsLCCNPerformance,
   fetchFriendsPerformance,
 } from "../services/api_standing.js";
@@ -196,7 +17,7 @@ const FriendStanding = () => {
   const [error, setError] = useState(null);
   const [userLeetcodeId, setUserLeetcodeId] = useState(null);
   const [userName, setUserName] = useState("");
-
+  const [contestMetadata, setContestMetadata] = useState(null);
   useEffect(() => {
     (async () => {
       try {
@@ -228,19 +49,31 @@ const FriendStanding = () => {
           ];
         }
 
-        const leetcodeIds = friendsList.map((f) => f.leetcodeId);
         const nameMap = Object.fromEntries(
           friendsList.map((f) => [f.leetcodeId, f.friendName])
         );
 
-        const [lcResults, lccnResults] = await Promise.all([
-          fetchFriendsPerformance(contestName, leetcodeIds),
-          fetchFriendsLCCNPerformance(contestName, leetcodeIds),
-        ]);
+        const lcResults = [];
+        const lccnResults = [];
 
-        // Merge both results by username
+        const batchSize = 3;
+
+        for (let i = 0; i < friendsList.length; i += batchSize) {
+          const batch = friendsList.slice(i, i + batchSize);
+          const ids = batch.map((f) => f.leetcodeId);
+
+          const [lcRes, lccnRes] = await Promise.all([
+            fetchFriendsPerformance(contestName, ids),
+            fetchFriendsLCCNPerformance(contestName, ids),
+          ]);
+
+          lcResults.push(...lcRes);
+          lccnResults.push(...lccnRes);
+        }
+        const metadata = await fetchContestMetadata(contestName);
+        setContestMetadata(metadata);
         const merged = lcResults.map((lc) => {
-          const lccn = lccnResults.find((item) => item.username === lc.username);
+          const lccn = lccnResults.find((l) => l.username === lc.username);
           return {
             username: lc.username,
             friendName: nameMap[lc.username] || "N/A",
@@ -248,7 +81,6 @@ const FriendStanding = () => {
             lccn: lccn || {},
           };
         });
-
         setFriends(friendsList);
         setStandings(merged);
       } catch (err) {
@@ -259,6 +91,29 @@ const FriendStanding = () => {
       }
     })();
   }, [contestName, userLeetcodeId]);
+  console.log("Standings:", standings);
+  const questionIdToLabelMap = useMemo(() => {
+    if (!contestMetadata?.questions) return {};
+    const map = {};
+    for (const q of contestMetadata.questions) {
+      map[q.questionId] = q.label;
+    }
+    return map;
+  }, [contestMetadata]);
+
+  const labelToMeta = useMemo(() => {
+    if (!contestMetadata?.questions) return {};
+    const map = {};
+    for (const q of contestMetadata.questions) {
+      map[q.label] = {
+        titleSlug: q.titleSlug,
+        credit: q.credit,
+      };
+    }
+    return map;
+  }, [contestMetadata]);
+
+  const startTime = contestMetadata?.date || 0;
 
   const processedStandings = useMemo(() => {
     return standings
@@ -268,7 +123,13 @@ const FriendStanding = () => {
         rank: leetcode.rank,
         score: leetcode.score,
         finishTime: leetcode.finishTime,
-        submissions: leetcode.submissions || [],
+        submissions: (leetcode.submissions || []).reduce((acc, sub) => {
+          const label = questionIdToLabelMap[sub.questionId];
+          if (label) {
+            acc[label] = sub;
+          }
+          return acc;
+        }, {}),
         old_rating: lccn?.old_rating ?? "-",
         new_rating: lccn?.new_rating ?? "-",
         delta_rating: lccn?.delta_rating ?? "-",
@@ -292,26 +153,80 @@ const FriendStanding = () => {
       </div>
     );
   }
+  const getContestStartUnix = () => {
+    if (!contestName) return null;
+    const parts = contestName.split("-");
+    const type = parts[0];
+    const id = parseInt(parts[parts.length - 1]);
+
+    if (isNaN(id)) return null;
+
+    const baseTime = {
+      weekly: { id: 445, unix: 1744511400 }, 
+      biweekly: { id: 154, unix: 1744468200 },
+    };
+
+    const reference = baseTime[type];
+    if (!reference) return null;
+
+    const diff = id - reference.id;
+    const secondsInWeek = 7 * 24 * 3600;
+    const interval = type === "weekly" ? secondsInWeek : secondsInWeek * 2;
+
+    return reference.unix + diff * interval;
+  };
+
+  const submissionTime = (submissionUnix, lang) => {
+    const contestStartUnix = getContestStartUnix();
+    if (!contestStartUnix) return `${lang} - N/A`;
+
+    const diffSeconds = submissionUnix - contestStartUnix;
+    if (diffSeconds < 0) return `${lang} - Before Start`;
+
+    const totalMinutes = Math.floor(diffSeconds / 60);
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+
+    return `${lang} - ${hours}:${minutes.toString().padStart(2, "0")} hrs`;
+  };
 
   return (
     <div className="min-h-screen bg-[#0e0e10] text-white p-6">
       <h1 className="text-4xl font-bold text-[#ffa116] text-center mb-6">
         {contestName.replace(/-/g, " ").toUpperCase()} - Friends' Standings
       </h1>
+      <div className="text-right text-sm text-gray-400 mb-2">
+        No of friends participated in contest-{processedStandings.length} |
+        Total participants: {contestMetadata?.totalParticipants ?? "N/A"}
+      </div>
 
       <div className="max-w-6xl mx-auto overflow-x-auto">
-        <table className="w-full border-collapse bg-[#1e1e1e] text-gray-300">
+        <table className="w-full border-collapse bg-[#1e1e1e] text-gray-300 rounded-xl overflow-hidden shadow-lg">
           <thead>
-            <tr className="text-black bg-[#ffa116]">
+            <tr className="text-black bg-[#ffa116] rounded-t-xl">
               <th className="p-3">Current Rank</th>
               <th className="p-3">Previous Rank</th>
               <th className="p-3">Username</th>
               <th className="p-3">LeetCode ID</th>
               <th className="p-3">Score</th>
-              <th className="p-3">Q1</th>
-              <th className="p-3">Q2</th>
-              <th className="p-3">Q3</th>
-              <th className="p-3">Q4</th>
+              {["A", "B", "C", "D"].map((label) => {
+                const meta = labelToMeta[label];
+                return (
+                  <th className="p-3" key={label}>
+                    {meta ? (
+                      <Link
+                        to={`https://leetcode.com/problems/${meta.titleSlug}/description/`}
+                        target="_blank"
+                        className="text-black hover:underline"
+                      >
+                        {label} ({meta.credit})
+                      </Link>
+                    ) : (
+                      `${label}`
+                    )}
+                  </th>
+                );
+              })}
               <th className="p-3">Old Rating</th>
               <th className="p-3">New Rating</th>
               <th className="p-3">Delta</th>
@@ -321,7 +236,9 @@ const FriendStanding = () => {
             {processedStandings.map((friend, idx) => (
               <tr
                 key={idx}
-                className="border-b border-gray-700 text-center hover:bg-[#252525]"
+                className={`border-b border-gray-700 text-center hover:bg-[#252525] ${
+                  idx % 2 === 0 ? "bg-[#181818]" : "bg-[#1e1e1e]"
+                }`}
               >
                 <td className="p-3">
                   <Link
@@ -337,6 +254,7 @@ const FriendStanding = () => {
                   <Link
                     to={`https://leetcode.com/${friend.username}`}
                     className="text-[#ffa116] hover:underline"
+                    target="_blank"
                   >
                     {friend.friendName}
                   </Link>
@@ -351,27 +269,33 @@ const FriendStanding = () => {
                   </Link>
                 </td>
                 <td className="p-3 font-bold">{friend.score}</td>
-                {[0, 1, 2, 3].map((qIdx) => {
-                  const sub = friend.submissions[qIdx];
+                {["A", "B", "C", "D"].map((label, qIdx) => {
+                  const sub = friend.submissions?.[label];
                   return (
                     <td key={qIdx} className="p-3 relative">
                       {sub ? (
                         <>
                           <Link
                             to={`https://leetcode.com/submissions/detail/${sub.submissionId}`}
-                            className="text-[#ffa116] hover:underline block"
+                            className="text-[#ffa116] hover:underline block hover:bg-[#333] px-1 py-0.5 rounded transition"
                             target="_blank"
+                            title={`Go to submission (ID: ${sub.submissionId})`}
                           >
-                            {sub.lang} - {Math.floor(sub.date / 60)} min
+                            {submissionTime(sub.date, sub.lang)}
                           </Link>
-                          {sub.failCount >= 2 && (
+                          {sub.failCount > 0 && (
                             <span className="absolute top-1 right-2 text-red-500 font-bold">
                               {sub.failCount}
                             </span>
                           )}
                         </>
                       ) : (
-                        <FaMinusCircle />
+                        <td
+                          key={qIdx}
+                          className="p-3 relative text-center text-gray-500"
+                        >
+                          <FaMinus className="inline-block text-sm opacity-60" />
+                        </td>
                       )}
                     </td>
                   );

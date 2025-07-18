@@ -1,5 +1,5 @@
 import Router from 'express';
-import { fetchAndStoreLeetcodeContests,getFriendsContestPerformance  } from "../controllers/contestantStanding.controller.js";
+import { fetchAndStoreLeetcodeContests,getContestData,getFriendsContestPerformance  } from "../controllers/contestantStanding.controller.js";
 import { fetchAndStoreLCCNContests,getFriendsLCCNPerformance } from "../controllers/lccnInfo.controller.js";
 import { verifyJWT}  from '../middlewares/auth.middleware.js';
 
@@ -9,8 +9,10 @@ router.route("/populate-contest-standings").post(verifyJWT, fetchAndStoreLeetcod
 
 router.route("/lccn-contests-populate").post(verifyJWT, fetchAndStoreLCCNContests);
 
-router.route("/friends-contest-lc-details").get(verifyJWT, getFriendsContestPerformance);
+router.route("/friends-contest-lc-details").post(verifyJWT, getFriendsContestPerformance);
 
-router.route("/friends-contest-lccn-details").get(verifyJWT, getFriendsLCCNPerformance);
+router.route("/friends-contest-lccn-details").post(verifyJWT, getFriendsLCCNPerformance);
+
+router.route("/contest-metadata").get(verifyJWT,getContestData);
 
 export default router;

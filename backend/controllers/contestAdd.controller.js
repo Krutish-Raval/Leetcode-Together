@@ -32,9 +32,9 @@ const removeContest = asyncHandler(async (req, res) => {
 });
 
 const getAllContests = asyncHandler(async (req, res) => {
-  let { page = 1, limit = 7 } = req.query;
+  let { page = 1, limit = 6 } = req.query;
   page = parseInt(page) || 1; // Default page = 1
-  limit = parseInt(limit) || 7; // Default limit = 10 contests per page
+  limit = parseInt(limit) || 6; // Default limit = 6 contests per page
   // console.log(page);
   const totalContests = await Contest.countDocuments();
   const contests = await Contest.find()

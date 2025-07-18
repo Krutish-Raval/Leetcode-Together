@@ -9,9 +9,9 @@ const submissionSchema = new Schema({
 }, { _id: false });
 
 const participantPerformanceSchema = new Schema({
-  contestType: { type: String, required: true, index: true },
-  contestId: { type: Number, required: true, index: true },
-  leetcodeId: { type: String, required: true, index: true },
+  contestType: { type: String, required: true,  },
+  contestId: { type: Number, required: true, },
+  leetcodeId: { type: String, required: true, },
 
   rank: { type: Number, required: true },
   score: { type: Number, required: true },
@@ -19,7 +19,6 @@ const participantPerformanceSchema = new Schema({
   submissions: [submissionSchema]
 }, { timestamps: true });
 
-// Ensure uniqueness per contestType + contestId + user
 participantPerformanceSchema.index(
   { contestType: 1, contestId: 1, leetcodeId: 1 },
   { unique: true }
