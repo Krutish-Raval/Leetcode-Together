@@ -5,7 +5,7 @@ import connectDB from "../db/index.js";
 await connectDB();
 
 try {
-    console.log("Starting automatic contest addition...");
+  console.log("Starting automatic contest addition...");
   await autoAddContest();
 } catch (err) {
   console.error("Failed to auto add contest:", err);
