@@ -54,7 +54,7 @@ const Login = () => {
           <span className="text-yellow-500">&lt;/&gt;</span> LeetCode Together
         </h1>
         <button
-          className="bg-[#ffa116] text-black px-6 py-2 rounded-lg hover:bg-yellow-600 transition-all cursor-pointer"
+          className="bg-yellow-500 text-black px-6 py-2 rounded-sm hover:bg-yellow-600 transition-all cursor-pointer"
           onClick={() => navigate("/register")}
         >
           Register
