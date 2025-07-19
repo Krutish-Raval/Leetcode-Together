@@ -2,13 +2,14 @@ name: Auto Add & Remove Contests
 
 on:
   schedule:
-    - cron: '5 4 * * 0'  # Sundays 9:35 AM IST
-    - cron: '28 16 * * 6' # Saturdays 9:35 PM IST
+    - cron: '5 4 * * 0'   # Sundays 9:35 AM IST
+    - cron: '45 16 * * 6' # Saturdays 9:35 PM IST
   workflow_dispatch:
 
 jobs:
   auto-contest:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -19,10 +20,13 @@ jobs:
           node-version: 20
 
       - name: Install dependencies
-        run: npm ci
+        run: |
+          cd backend
+          npm ci
 
       - name: Run contest auto-add
         env:
           MONGODB_URI: ${{ secrets.MONGO_URI }}
         run: |
-          node backend/scripts/autoAddContest.js
+          cd backend
+          node scripts/autoAddContest.js
