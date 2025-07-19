@@ -48,7 +48,7 @@
 //     await Contest.deleteOne({ contestType: "biweekly", contestId: removeBiweeklyId });
 //     console.log(`Removing biweekly contest ${removeBiweeklyId}`);
 //   }
-// };
+// };  
 
 import { Contest } from "../models/contest.model.js";
 
