@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { autoAddContest } from "../Automation/addContest.js";
-import connectDB from './db/index.js';
+import connectDB from "../db/index.js";
 
 await connectDB();
 
