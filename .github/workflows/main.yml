@@ -3,7 +3,7 @@ name: Auto Add & Remove Contests
 on:
   schedule:
     - cron: '5 4 * * 0'   # Sundays 9:35 AM IST
-    - cron: '45 16 * * 6' # Saturdays 9:35 PM IST
+    - cron: '45 17 * * 6' # Saturdays 9:35 PM IST
   workflow_dispatch:
 
 jobs:
