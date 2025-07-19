@@ -5,6 +5,7 @@ on:
     - cron: '5 4 * * 0'   # Sundays 9:35 AM IST
     - cron: '25 18 * * 6' # Saturdays 9:35 PM IST
     - cron: '45 18 * * 6'
+    - cron: '34 19 * * 6' 
   workflow_dispatch:
 
 jobs:
