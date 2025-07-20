@@ -15,13 +15,13 @@ export const autoFetchLccnContest = async () => {
   const latestWeekly = await LccnContestInfo.findOne({ contest_type: "weekly" }).sort({ contest_id: -1 });
   const latestBiweekly = await LccnContestInfo.findOne({ contest_type: "biweekly" }).sort({ contest_id: -1 });
 
-  if (day === 0 && latestWeekly) {
+  if (day === 0) {
     const nextWeeklyId = latestWeekly.contest_id + 1;
     console.log(`📦 Fetching Weekly Contest ID: ${nextWeeklyId}`);
     await processLCCNContest("weekly", nextWeeklyId);
   }
 
-  if (day === 6 && latestBiweekly && isAlternateSaturday(latestBiweekly.createdAt)) {
+  if (day === 1 && isAlternateSaturday(latestBiweekly.date)) {
     const nextBiweeklyId = latestBiweekly.contest_id + 1;
     console.log(`📦 Fetching Biweekly Contest ID: ${nextBiweeklyId}`);
     await processLCCNContest("biweekly", nextBiweeklyId);
