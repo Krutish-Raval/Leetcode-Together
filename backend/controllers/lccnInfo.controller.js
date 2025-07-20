@@ -1,4 +1,4 @@
-import { LccnContestInfo } from "../models/LccnContestInfo.model.js";
+import { LccnContestInfo } from "../models/lccnContestInfo.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import pLimit from "p-limit";
