@@ -29,6 +29,8 @@ jobs:
           npm ci
 
       - name: Run autoFetchLccnContest script
+        env:
+          MONGO_URI: ${{ secrets.MONGO_URI }}
         run: |
            cd backend
            node scripts/autoFetchLccnContest.js
