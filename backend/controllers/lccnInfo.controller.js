@@ -51,7 +51,7 @@ export async function processLCCNContest(contestType, contestId) {
   const slug = `${contestType}-contest-${contestId}`;
   const totalCount = await fetchLccnCount(slug);
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
-  console.log(totalPages);
+  // console.log(totalPages);
   const limit = pLimit(MAX_CONCURRENT_PAGES);
 
   const skips = Array.from({ length: totalPages }, (_, i) => i * PAGE_SIZE);
