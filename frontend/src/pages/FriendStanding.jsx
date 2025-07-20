@@ -68,19 +68,40 @@ const FriendStanding = () => {
           ]);
 
           lcResults.push(...lcRes);
+          console.log("LC Results:", lcRes);
           lccnResults.push(...lccnRes);
+          console.log("LCCN Results:", lccnRes);
         }
         const metadata = await fetchContestMetadata(contestName);
         setContestMetadata(metadata);
-        const merged = lcResults.map((lc) => {
-          const lccn = lccnResults.find((l) => l.username === lc.username);
-          return {
-            username: lc.username,
-            friendName: nameMap[lc.username] || "N/A",
-            leetcode: lc,
-            lccn: lccn || {},
-          };
-        });
+        // const merged = lcResults.map((lc) => {
+        //   const lccn = lccnResults.find((l) => l.username === lc.username);
+        //   return {
+        //     username: lc?.username || lccn?.username,
+        //     friendName: nameMap[lc?.username] || "N/A",
+        //     leetcode: lc || {},
+        //     lccn: lccn || {},
+        //   };
+        // });
+        const merged = [];
+
+        for (const friend of friendsList) {
+          const lc = lcResults.find((l) => l.username === friend.leetcodeId);
+          const lccn = lccnResults.find(
+            (l) => l.username === friend.leetcodeId
+          );
+
+          // Only include if at least one of them exists
+          if (lc || lccn) {
+            merged.push({
+              username: friend.leetcodeId,
+              friendName: friend.friendName,
+              leetcode: lc || {},
+              lccn: lccn || {},
+            });
+          }
+        }
+
         setFriends(friendsList);
         setStandings(merged);
       } catch (err) {
@@ -114,20 +135,21 @@ const FriendStanding = () => {
   }, [contestMetadata]);
 
   const processedStandings = useMemo(() => {
-    console.log("standings:", standings);
+    //console.log("standings:", standings);
     return standings
+      .filter(({ leetcode, lccn }) => leetcode?.score || lccn?.score) 
       .map(({ username, friendName, leetcode, lccn }) => ({
         username,
         friendName,
-        rank: leetcode.rank,
-        score: leetcode.score,
-        finishTime: leetcode.finishTime,
-        submissions: (leetcode.submissions || []).reduce((acc, sub) => {
-          const label = questionIdToLabelMap[sub.questionId];
+        rank: leetcode?.rank || lccn?.rank || 0,
+        score: leetcode?.score || lccn?.score || 0,
+        finishTime: leetcode?.finishTime,
+        submissions: (leetcode?.submissions || []).reduce((acc, sub) => {
+          const label = questionIdToLabelMap[sub?.questionId];
           if (label) {
             acc[label] = {
               ...sub,
-              failCount: sub.failCount ?? 0, // make sure it's included
+              failCount: sub?.failCount ?? 0, // make sure it's included
             };
           }
           //console.log("Submission:", sub);
@@ -137,7 +159,7 @@ const FriendStanding = () => {
         new_rating: lccn?.new_rating ?? "-",
         delta_rating: lccn?.delta_rating ?? "-",
         previousRank: lccn?.rank ?? "-",
-        rankPage: Math.floor(leetcode.rank / 25) + 1,
+        rankPage: Math.floor((leetcode?.rank || lccn?.rank) / 25) + 1,
       }))
       .sort((a, b) => a.rank - b.rank);
   }, [standings]);
