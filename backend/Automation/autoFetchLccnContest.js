@@ -17,18 +17,18 @@ export const autoFetchLccnContest = async () => {
   //const latestBiweekly = await LccnContestInfo.findOne({ contest_type: "biweekly" }).sort({ contest_id: -1 });
    const latestWeekly = await Contest.findOne({ contestType: "Weekly" }).sort({ contestId: -1 });
     const latestBiweekly = await Contest.findOne({ contestType: "Biweekly" }).sort({ contestId: -1 });
-  if (day === 0) {
-    const nextWeeklyId = latestWeekly.contestId + 1;
-    console.log(`📦 Fetching Weekly Contest ID: ${nextWeeklyId}`);
-    await processLCCNContest("weekly", nextWeeklyId);
-  }
+  // if (day === 0) {
+  //   const nextWeeklyId = latestWeekly.contestId + 1;
+  //   console.log(`📦 Fetching Weekly Contest ID: ${nextWeeklyId}`);
+  //   await processLCCNContest("weekly", nextWeeklyId);
+  // }
  /// console.log(latestBiweekly);
   // if (day === 6 && isAlternateSaturday(latestBiweekly.date)) {
   //   const nextBiweeklyId = latestBiweekly.contestId + 1;
   //   console.log(`📦 Fetching Biweekly Contest ID: ${nextBiweeklyId}`);
   //   await processLCCNContest("biweekly", nextBiweeklyId);
   // }
-  if (day === 1 ) {
+  if (day === 0 ) {
     const nextBiweeklyId = latestBiweekly.contestId;
     console.log(`📦 Fetching Biweekly Contest ID: ${nextBiweeklyId}`);
     await processLCCNContest("biweekly", nextBiweeklyId);
