@@ -9,9 +9,9 @@ const isAlternateSaturday = (lastDate) => {
 export const autoAddContest = async()=> {
   const now = new Date();
   const day = now.getDay(); // 0 = Sunday, 6 = Saturday
-   //console.log(`Today is ${now.toDateString()}, Day: ${day}`);
-  const latestWeekly = await Contest.findOne({ contestType: "weekly" }).sort({ contestId: -1 });
-  const latestBiweekly = await Contest.findOne({ contestType: "biweekly" }).sort({ contestId: -1 });
+  console.log(`Today is ${now.toDateString()}, Day: ${day}`);
+  const latestWeekly = await Contest.findOne({ contestType: "Weekly" }).sort({ contestId: -1 });
+  const latestBiweekly = await Contest.findOne({ contestType: "Biweekly" }).sort({ contestId: -1 });
   if (day === 0) {
     const newWeekly = {
       contestType: "weekly",
