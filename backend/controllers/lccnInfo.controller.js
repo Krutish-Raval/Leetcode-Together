@@ -47,7 +47,7 @@ const fetchAndStoreLCCNContests = asyncHandler(async (req, res) => {
   );
 });
 
-async function processLCCNContest(contestType, contestId) {
+export async function processLCCNContest(contestType, contestId) {
   const slug = `${contestType}-contest-${contestId}`;
   const totalCount = await fetchLccnCount(slug);
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
