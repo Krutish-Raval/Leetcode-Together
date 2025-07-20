@@ -23,4 +23,4 @@ LCCNParticipantSchema.index(
   { unique: true }
 );
 
-export const LccnContestInfo = mongoose.model("LccnContestInfo", LCCNParticipantSchema);
+export const LccnContestInfo = mongoose.models.LccnContestInfo || mongoose.model("LccnContestInfo", LCCNParticipantSchema);

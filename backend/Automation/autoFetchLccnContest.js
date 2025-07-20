@@ -1,4 +1,4 @@
-import { LccnContestInfo } from "../models/LccnContestInfo.model.js";
+import { LccnContestInfo } from "../models/lccnContestInfo.model.js";
 import { processLCCNContest } from "../controllers/lccnInfo.controller.js"; // Exported separately now
 
 const isAlternateSaturday = (lastDate) => {
