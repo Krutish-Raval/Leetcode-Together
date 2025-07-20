@@ -67,7 +67,7 @@ const populateContests = asyncHandler(async (req, res) => {
   while (weeklyContestId >= 300 && weeklyDate >= startDate) {
     contests.push({
       contestType: "Weekly",
-      contestId: `${weeklyContestId}`,
+      contestId: weeklyContestId,
       date: new Date(weeklyDate),
     });
     weeklyDate.setDate(weeklyDate.getDate() - 7);
@@ -75,7 +75,7 @@ const populateContests = asyncHandler(async (req, res) => {
     if (biweeklyContestId >= 85 && biweeklyDate >= startDate) {
       contests.push({
         contestType: "Biweekly",
-        contestId: `${biweeklyContestId}`,
+        contestId: biweeklyContestId,
         date: new Date(biweeklyDate),
       });
       biweeklyDate.setDate(biweeklyDate.getDate() - 14);

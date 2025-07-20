@@ -6,7 +6,7 @@ import { fetchContests } from "../services/api_contest.js";
 
 const ContestLists = () => {
   let [contestType, setContestType] = useState("");
-  const [contestNumber, setContestNumber] = useState("");
+  const [contestNumber, setContestNumber] = useState(0);
   const [contests, setContests] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -29,7 +29,7 @@ const ContestLists = () => {
 
   const handleButtonViewStanding = (e) => {
     e.preventDefault();
-    if (!contestType.trim() || !contestNumber.trim()) {
+    if (!contestType.trim() || contestNumber <= 0 ) {
       toast.error("Please enter valid Contest Type and Contest Number");
       return;
     }

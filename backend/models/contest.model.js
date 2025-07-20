@@ -7,7 +7,7 @@ const contestSchema= new Schema({
         required:true
     },
     contestId:{
-        type:String,
+        type:Number,
         required:true,
         unique: true
     },
