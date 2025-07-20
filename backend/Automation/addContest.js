@@ -10,18 +10,18 @@ export const autoAddContest = async()=> {
   const now = new Date();
   const day = now.getDay(); // 0 = Sunday, 6 = Saturday
   console.log(`Today is ${now.toDateString()}, Day: ${day}`);
-  const latestWeekly = await Contest.findOne({ contestType: {"Weekly": 1} }).sort({ contestId: -1 });
-  const latestBiweekly = await Contest.findOne({ contestType: {"Biweekly": 1} }).sort({ contestId: -1 });
+  const latestWeekly = await Contest.findOne({ contestType: "Weekly" }).sort({ contestId: -1 });
+  const latestBiweekly = await Contest.findOne({ contestType: "Biweekly" }).sort({ contestId: -1 });
   if (day === 0) {
     const newWeekly = {
-      contestType: "weekly",
+      contestType: "Weekly",
       contestId: latestWeekly.contestId + 1,
       date: new Date(new Date(latestWeekly.date).getTime() + 7 * 24 * 60 * 60 * 1000)
     };
     await Contest.create(newWeekly);
     console.log(`Adding weekly contest ${latestWeekly.contestId + 1}`);
     const removeWeeklyId = latestWeekly.contestId - 17;
-    await Contest.deleteOne({ contestType: "weekly", contestId: removeWeeklyId });
+    await Contest.deleteOne({ contestType: "Weekly", contestId: removeWeeklyId });
     console.log(`Removing weekly contest ${removeWeeklyId}`);
   }
   // else{
@@ -38,14 +38,14 @@ export const autoAddContest = async()=> {
   // }
   else if (isAlternateSaturday(latestBiweekly.date)) {
     const newBiweekly = {
-      contestType: "biweekly",
+      contestType: "Biweekly",
       contestId: latestBiweekly.contestId + 1,
       date: new Date(new Date(latestBiweekly.date).getTime() + 14 * 24 * 60 * 60 * 1000)
     };
     console.log(`Adding biweekly contest ${latestBiweekly.contestId + 1}`);
     await Contest.create(newBiweekly);
     const removeBiweeklyId = latestBiweekly.contestId - 9;
-    await Contest.deleteOne({ contestType: "biweekly", contestId: removeBiweeklyId });
+    await Contest.deleteOne({ contestType: "Biweekly", contestId: removeBiweeklyId });
     console.log(`Removing biweekly contest ${removeBiweeklyId}`);
   }
 };  
