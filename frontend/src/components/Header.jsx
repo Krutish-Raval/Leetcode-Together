@@ -25,33 +25,33 @@ const Header = () => {
 
   return (
     <div>
-      <header className="bg-[#1e1e1e] text-white py-4 px-8 shadow-md">
+      <header className="bg-[#1e1e1e] text-white py-4 px-7 shadow-md">
         <div className="flex justify-between items-center">
           {/* Brand Logo */}
-          <h1
-            className="text-3xl font-bold cursor-pointer text-white"
+          <div
+            className="text-2xl font-bold cursor-pointer text-white"
             onClick={() => navigate("/home")}
           >
             <span className="text-[#ffa116]">&lt;/&gt;</span> LeetCode Together
-          </h1>
+          </div>
 
           {/* Navigation Links */}
-          <nav className="flex gap-6">
+          <nav className="flex gap-7">
             <button
               onClick={() => navigate("/home")}
-              className="text-lg font-semibold hover:text-yellow-400 cursor-pointer transition-all"
+              className="text-2xl font-semibold hover:text-yellow-400 cursor-pointer transition-all"
             >
               Home
             </button>
             <button
               onClick={() => navigate("/add-friends")}
-              className="text-lg font-semibold hover:text-yellow-400 cursor-pointer transition-all"
+              className="text-2xl font-semibold hover:text-yellow-400 cursor-pointer transition-all"
             >
               Friends
             </button>
             <button
               onClick={() => navigate("/contest-lists")}
-              className="text-lg font-semibold hover:text-yellow-400 cursor-pointer transition-all"
+              className="text-2xl font-semibold hover:text-yellow-400 cursor-pointer transition-all"
             >
               Contest Standings
             </button>

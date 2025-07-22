@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { addUserDetail, getUserDetails } from "../services/api_user.js";
-// import { set } from "mongoose";
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -62,7 +61,7 @@ const HomePage = () => {
   return (
     <div className="min-h-screen bg-[#0e0e10] text-white flex flex-col items-center px-6">
       {/* Main Section */}
-      <main className="flex flex-col items-center justify-center text-center space-y-12  flex-grow">
+      <main className="flex flex-col items-center justify-center text-center space-y-12 flex-grow">
         <h1 className="text-5xl font-bold mb-4">
           Welcome to <span className="text-[#ffa116]">LeetCode Together</span>
         </h1>

@@ -1,10 +1,34 @@
-import { processLCCNContest } from "../controllers/lccnInfo.controller.js"; // Exported separately now
-import { Contest } from "../models/contest.model.js"; // Assuming you have a Contest model for weekly contests
+import { processLCCNContest } from "../controllers/lccnInfo.controller.js"; 
+import { Contest } from "../models/contest.model.js"; 
+import { ContestantParticipant } from "../models/ContestantParticiapant.model.js";
+import { ContestMetadata } from "../models/contestMetadata.model.js";
+import { LccnContestInfo } from "../models/lccnContestInfo.model.js";
 const isAlternateSaturday = (lastDate) => {
   const now = new Date();
   const diffDays = Math.floor((now - new Date(lastDate)) / (1000 * 60 * 60 * 24));
  // console.log(`Last contest date: ${lastDate}, Days since last contest: ${diffDays}`);
   return now.getDay() === 6 && diffDays >= 14;
+};
+
+const deleteOldestContest = async (contestType, deleteIndex) => {
+  const contests = await Contest.find({ contestType }).sort({ contestId: -1 });
+
+  if (contests.length <= deleteIndex) return; // nothing to delete
+
+  const contestToDelete = contests[deleteIndex];
+
+  if (!contestToDelete) return;
+
+  const contestId = contestToDelete.contestId;
+
+  console.log(`Deleting ${contestType} Contest ID: ${contestId}`);
+
+  await Promise.all([
+    Contest.deleteOne({ contestType, contestId }),
+    ContestantParticipant.deleteMany({ contestType: contestType.toLowerCase(), contestId }),
+    ContestMetadata.deleteMany({ contestType: contestType.toLowerCase(), contestId }),
+    LccnContestInfo.deleteMany({ contest_type: contestType.toLowerCase(), contestId }),
+  ]);
 };
 
 export const autoFetchLccnContest = async () => {
@@ -20,11 +44,13 @@ export const autoFetchLccnContest = async () => {
     const nextWeeklyId = latestWeekly.contestId;
     console.log(`📦 Fetching Weekly Contest ID: ${nextWeeklyId}`);
     await processLCCNContest("weekly", nextWeeklyId);
+    await deleteOldestContest("Weekly", 17);
   }
   if (day === 6 && isAlternateSaturday(latestBiweekly.date)) {
     const nextBiweeklyId = latestBiweekly.contestId;
     console.log(`📦 Fetching Biweekly Contest ID: ${nextBiweeklyId}`);
     await processLCCNContest("biweekly", nextBiweeklyId);
+     await deleteOldestContest("Biweekly", 9);
   }
   // if (day === 0 ) {
   //   const nextBiweeklyId = latestBiweekly.contestId;
