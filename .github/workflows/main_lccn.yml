@@ -6,8 +6,6 @@ on:
     - cron: '0 17 * * 6'
     # Sunday 10:25 AM IST → Sunday 4:55 UTC
     - cron: '55 4 * * 0'
-    # Sunday 3:10 PM IST → Sunday 9:40 UTC (for testing)
-    - cron: '40 9 * * 0'
   workflow_dispatch:
 
 jobs:

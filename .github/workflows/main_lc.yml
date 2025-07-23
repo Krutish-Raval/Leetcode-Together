@@ -1,0 +1,40 @@
+name: Auto Fetch LC Contest
+
+on:
+  schedule:
+    # Sunday 9:40 AM IST → Sunday 4:10 UTC
+    - cron: '10 4 * * 0'
+    # Saturday 9:40 PM IST → Saturday 16:10 UTC
+    - cron: '10 16 * * 6'
+     # Wednesday 10:00 PM IST → Wednesday 16:30 UTC
+    - cron: '30 16 * * 3'
+    # Thursday 10:00 PM IST → Thursday 16:30 UTC
+    - cron: '30 16 * * 4'
+    # Friday 10:00 PM IST → Friday 16:30 UTC
+    - cron: '30 16 * * 5'
+  workflow_dispatch:
+
+jobs:
+  fetch-lc:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install Dependencies
+        run: |
+          cd backend
+          npm ci
+
+      - name: Run autoFetchLCInfo script
+        env:
+          MONGO_URI: ${{ secrets.MONGO_URI }}
+        run: |
+          cd backend
+          node scripts/autoFetchLCInfo.js
