@@ -6,6 +6,12 @@ on:
     - cron: '10 4 * * 0'
     # Saturday 9:40 PM IST → Saturday 16:10 UTC
     - cron: '10 16 * * 6'
+     # Wednesday 10:00 PM IST → Wednesday 16:30 UTC
+    - cron: '30 16 * * 3'
+    # Thursday 10:00 PM IST → Thursday 16:30 UTC
+    - cron: '30 16 * * 4'
+    # Friday 10:00 PM IST → Friday 16:30 UTC
+    - cron: '30 16 * * 5'
   workflow_dispatch:
 
 jobs:
