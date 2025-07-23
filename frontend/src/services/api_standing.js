@@ -19,7 +19,7 @@ const BASE_URL = "http://localhost:7000/api/v1/lcstandings";
 export const fetchFriendsPerformance = async (contestName, friends) => {
   try {
     const response = await apiFunc().post(
-      `${BASE_URL}/friends-contest-lc-details`,
+      `lcstandings/friends-contest-lc-details`,
       { contestName, friends },
       { withCredentials: true }
     );
@@ -34,7 +34,7 @@ export const fetchFriendsPerformance = async (contestName, friends) => {
 export const fetchFriendsLCCNPerformance = async (contestName, friends) => {
   try {
     const response = await apiFunc().post(
-      `${BASE_URL}/friends-contest-lccn-details`,
+      `lcstandings/friends-contest-lccn-details`,
       { contestName, friends },
       { withCredentials: true }
     );
@@ -47,7 +47,7 @@ export const fetchFriendsLCCNPerformance = async (contestName, friends) => {
 
 export const fetchContestMetadata = async (contestName) => {
   try {
-    const response = await apiFunc().get(`${BASE_URL}/contest-metadata`, {
+    const response = await apiFunc().get(`lcstandings/contest-metadata`, {
       params: { contestName },
       withCredentials: true,
     });

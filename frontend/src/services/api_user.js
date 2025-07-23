@@ -5,7 +5,7 @@ const API_URL = 'http://localhost:7000/api/v1/user';
 
 export const registerUser = async (userData) => {
   try {
-    const response = await axios.post(`${API_URL}/register`, userData, {
+    const response = await axios.post(`user/register`, userData, {
       withCredentials: true,
     });
     // console.log("Register res: ",response)
@@ -17,7 +17,7 @@ export const registerUser = async (userData) => {
 
 export const loginUser = async (userData) => {
   try {
-    const response = await axios.post(`${API_URL}/login`, userData, {
+    const response = await axios.post(`user/login`, userData, {
       withCredentials: true,
     });
     return response.data;
@@ -28,7 +28,7 @@ export const loginUser = async (userData) => {
 
 export const logOutUser=async(userData)=>{
   try {
-    const response=await axios.post(`${API_URL}/logout`,userData,{
+    const response=await axios.post(`user/logout`,userData,{
       withCredentials: true,
     })
     return response.data;
@@ -38,7 +38,7 @@ export const logOutUser=async(userData)=>{
 }
 export const otpSend=async(userData) =>{
   try {
-    const response= await axios.post(`${API_URL}/send-otp`,userData,{
+    const response= await axios.post(`user/send-otp`,userData,{
       withCredentials:true,
     });
     return response.data;
@@ -60,7 +60,7 @@ export const resendOtp = async (data) =>{
 
 export const addFriend=async(userData)=>{
   try {
-    const response=await apiFunc().post(`${API_URL}/add-friend`,userData,{
+    const response=await apiFunc().post(`user/add-friend`,userData,{
       withCredentials:true,
     });
     return response.data;
@@ -70,7 +70,7 @@ export const addFriend=async(userData)=>{
 }
 export const removeFriend=async(leetcodeId)=>{
   try {
-    const response=await apiFunc().delete(`${API_URL}/remove-friend`,{
+    const response=await apiFunc().delete(`user/remove-friend`,{
       params: { leetcodeId },
       withCredentials:true,
     });
@@ -82,7 +82,7 @@ export const removeFriend=async(leetcodeId)=>{
 
 export const getFriendsList=async(page,limit)=>{
   try {
-    const response=await apiFunc().get(`${API_URL}/get-friend-list`,{
+    const response=await apiFunc().get(`user/get-friend-list`,{
       params: { page, limit },
       withCredentials:true,
     });
@@ -95,7 +95,7 @@ export const getFriendsList=async(page,limit)=>{
 
 export const fetchAllFriends=async()=>{
     try {
-      const response=await apiFunc().get(`${API_URL}/fetch-all-friends`,{
+      const response=await apiFunc().get(`user/fetch-all-friends`,{
         withCredentials:true,
       })
       // console.log(response.data)
@@ -107,7 +107,7 @@ export const fetchAllFriends=async()=>{
 
 export const addUserDetail=async(userData)=>{
   try {
-    const response =await apiFunc().post(`${API_URL}/add-user-details`,userData,{
+    const response =await apiFunc().post(`user/add-user-details`,userData,{
       withCredentials:true,
     })
     return response.data
@@ -118,7 +118,7 @@ export const addUserDetail=async(userData)=>{
 
 export const getUserDetails=async()=>{
   try {
-    const response=await apiFunc().get(`${API_URL}/current-user`,{
+    const response=await apiFunc().get(`user/current-user`,{
       withCredentials:true,
     })
     return response.data
@@ -129,7 +129,7 @@ export const getUserDetails=async()=>{
 
 export const deleteUser= async()=>{
   try {
-    const response=await apiFunc().delete(`${API_URL}/delete-account`,{
+    const response=await apiFunc().delete(`user/delete-account`,{
       withCredentials:true,
     })
     return response.data
@@ -140,7 +140,7 @@ export const deleteUser= async()=>{
 
 export const updatePassword=async()=>{
   try {
-    const response=await apiFunc().patch(`${API_URL}/change-password`,{
+    const response=await apiFunc().patch(`user/change-password`,{
       withCredentials:true,
     })
     return response.data
@@ -151,7 +151,7 @@ export const updatePassword=async()=>{
 
 export const updateFriend=async({beforeleetcodeid,leetcodeId,friendName})=>{
   try {
-    const response=await apiFunc().patch(`${API_URL}/update-friend-profile`,{
+    const response=await apiFunc().patch(`user/update-friend-profile`,{
       beforeleetcodeid,
       leetcodeId,
       friendName,

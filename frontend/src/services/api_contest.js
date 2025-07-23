@@ -4,7 +4,7 @@ const API_BASE_URL = "http://localhost:7000/api/v1/contest"; // Change for produ
 
 export const fetchContests = async (page = 1, limit = 10) => {
     try {
-        const response = await apiFunc().get(`${API_BASE_URL}/get-all-contest`,{
+        const response = await apiFunc().get(`contest/get-all-contest`,{
             params:{page,limit},
             withCredentials:true,
         });
