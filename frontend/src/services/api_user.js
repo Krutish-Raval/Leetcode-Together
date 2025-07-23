@@ -5,7 +5,7 @@ const API_URL = 'http://localhost:7000/api/v1/user';
 
 export const registerUser = async (userData) => {
   try {
-    const response = await axios.post(`user/register`, userData, {
+    const response = await apiFunc().post(`user/register`, userData, {
       withCredentials: true,
     });
     // console.log("Register res: ",response)
@@ -17,7 +17,7 @@ export const registerUser = async (userData) => {
 
 export const loginUser = async (userData) => {
   try {
-    const response = await axios.post(`user/login`, userData, {
+    const response = await apiFunc().post(`user/login`, userData, {
       withCredentials: true,
     });
     return response.data;
@@ -28,7 +28,7 @@ export const loginUser = async (userData) => {
 
 export const logOutUser=async(userData)=>{
   try {
-    const response=await axios.post(`user/logout`,userData,{
+    const response=await apiFunc().post(`user/logout`,userData,{
       withCredentials: true,
     })
     return response.data;
@@ -38,7 +38,7 @@ export const logOutUser=async(userData)=>{
 }
 export const otpSend=async(userData) =>{
   try {
-    const response= await axios.post(`user/send-otp`,userData,{
+    const response= await apiFunc().post(`user/send-otp`,userData,{
       withCredentials:true,
     });
     return response.data;
@@ -49,7 +49,7 @@ export const otpSend=async(userData) =>{
 
 export const resendOtp = async (data) =>{
   try {
-    const response= axios.post('${API_URL)/resend-otp', data,{
+    const response= await apiFunc().post(`user/resend-otp`, data,{
       withCredentials:true,
     });
     return response.data;
