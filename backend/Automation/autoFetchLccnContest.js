@@ -4,16 +4,24 @@ import { ContestantParticipant } from "../models/ContestantParticiapant.model.js
 import { ContestMetadata } from "../models/contestMetadata.model.js";
 import { LccnContestInfo } from "../models/lccnContestInfo.model.js";
 const isAlternateSaturday = (lastDate) => {
-  const now = new Date();
-  const diffDays = Math.floor((now - new Date(lastDate)) / (1000 * 60 * 60 * 24));
- // console.log(`Last contest date: ${lastDate}, Days since last contest: ${diffDays}`);
-  return now.getDay() === 6 && diffDays >= 14;
+   const now = new Date();
+  const day1=lastDate.getDay();
+  const day2=now.getDay();
+  // const diffDays = Math.floor(
+  //   (now - new Date(lastDate)) / (1000 * 60 * 60 * 24)
+  // );
+  // console.log(`Last contest date: ${lastDate}, Days since last contest: ${diffDays}`);
+  return day1===day2;
+//   const now = new Date();
+//   const diffDays = Math.floor((now - new Date(lastDate)) / (1000 * 60 * 60 * 24));
+//  // console.log(`Last contest date: ${lastDate}, Days since last contest: ${diffDays}`);
+//   return now.getDay() === 6 && diffDays >= 14;
 };
 
 const deleteOldestContest = async (contestType, deleteIndex) => {
   const contests = await Contest.find({ contestType }).sort({ contestId: -1 });
 
-  if (contests.length <= deleteIndex) return; // nothing to delete
+  if (contests.length <= deleteIndex) return;
 
   const contestToDelete = contests[deleteIndex];
 
@@ -24,7 +32,6 @@ const deleteOldestContest = async (contestType, deleteIndex) => {
   console.log(`Deleting ${contestType} Contest ID: ${contestId}`);
 
   await Promise.all([
-    Contest.deleteOne({ contestType, contestId }),
     ContestantParticipant.deleteMany({ contestType: contestType.toLowerCase(), contestId }),
     ContestMetadata.deleteMany({ contestType: contestType.toLowerCase(), contestId }),
     LccnContestInfo.deleteMany({ contest_type: contestType.toLowerCase(), contestId }),
@@ -38,19 +45,17 @@ export const autoFetchLccnContest = async () => {
 
   //const latestWeekly = await Contest.findOne({ contest_type: "weekly" }).sort({ contest_id: -1 });
   //const latestBiweekly = await LccnContestInfo.findOne({ contest_type: "biweekly" }).sort({ contest_id: -1 });
-   const latestWeekly = await Contest.findOne({ contestType: "Weekly" }).sort({ contestId: -1 });
-    const latestBiweekly = await Contest.findOne({ contestType: "Biweekly" }).sort({ contestId: -1 });
+  const latestWeekly = await Contest.findOne({ contestType: "Weekly" }).sort({ contestId: -1 });
+  const latestBiweekly = await Contest.findOne({ contestType: "Biweekly" }).sort({ contestId: -1 });
   if (day === 0) {
     const nextWeeklyId = latestWeekly.contestId;
     console.log(`📦 Fetching Weekly Contest ID: ${nextWeeklyId}`);
     await processLCCNContest("weekly", nextWeeklyId);
-    await deleteOldestContest("Weekly", 17);
   }
   if (day === 6 && isAlternateSaturday(latestBiweekly.date)) {
     const nextBiweeklyId = latestBiweekly.contestId;
     console.log(`📦 Fetching Biweekly Contest ID: ${nextBiweeklyId}`);
     await processLCCNContest("biweekly", nextBiweeklyId);
-     await deleteOldestContest("Biweekly", 9);
   }
   // if (day === 0 ) {
   //   const nextBiweeklyId = latestBiweekly.contestId;

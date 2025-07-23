@@ -47,7 +47,7 @@ const fetchAndStoreLeetcodeContests = asyncHandler(async (req, res, next) => {
   );
 });
 
-async function processContest(contestType, contestId) {
+export async function processContest(contestType, contestId) {
   const slug = `${contestType}-contest-${contestId}`;
   const firstPageUrl = `https://leetcode.com/contest/api/ranking/${slug}/?pagination=1&region=global`;
 

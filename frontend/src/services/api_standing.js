@@ -12,13 +12,13 @@
 //     }
 // };
 import axios from "axios";
-
+import { apiFunc } from "../utils/apiClient.js";
 const BASE_URL = "http://localhost:7000/api/v1/lcstandings";
 
 // LeetCode Friends Performance
 export const fetchFriendsPerformance = async (contestName, friends) => {
   try {
-    const response = await axios.post(
+    const response = await apiFunc().post(
       `${BASE_URL}/friends-contest-lc-details`,
       { contestName, friends },
       { withCredentials: true }
@@ -33,7 +33,7 @@ export const fetchFriendsPerformance = async (contestName, friends) => {
 // LCCN Friends Performance
 export const fetchFriendsLCCNPerformance = async (contestName, friends) => {
   try {
-    const response = await axios.post(
+    const response = await apiFunc().post(
       `${BASE_URL}/friends-contest-lccn-details`,
       { contestName, friends },
       { withCredentials: true }
@@ -47,7 +47,7 @@ export const fetchFriendsLCCNPerformance = async (contestName, friends) => {
 
 export const fetchContestMetadata = async (contestName) => {
   try {
-    const response = await axios.get(`${BASE_URL}/contest-metadata`, {
+    const response = await apiFunc().get(`${BASE_URL}/contest-metadata`, {
       params: { contestName },
       withCredentials: true,
     });
