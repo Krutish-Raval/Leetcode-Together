@@ -23,6 +23,5 @@ A full-stack web application to track and compare LeetCode contest performances 
 - **Backend:** Node.js, Express.js  
 - **Database:** MongoDB  
 - **Authentication:** JWT, bcrypt  
-- **File Storage:** Cloudinary, Multer  
 - **Deployment:** Vercel (Frontend), Render (Backend)
 
