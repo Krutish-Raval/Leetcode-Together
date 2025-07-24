@@ -22,9 +22,9 @@ import userRouter from "./routes/user.router.js"
 
 app.use("/api/v1/user", userRouter)
 
-import authRouter from "./routes/auth.router.js"
+// import authRouter from "./routes/auth.router.js"
 
-app.use("/api/v1/auth", authRouter)
+// app.use("/api/v1/auth", authRouter)
 
 // solutionPost routes
 
