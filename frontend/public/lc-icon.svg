@@ -1,0 +1,6 @@
+<svg width="130" height="120" xmlns="http://www.w3.org/2000/svg">
+  <rect width="200" height="200" rx="30" ry="30" fill="#1e1e1e"/>
+  <text x="50%" y="50%" text-anchor="middle" fill="#ffa116" font-size="48" font-family="Arial, sans-serif" dominant-baseline="middle">
+    &lt;LC/&gt;
+  </text>
+</svg>
