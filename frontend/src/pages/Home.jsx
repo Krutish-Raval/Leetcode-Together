@@ -137,8 +137,8 @@ const HomePage = () => {
             description="See where your friends rank in contests and compare your performance."
           />
           <FeatureCard
-            title="View Friends' Solutions"
-            description="Check out your friends' solutions for contests to learn new approaches."
+            title="View Friends Solutions"
+            description="Check out your friends solutions for contests to learn new approaches."
           />
         </section>
       </main>

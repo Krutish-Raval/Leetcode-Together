@@ -218,7 +218,7 @@ const FriendStanding = () => {
   return (
     <div className="min-h-screen bg-[#0e0e10] text-white p-6">
       <h1 className="text-4xl font-bold text-[#ffa116] text-center mb-6">
-        {contestName.replace(/-/g, " ").toUpperCase()} - Friends' Standings
+        {contestName.replace(/-/g, " ").toUpperCase()} - Friends Standings
       </h1>
       <div className="text-center text-sm text-gray-100 mb-2">
         {/* {processedStandings.length} Friend Participated || */}
