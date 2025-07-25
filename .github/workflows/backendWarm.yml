@@ -1,0 +1,19 @@
+name: Keep Backend Warm
+
+on:
+  schedule:
+    # Run every 14 minutes to prevent 15-minute sleep on Render
+    - cron: '*/14 * * * *'
+  workflow_dispatch: # Allows manual triggering
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping backend service
+        run: |
+          curl -I -X GET https://leetcode-together-backend.onrender.com
+          echo "Pinged backend at $(date)"
+      - name: Check status
+        if: ${{ success() }}
+        run: echo "Backend is alive!"
