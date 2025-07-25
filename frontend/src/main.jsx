@@ -29,7 +29,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
           /* Protected Routes with Layout */
           <Route element={<PrivateRoute />}>
             <Route path="/" element={<Layout />}>
-              <Route path="/home" element={<HomePage />} />
+              <Route path="/" element={<HomePage />} />
               <Route path="/add-friends" element={<AddFriends/>} />
               <Route path="/contest-lists" element={<ContestLists/>} />
               <Route path="/contest-lists/:contest-name" element={<FriendStanding/>}/>
