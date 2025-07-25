@@ -30,7 +30,7 @@ const Header = () => {
           {/* Brand Logo */}
           <div
             className="text-2xl font-bold cursor-pointer text-white"
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/home")}
           >
             <span className="text-[#ffa116]">&lt;/&gt;</span> LeetCode Together
           </div>
@@ -38,7 +38,7 @@ const Header = () => {
           {/* Navigation Links */}
           <nav className="flex gap-7">
             <button
-              onClick={() => navigate("/")}
+              onClick={() => navigate("/home")}
               className="text-2xl font-semibold hover:text-yellow-400 cursor-pointer transition-all"
             >
               Home
