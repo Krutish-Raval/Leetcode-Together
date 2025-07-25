@@ -16,30 +16,26 @@ import ContestLists from "./pages/ContestLists.jsx";
 import FriendStanding from "./pages/FriendStanding.jsx"
 
 // const user = useSelector((state) => state.auth.email);
-const RoutesWrapper = () => {
-  const user = useSelector((state) => state.auth.email);
 
-  return (
-    <Routes>
-      <Route path="/" element={user ? <Navigate to="/home" /> : <App />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route element={<PrivateRoute />}>
-        <Route element={<Layout />}>
-          <Route path="/home" element={<HomePage />} />
-          <Route path="/add-friends" element={<AddFriends />} />
-          <Route path="/contest-lists" element={<ContestLists />} />
-          <Route path="/contest-lists/:contest-name" element={<FriendStanding />} />
-        </Route>
-      </Route>
-    </Routes>
-  );
-};
 ReactDOM.createRoot(document.getElementById("root")).render(
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
       <BrowserRouter>
-        <RoutesWrapper />
+        <Routes>
+          <Route path="/" element={<App />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+
+          /* Protected Routes with Layout */
+          <Route element={<PrivateRoute />}>
+            <Route path="/" element={<Layout />}>
+              <Route path="/home" element={<HomePage />} />
+              <Route path="/add-friends" element={<AddFriends/>} />
+              <Route path="/contest-lists" element={<ContestLists/>} />
+              <Route path="/contest-lists/:contest-name" element={<FriendStanding/>}/>
+            </Route>
+          </Route>
+        </Routes>
       </BrowserRouter>
     </PersistGate>
   </Provider>
