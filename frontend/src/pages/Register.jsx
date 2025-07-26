@@ -125,7 +125,7 @@ const Register = () => {
               name="email"
               ref={emailRef}
               placeholder="you@example.com"
-              className="w-full px-3 py-2 text-white bg-[#2b2b2b] border border-[#444] rounded focus:outline-none focus:ring-2 focus:ring-[#ffa116] mb-4"
+              className="w-full p-3 mb-4 bg-[#2e2e2e] border border-gray-600 rounded-lg text-white"
               value={formData.email}
               onChange={handleChange}
               onKeyDown={(e) => {
@@ -144,7 +144,7 @@ const Register = () => {
                 name="password"
                 ref={passwordRef}
                 placeholder="Password"
-                className="w-full px-3 py-2 text-white bg-[#2b2b2b] border border-[#444] rounded focus:outline-none focus:ring-2 focus:ring-[#ffa116] mb-4"
+                className="w-full p-3 mb-4 bg-[#2e2e2e] border border-gray-600 rounded-lg text-white pr-10"
                 value={formData.password}
                 onChange={handleChange}
                 onKeyDown={(e) => {
@@ -171,7 +171,7 @@ const Register = () => {
                 name="confirmPassword"
                 ref={confirmPasswordRef}
                 placeholder="Confirm Password"
-                className="w-full px-3 py-2 text-white bg-[#2b2b2b] border border-[#444] rounded focus:outline-none focus:ring-2 focus:ring-[#ffa116] mb-4"
+                className="w-full p-3 mb-4 bg-[#2e2e2e] border border-gray-600 rounded-lg text-white pr-10"
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 onKeyDown={(e) => {
