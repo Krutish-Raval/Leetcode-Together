@@ -3,19 +3,17 @@ import { Contest } from "../models/contest.model.js";
 import { ContestantParticipant } from "../models/ContestantParticiapant.model.js";
 import { ContestMetadata } from "../models/contestMetadata.model.js";
 import { LccnContestInfo } from "../models/lccnContestInfo.model.js";
+const isSameDate = (d1, d2) => {
+  return (
+    d1.getFullYear() === d2.getFullYear() &&
+    d1.getMonth() === d2.getMonth() &&
+    d1.getDate() === d2.getDate()
+  );
+};
+
 const isAlternateSaturday = (lastDate) => {
-   const now = new Date();
-  const day1=lastDate.getDay();
-  const day2=now.getDay();
-  // const diffDays = Math.floor(
-  //   (now - new Date(lastDate)) / (1000 * 60 * 60 * 24)
-  // );
-  // console.log(`Last contest date: ${lastDate}, Days since last contest: ${diffDays}`);
-  return day1===day2;
-//   const now = new Date();
-//   const diffDays = Math.floor((now - new Date(lastDate)) / (1000 * 60 * 60 * 24));
-//  // console.log(`Last contest date: ${lastDate}, Days since last contest: ${diffDays}`);
-//   return now.getDay() === 6 && diffDays >= 14;
+  const now = new Date();
+  return isSameDate(now, new Date(lastDate));
 };
 
 const deleteOldestContest = async (contestType, deleteIndex) => {
@@ -51,11 +49,13 @@ export const autoFetchLccnContest = async () => {
     const nextWeeklyId = latestWeekly.contestId;
     console.log(`📦 Fetching Weekly Contest ID: ${nextWeeklyId}`);
     await processLCCNContest("weekly", nextWeeklyId);
+    await deleteOldestContest("weekly", 17); // Delete the 18th oldest contest
   }
   if (day === 6 && isAlternateSaturday(latestBiweekly.date)) {
     const nextBiweeklyId = latestBiweekly.contestId;
     console.log(`📦 Fetching Biweekly Contest ID: ${nextBiweeklyId}`);
     await processLCCNContest("biweekly", nextBiweeklyId);
+    await deleteOldestContest("biweekly", 9); // Delete the 10th oldest contest
   }
   // if (day === 0 ) {
   //   const nextBiweeklyId = latestBiweekly.contestId;

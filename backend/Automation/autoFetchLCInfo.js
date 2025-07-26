@@ -1,14 +1,16 @@
 import { Contest } from "../models/contest.model.js";
 import { processContest } from "../controllers/contestantStanding.controller.js";
+const isSameDate = (d1, d2) => {
+  return (
+    d1.getFullYear() === d2.getFullYear() &&
+    d1.getMonth() === d2.getMonth() &&
+    d1.getDate() === d2.getDate()
+  );
+};
+
 const isAlternateSaturday = (lastDate) => {
   const now = new Date();
-  const day1=lastDate.getDay();
-  const day2=now.getDay();
-  // const diffDays = Math.floor(
-  //   (now - new Date(lastDate)) / (1000 * 60 * 60 * 24)
-  // );
-  // console.log(`Last contest date: ${lastDate}, Days since last contest: ${diffDays}`);
-  return day1===day2;
+  return isSameDate(now, new Date(lastDate));
 };
 
 export const autoFetchLCInfo = async () => {
