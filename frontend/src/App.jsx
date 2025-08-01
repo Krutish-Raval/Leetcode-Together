@@ -3,7 +3,6 @@ import { useSelector } from "react-redux";
 const HomePage = () => {
   const user = useSelector((state) => state.auth.email);
   
-  // If user is logged in, redirect to /home
   if (user) {
     return <Navigate to="/home" replace />;
   }
