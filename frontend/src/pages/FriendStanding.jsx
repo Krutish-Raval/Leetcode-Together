@@ -41,7 +41,6 @@ const FriendStanding = () => {
         const friendsData = await fetchAllFriends();
         let friendsList = friendsData?.data?.friends || [];
 
-        // Add current user
         if (userLeetcodeId) {
           friendsList = [
             ...friendsList,
@@ -49,24 +48,17 @@ const FriendStanding = () => {
           ];
         }
 
-        const nameMap = Object.fromEntries(
-          friendsList.map((f) => [f.leetcodeId, f.friendName])
-        );
-
         const lcResults = [];
         const lccnResults = [];
-
         const batchSize = 3;
 
         for (let i = 0; i < friendsList.length; i += batchSize) {
           const batch = friendsList.slice(i, i + batchSize);
           const ids = batch.map((f) => f.leetcodeId);
-
           const [lcRes, lccnRes] = await Promise.all([
             fetchFriendsPerformance(contestName, ids),
             fetchFriendsLCCNPerformance(contestName, ids),
           ]);
-
           lcResults.push(...lcRes);
           console.log("LC Results:", lcRes);
           lccnResults.push(...lccnRes);
@@ -74,15 +66,6 @@ const FriendStanding = () => {
         }
         const metadata = await fetchContestMetadata(contestName);
         setContestMetadata(metadata);
-        // const merged = lcResults.map((lc) => {
-        //   const lccn = lccnResults.find((l) => l.username === lc.username);
-        //   return {
-        //     username: lc?.username || lccn?.username,
-        //     friendName: nameMap[lc?.username] || "N/A",
-        //     leetcode: lc || {},
-        //     lccn: lccn || {},
-        //   };
-        // });
         const merged = [];
 
         for (const friend of friendsList) {
@@ -90,8 +73,6 @@ const FriendStanding = () => {
           const lccn = lccnResults.find(
             (l) => l.username === friend.leetcodeId
           );
-
-          // Only include if at least one of them exists
           if (lc || lccn) {
             merged.push({
               username: friend.leetcodeId,
@@ -112,7 +93,7 @@ const FriendStanding = () => {
       }
     })();
   }, [contestName, userLeetcodeId]);
-  //console.log("Standings:", standings);
+
   const questionIdToLabelMap = useMemo(() => {
     if (!contestMetadata?.questions) return {};
     const map = {};
@@ -158,7 +139,7 @@ const FriendStanding = () => {
         old_rating: lccn?.old_rating ?? "-",
         new_rating: lccn?.new_rating ?? "-",
         delta_rating: lccn?.delta_rating ?? "-",
-        previousRank: lccn?.rank ?? "-",
+        previousRank: lccn?.rank ?? leetcode?.rank ?? "-",
         rankPage: Math.floor((leetcode?.rank || lccn?.rank) / 25) + 1,
       }))
       .sort((a, b) => a.rank - b.rank);
@@ -183,9 +164,7 @@ const FriendStanding = () => {
     const parts = contestName.split("-");
     const type = parts[0];
     const id = parseInt(parts[parts.length - 1]);
-
-    if (isNaN(id)) return null;
-
+    
     const baseTime = {
       weekly: { id: 445, unix: 1744511400 },
       biweekly: { id: 154, unix: 1744468200 },
@@ -222,7 +201,7 @@ const FriendStanding = () => {
       </h1>
       <div className="text-center text-sm text-gray-100 mb-2">
         {/* {processedStandings.length} Friend Participated || */}
-        Total Participants : {contestMetadata?.totalParticipants}
+        Total Participants : {contestMetadata?.totalParticipants} ?? {'-'}
       </div>
 
       <div className="max-w-6xl mx-auto overflow-x-auto">

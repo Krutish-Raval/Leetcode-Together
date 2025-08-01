@@ -39,20 +39,17 @@ const VerifyOtp = ({ email, password, confirmPassword, goBack }) => {
     setLoading(true);
     try {
       await registerUser({ email, password, confirmPassword, otp: enteredOtp });
-      toast.dismiss(); // Remove any existing toast
-
+      toast.dismiss(); 
       toast.success('Registration and OTP Verification Successful! You can now log in.');
       navigate("/login");
     } catch (err) {
         if(err==="User already exists"){
-            toast.dismiss(); // Remove any existing toast
-
+            toast.dismiss(); 
             toast.error('User already exists. Login or enter different email ID');
         }
         else{
-            toast.dismiss(); // Remove any existing toast
-
-             toast.error('OTP Verification Failed. Please try again.');
+            toast.dismiss(); 
+            toast.error('OTP Verification Failed. Please try again.');
         }
     } finally {
       setLoading(false);

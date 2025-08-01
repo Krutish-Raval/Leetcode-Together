@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import { FaArrowLeft, FaEye, FaEyeSlash } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import VerifyOtp from "../components/VerifyOtp.jsx";
@@ -16,7 +16,6 @@ const Register = () => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const navigate = useNavigate();
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
   const confirmPasswordRef = useRef(null);
@@ -27,14 +26,11 @@ const Register = () => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-
     if (formData.password !== formData.confirmPassword) {
-      toast.dismiss(); // Remove any existing toast
-
+      toast.dismiss(); 
       toast.error("Passwords don't match!");
       return;
     }
-
     setLoading(true);
     try {
       await otpSend({ email: formData.email });
@@ -42,7 +38,7 @@ const Register = () => {
       toast.dismiss();
       toast.success("OTP sent! Please check your email.");
     } catch (error) {
-      toast.dismiss(); // Remove any existing toast
+      toast.dismiss(); 
       if (error !== "Login from this ID") {
         toast.error(
           error?.response?.data?.message ||
@@ -60,12 +56,6 @@ const Register = () => {
     setOtp(false);
   };
 
-  const togglePasswordVisibility = (field) => {
-    field === "password"
-      ? setShowPassword((prev) => !prev)
-      : setShowConfirmPassword((prev) => !prev);
-  };
-
   return (
     <div className="min-h-screen bg-[#0e0e10] text-white">
       <ToastContainer
@@ -80,17 +70,16 @@ const Register = () => {
         limit={1}
       />
 
-      {/* Header Section with Login Button */}
       <div className="bg-[#1e1e1e] py-4 px-8 flex items-center justify-between ">
         <h1 className="text-white text-2xl font-bold">
           <span className="text-yellow-500">&lt;/&gt;</span> LeetCode Together
         </h1>
-        <button
+        <Link
           className="bg-yellow-500 text-black px-6 py-2 rounded-sm font-medium hover:bg-yellow-600 transition-all cursor-pointer"
-          onClick={() => navigate("/login")}
+          to="/login"
         >
           Login
-        </button>
+        </Link>
       </div>
             <div className="border-t border-yellow-500 mt-[-1px] shadow-[0_0_10px_rgba(255,193,7,0.4)]"></div>
 
@@ -102,14 +91,13 @@ const Register = () => {
           >
             {/* Back to Home Button */}
             <div className="mb-4">
-              <button
+              <Link
                 className="flex items-center text-yellow-500 hover:text-yellow-400 transition-all cursor-pointer"
-                onClick={() => navigate("/")}
-                type="button"
+                to="/"
               >
                 <FaArrowLeft className="mr-2" />
                 Back to Home
-              </button>
+              </Link>
             </div>
 
             <h1 className="mx-auto w-fit text-3xl font-bold mb-4 text-white">
@@ -137,7 +125,6 @@ const Register = () => {
               required
             />
 
-            {/* Password Input with Visibility Toggle */}
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
@@ -158,9 +145,9 @@ const Register = () => {
               <button
                 type="button"
                 className="absolute right-4 top-4 text-gray-400 cursor-pointer"
-                onClick={() => togglePasswordVisibility("password")}
+                onClick={() => setShowPassword(!showPassword)}
               >
-                {showPassword ? <FaEyeSlash /> : <FaEye />}
+                {showPassword ? <FaEye /> : <FaEyeSlash />}
               </button>
             </div>
 
@@ -185,20 +172,18 @@ const Register = () => {
               <button
                 type="button"
                 className="absolute right-4 top-4 text-gray-400 cursor-pointer"
-                onClick={() => togglePasswordVisibility("confirmPassword")}
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               >
-                {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                {showConfirmPassword ? <FaEye /> : <FaEyeSlash />}
               </button>
             </div>
 
-            {/* Sign-Up Button with Loading Effect */}
             <button
               className={`w-full p-3 ${
                 loading ? "bg-yellow-400" : "bg-[#ffa116]"
               } text-black font-bold rounded-lg hover:bg-yellow-600 cursor-pointer`}
               disabled={loading}
             >
-              {/*disabled is used to prevent duplicate submission*/}
               {loading ? (
                 <div className="flex items-center justify-center">
                   <svg

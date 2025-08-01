@@ -6,8 +6,8 @@ const authSlice = createSlice({
         email: null,
     },
     reducers: {
-        login(state, action) {
-            state.email = action.payload;
+        login(state, action) {              // state gives access to initialState
+            state.email = action.payload;   // action like i need any id to remove then i would need action 
         },
         logout(state) {
             state.email = null;

@@ -24,11 +24,6 @@ const HomePage = () => {
           email: response.email || "",
         });
         if (response.name !== "") {
-          // Fix condition
-          // setUserData({
-          //   name: response.name,
-          //   leetcodeId: response.leetcodeId,
-          // });
           setIsSubmitted(true);
         } else {
           setIsSubmitted(false);
@@ -60,7 +55,6 @@ const HomePage = () => {
 
   return (
     <div className="min-h-screen bg-[#0e0e10] text-white flex flex-col items-center px-6">
-      {/* Main Section */}
       <main className="flex flex-col items-center justify-center text-center space-y-12 flex-grow">
         <h1 className="text-5xl font-bold mb-4">
           Welcome to <span className="text-[#ffa116]">LeetCode Together</span>
@@ -70,7 +64,6 @@ const HomePage = () => {
           code together!
         </p>
 
-        {/* User Details Section */}
         {isSubmitted && !isEditing ? (
           <div className="bg-[#1a1a1d] p-3 rounded-xl shadow-lg w-full max-w-90 text-center">
             <h3 className="text-2xl font-semibold text-[#ffa116]">
