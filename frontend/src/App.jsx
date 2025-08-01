@@ -3,9 +3,9 @@ import { useSelector } from "react-redux";
 const HomePage = () => {
   const user = useSelector((state) => state.auth.email);
   
-  if (user) {
-    return <Navigate to="/home" replace />;
-  }
+  // if (user) {
+  //   return <Navigate to="/home" replace />;
+  // }
   return (
     <div className="min-h-screen bg-[#0d0d0d] text-white relative overflow-hidden font-sans">
       {/* Header */}
