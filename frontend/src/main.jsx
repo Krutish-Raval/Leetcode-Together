@@ -22,12 +22,13 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <PersistGate loading={null} persistor={persistor}>
       <BrowserRouter>
         <Routes>
+          <Route element={<PrivateRoute />}>
           <Route path="/" element={<App />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
           /* Protected Routes with Layout */
-          <Route element={<PrivateRoute />}>
+          
             <Route path="/" element={<Layout />}>
               <Route path="/home" element={<HomePage />} />
               <Route path="/add-friends" element={<AddFriends/>} />
