@@ -201,7 +201,7 @@ const FriendStanding = () => {
       </h1>
       <div className="text-center text-sm text-gray-100 mb-2">
         {/* {processedStandings.length} Friend Participated || */}
-        Total Participants : {contestMetadata?.totalParticipants} ?? {'-'}
+        Total Participants : {contestMetadata?.totalParticipants}
       </div>
 
       <div className="max-w-6xl mx-auto overflow-x-auto">
