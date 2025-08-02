@@ -33,7 +33,7 @@ export const autoAddContest = async()=> {
     };
     console.log(`Adding biweekly contest ${latestBiweekly.contestId + 1}`);
     await Contest.create(newBiweekly);
-    const removeBiweeklyId = latestBiweekly.contestId - 9;
+    const removeBiweeklyId = parseInt(latestBiweekly.contestId) - 9;
     await Contest.deleteOne({ contestType: "Biweekly", contestId: removeBiweeklyId });
     console.log(`Removing biweekly contest ${removeBiweeklyId}`);
   }
