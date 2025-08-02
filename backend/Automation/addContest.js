@@ -3,6 +3,7 @@ import { Contest } from "../models/contest.model.js";
 const isAlternateSaturday = (lastDate) => {
   const now = new Date();
   const diffDays = Math.floor((now - new Date(lastDate)) / (1000 * 60 * 60 * 24));
+  console.log(`Days since last biweekly: ${diffDays}`);
   return now.getDay() === 6 && diffDays >= 14;
 };
 
