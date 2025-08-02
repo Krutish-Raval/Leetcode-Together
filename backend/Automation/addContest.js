@@ -24,7 +24,7 @@ export const autoAddContest = async()=> {
     await Contest.deleteOne({ contestType: "Weekly", contestId: removeWeeklyId });
     console.log(`Removing weekly contest ${removeWeeklyId}`);
   }
-  else if (isAlternateSaturday(latestBiweekly.date)) {
+  else if (day===6 && isAlternateSaturday(latestBiweekly.date)) {
     const newBiweekly = {
       contestType: "Biweekly",
       contestId: latestBiweekly.contestId + 1,
