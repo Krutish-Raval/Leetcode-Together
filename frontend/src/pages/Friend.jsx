@@ -141,8 +141,11 @@ const AddFriends = () => {
       <header className="text-center mb-4">
         <h1 className="text-4xl font-bold text-[#ffa116]">LeetCode Friends</h1>
         <p className="text-gray-400">
-          Add or remove friends to personalize your contest standings. Enter
-          correct LeetcodeID.
+          Add or remove friends to personalize your contest standings.
+        </p>
+        <p className="text-gray-400"> 
+          Enter your friend's LeetCode ID exactly as it appears on their profile
+          (case-sensitive)
         </p>
       </header>
 
