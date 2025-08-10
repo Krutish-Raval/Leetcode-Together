@@ -175,7 +175,7 @@ const updateFriendProfile = asyncHandler(async (req, res, next) => {
   ).select("-password -refreshToken");
   
   const updatedFriend = user.friends.find(friend => friend.leetcodeId === leetcodeId);
-  
+ //  console.log(updatedFriend);
   return res
     .status(200)
     .json(new ApiResponse(200, updatedFriend, "Friend profile updated successfully"));

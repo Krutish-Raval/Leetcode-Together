@@ -55,10 +55,10 @@ const Login = () => {
       />
       <div className="bg-[#1e1e1e] py-4 px-8 flex items-center justify-between">
         <h1 className="text-white text-2xl font-bold">
-          <span className="text-yellow-500">&lt;/&gt;</span> LeetCode Together
+          <span className="text-[#ffa116]">&lt;/&gt;</span> LeetCode Together
         </h1>
         <Link
-          className="bg-yellow-500 text-black px-6 py-2 rounded-sm hover:bg-yellow-600 transition-all cursor-pointer"
+          className="bg-[#ffa116] text-black px-6 py-2 rounded-sm hover:bg-yellow-600 transition-all cursor-pointer"
           to="/register"
         >
           Register
@@ -68,7 +68,7 @@ const Login = () => {
         <div className="w-full max-w-sm p-6 bg-[#222222] rounded-lg shadow-lg border border-[#333]">
           <div className="mb-4">
             <Link
-              className="flex items-center text-yellow-500 hover:text-yellow-400 transition-all cursor-pointer"
+              className="flex items-center text-[#ffa116] hover:text-yellow-600 transition-all cursor-pointer"
               to="/"
             >
               <FaArrowLeft className="mr-2" />
@@ -151,7 +151,7 @@ const Login = () => {
 
             <button
               type="submit"
-              className="w-full py-2 text-white bg-[#ffa116] rounded hover:bg-[#ff8c00] cursor-pointer"
+              className="w-full py-2 text-white bg-[#ffa116] rounded hover:bg-yellow-600 cursor-pointer"
               onKeyDown={(e) => {
                 if (e.key === "ArrowUp") {
                   e.preventDefault();

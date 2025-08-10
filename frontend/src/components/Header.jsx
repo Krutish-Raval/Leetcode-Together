@@ -1,6 +1,5 @@
-import React from "react";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { logOutUser } from "../services/api_user.js";
 import { logout } from "../store/authSlice";
@@ -8,7 +7,7 @@ import { logout } from "../store/authSlice";
 const Header = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
+  const location = useLocation();
   const handleLogout = async (e) => {
     e.preventDefault();
     try {
@@ -22,6 +21,7 @@ const Header = () => {
       toast.error("Something went wrong");
     }
   };
+  const isActive = (path) => location.pathname === path;
 
   return (
     <div>
@@ -39,19 +39,31 @@ const Header = () => {
           <nav className="flex gap-7">
             <button
               onClick={() => navigate("/home")}
-              className="text-2xl font-semibold hover:text-yellow-400 cursor-pointer transition-all"
+              className={`text-2xl font-semibold cursor-pointer transition-all ${
+                isActive("/home")
+                  ? "text-[#ffa116] "
+                  : "hover:text-yellow-400"
+              }`}
             >
               Home
             </button>
             <button
               onClick={() => navigate("/add-friends")}
-              className="text-2xl font-semibold hover:text-yellow-400 cursor-pointer transition-all"
+              className={`text-2xl font-semibold cursor-pointer transition-all ${
+                isActive("/add-friends")
+                  ? "text-[#ffa116] "
+                  : "hover:text-yellow-400"
+              }`}
             >
               Friends
             </button>
             <button
               onClick={() => navigate("/contest-lists")}
-              className="text-2xl font-semibold hover:text-yellow-400 cursor-pointer transition-all"
+              className={`text-2xl font-semibold cursor-pointer transition-all ${
+                isActive("/contest-lists")
+                  ? "text-[#ffa116] "
+                  : "hover:text-yellow-400"
+              }`}
             >
               Contest Standings
             </button>
