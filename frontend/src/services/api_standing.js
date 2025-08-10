@@ -15,7 +15,6 @@ import axios from "axios";
 import { apiFunc } from "../utils/apiClient.js";
 const BASE_URL = "http://localhost:7000/api/v1/lcstandings";
 
-// LeetCode Friends Performance
 export const fetchFriendsPerformance = async (contestName, friends) => {
   try {
     const response = await apiFunc().post(

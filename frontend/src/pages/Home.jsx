@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { addUserDetail, getUserDetails } from "../services/api_user.js";
+import { useDispatch } from "react-redux";
+import { logout } from "../store/authSlice";
 
 const HomePage = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const [userData, setUserData] = useState({
     name: "",
     leetcodeId: "",
@@ -29,6 +33,8 @@ const HomePage = () => {
           setIsSubmitted(false);
         }
       } catch (error) {
+        dispatch(logout());
+        navigate("/login");
         console.error("Error fetching user data:", error);
       }
     };

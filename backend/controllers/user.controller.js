@@ -1,34 +1,33 @@
-  import { User } from "../models/user.model.js";
+import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-;
 
-  const changeCurrentPassword = asyncHandler(async (req, res, next) => {
-    const { currentPassword, newPassword, confirmPassword } = req.body;
-    if (!(currentPassword && newPassword && confirmPassword)) {
-      throw new ApiError(
-        400,
-        "Current password ,new password and confirm password are required"
-      );
-    }
-    if (newPassword !== confirmPassword) {
-      throw new ApiError(401, "Passwords do not match");
-    }
-    const user = await User.findById(req.user._id);
-    const isPasswordCorrect = await user.verifyPassword(currentPassword);
-    if (!isPasswordCorrect) {
-      throw new ApiError(401, "Incorrect current password");
-    }
-    user.password = newPassword;
-    await user.save({ validateBeforeSave: false });
-    return res
-      .status(200)
-      .json(new ApiResponse(200, {}, "Password changed successfully"));
-  });
+const changeCurrentPassword = asyncHandler(async (req, res, next) => {
+  const { currentPassword, newPassword, confirmPassword } = req.body;
+  if (!(currentPassword && newPassword && confirmPassword)) {
+    throw new ApiError(
+      400,
+      "Current password ,new password and confirm password are required"
+    );
+  }
+  if (newPassword !== confirmPassword) {
+    throw new ApiError(401, "Passwords do not match");
+  }
+  const user = await User.findById(req.user._id);
+  const isPasswordCorrect = await user.verifyPassword(currentPassword);
+  if (!isPasswordCorrect) {
+    throw new ApiError(401, "Incorrect current password");
+  }
+  user.password = newPassword;
+  await user.save({ validateBeforeSave: false });
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "Password changed successfully"));
+});
 
 const addUserDetails = asyncHandler(async (req, res, next) => {
-  const { name, leetcodeId ,email} = req.body;
+  const { name, leetcodeId, email } = req.body;
   if (!(name && leetcodeId)) {
     throw new ApiError(400, "All fields are required");
   }
@@ -72,7 +71,9 @@ const addFriend = asyncHandler(async (req, res, next) => {
     _id: req.user._id,
   });
   // console.log(userInfo);
-  const friendExists = userInfo?.friends.some((friend) => friend.leetcodeId === leetcodeId);
+  const friendExists = userInfo?.friends.some(
+    (friend) => friend.leetcodeId === leetcodeId
+  );
   if (friendExists) {
     throw new ApiError(402, "Friend already exists in your friends list");
   }
@@ -93,12 +94,16 @@ const addFriend = asyncHandler(async (req, res, next) => {
 
   // Add the user to the friend's friendOf list
 
-  return res
-    .status(200)
-    .json(new ApiResponse(200, {
-      friendName,
-      leetcodeId,
-    }, "Friend added successfully"));
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        friendName,
+        leetcodeId,
+      },
+      "Friend added successfully"
+    )
+  );
 });
 
 const removeFriend = asyncHandler(async (req, res, next) => {
@@ -130,7 +135,7 @@ const removeFriend = asyncHandler(async (req, res, next) => {
 
 const getFriendsList = asyncHandler(async (req, res, next) => {
   const { page = 1, limit = 10 } = req.query;
-  
+
   const user = await User.findById(req.user._id);
   // console.log(user);
   if (!user) {
@@ -138,24 +143,34 @@ const getFriendsList = asyncHandler(async (req, res, next) => {
   }
 
   const totalFriends = user.friends.length;
-  const friends = user.friends.reverse().slice((page - 1) * limit, page * limit);
+  const friends = user.friends
+    .reverse()
+    .slice((page - 1) * limit, page * limit);
   // console.log(friends,page)
   return res
     .status(200)
-    .json(new ApiResponse(200, { friends, totalFriends, page }, "Friends list fetched successfully"));
+    .json(
+      new ApiResponse(
+        200,
+        { friends, totalFriends, page },
+        "Friends list fetched successfully"
+      )
+    );
 });
 
-const fetchAllFriends=asyncHandler(async(req,res,next)=>{
+const fetchAllFriends = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.user._id);
-  const friends = user.friends
+  const friends = user.friends;
   return res
     .status(200)
-    .json(new ApiResponse(200, { friends }, "Friends list fetched successfully"));
-})
+    .json(
+      new ApiResponse(200, { friends }, "Friends list fetched successfully")
+    );
+});
 
 //Need to change this
 const updateFriendProfile = asyncHandler(async (req, res, next) => {
-  const {beforeleetcodeId, friendName ,leetcodeId} = req.body;
+  const { beforeleetcodeId, friendName, leetcodeId } = req.body;
   // console.log(beforeleetcodeId);
   if (!leetcodeId || !friendName) {
     throw new ApiError(400, "Leetcode Id and friendName is required");
@@ -173,26 +188,27 @@ const updateFriendProfile = asyncHandler(async (req, res, next) => {
     },
     { new: true }
   ).select("-password -refreshToken");
-  
-  const updatedFriend = user.friends.find(friend => friend.leetcodeId === leetcodeId);
- //  console.log(updatedFriend);
+
+  const updatedFriend = user.friends.find(
+    (friend) => friend.leetcodeId === leetcodeId
+  );
+  //  console.log(updatedFriend);
   return res
     .status(200)
-    .json(new ApiResponse(200, updatedFriend, "Friend profile updated successfully"));
+    .json(
+      new ApiResponse(200, updatedFriend, "Friend profile updated successfully")
+    );
 });
 
-
-
-const deleteAccount=asyncHandler(async(req,res)=>{
-
-})
+const deleteAccount = asyncHandler(async (req, res) => {});
 export {
   addFriend,
   addUserDetails,
-  changeCurrentPassword, deleteAccount,
-  fetchAllFriends, getCurrentUser,
+  changeCurrentPassword,
+  deleteAccount,
+  fetchAllFriends,
+  getCurrentUser,
   getFriendsList,
   removeFriend,
-  updateFriendProfile
+  updateFriendProfile,
 };
-
