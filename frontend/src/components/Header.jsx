@@ -21,7 +21,12 @@ const Header = () => {
       toast.error("Something went wrong");
     }
   };
-  const isActive = (path) => location.pathname === path;
+  const isActive = (path) => {
+    if (path === "/contest-lists") {
+      return location.pathname.startsWith("/contest-lists");
+    }
+    return location.pathname === path;
+  };
 
   return (
     <div>

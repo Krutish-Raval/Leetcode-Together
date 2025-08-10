@@ -90,7 +90,7 @@ export async function processContest(contestType, contestId) {
     await delay(1000);
   }
 
-  console.log(`✅ Completed ${slug}`);
+  console.log(`Completed ${slug}`);
 }
 
 async function fetchPageAndStore(contestType, contestId, page, slug) {
@@ -142,7 +142,7 @@ async function fetchPageAndStore(contestType, contestId, page, slug) {
     await ContestantParticipant.bulkWrite(bulkOperations);
   }
 
-  console.log(`✅ Stored page ${page} for ${slug}`);
+  console.log(`Stored page ${page} for ${slug}`);
 }
 
 async function storeContestMetadata(contestType, contestId, data) {

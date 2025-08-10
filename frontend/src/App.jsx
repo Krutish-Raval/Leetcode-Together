@@ -1,11 +1,11 @@
-import { Link,Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { Link, Navigate } from "react-router-dom";
 const HomePage = () => {
   const user = useSelector((state) => state.auth.email);
-  
-  // if (user) {
-  //   return <Navigate to="/home" replace />;
-  // }
+  // console.log("User in HomePage:", user);
+  if (user) {
+    return <Navigate to="/home" replace />;
+  }
   return (
     <div className="min-h-screen bg-[#0d0d0d] text-white relative overflow-hidden font-sans">
       {/* Header */}

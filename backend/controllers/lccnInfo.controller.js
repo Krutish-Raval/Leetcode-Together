@@ -20,7 +20,7 @@ const fetchAndStoreLCCNContests = asyncHandler(async (req, res) => {
 
   for (let i = biweeklyRange.start; i <= biweeklyRange.end; i++) {
     contests.push({ type: "biweekly", id: i });
-  }
+  } 
 
   const results = [];
 
@@ -87,14 +87,14 @@ export async function processLCCNContest(contestType, contestId) {
 
           if (ops.length > 0) {
             await LccnContestInfo.bulkWrite(ops);
-            console.log(`✅ Stored ${ops.length} users for ${slug} (skip=${skip})`);
+            console.log(`Stored ${ops.length} users for ${slug} (skip=${skip})`);
           }
         })
       )
     )
   );
 
-  console.log(`✅ Completed ${slug}`);
+  console.log(`Completed ${slug}`);
 }
 
 
