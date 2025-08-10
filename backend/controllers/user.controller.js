@@ -1,7 +1,8 @@
   import { User } from "../models/user.model.js";
-  import { ApiError } from "../utils/ApiError.js";
-  import { ApiResponse } from "../utils/ApiResponse.js";
-  import { asyncHandler } from "../utils/asyncHandler.js";;
+import { ApiError } from "../utils/ApiError.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
+;
 
   const changeCurrentPassword = asyncHandler(async (req, res, next) => {
     const { currentPassword, newPassword, confirmPassword } = req.body;
@@ -67,13 +68,11 @@ const addFriend = asyncHandler(async (req, res, next) => {
     throw new ApiError(400, "Leetcode Id and friendName is required");
   }
 
-  const friendExists = await User.findOne({
+  const userInfo = await User.findOne({
     _id: req.user._id,
-    $or: [
-      { "friends.leetcodeId": leetcodeId },
-      { "friends.friendName": friendName },
-    ],
   });
+  // console.log(userInfo);
+  const friendExists = userInfo?.friends.some((friend) => friend.leetcodeId === leetcodeId);
   if (friendExists) {
     throw new ApiError(402, "Friend already exists in your friends list");
   }
@@ -156,8 +155,8 @@ const fetchAllFriends=asyncHandler(async(req,res,next)=>{
 
 //Need to change this
 const updateFriendProfile = asyncHandler(async (req, res, next) => {
-  const {beforeleetcodeId, leetcodeId, friendName } = req.body;
-   console.log(req.body);
+  const {beforeleetcodeId, friendName ,leetcodeId} = req.body;
+  // console.log(beforeleetcodeId);
   if (!leetcodeId || !friendName) {
     throw new ApiError(400, "Leetcode Id and friendName is required");
   }
@@ -174,9 +173,12 @@ const updateFriendProfile = asyncHandler(async (req, res, next) => {
     },
     { new: true }
   ).select("-password -refreshToken");
+  
+  const updatedFriend = user.friends.find(friend => friend.leetcodeId === leetcodeId);
+  
   return res
     .status(200)
-    .json(new ApiResponse(200, {friendName,leetcodeId}, "Friend profile updated successfully"));
+    .json(new ApiResponse(200, updatedFriend, "Friend profile updated successfully"));
 });
 
 
@@ -187,11 +189,10 @@ const deleteAccount=asyncHandler(async(req,res)=>{
 export {
   addFriend,
   addUserDetails,
-  changeCurrentPassword,
-  getCurrentUser,
+  changeCurrentPassword, deleteAccount,
+  fetchAllFriends, getCurrentUser,
   getFriendsList,
   removeFriend,
-  updateFriendProfile,
-  deleteAccount,
-  fetchAllFriends
+  updateFriendProfile
 };
+

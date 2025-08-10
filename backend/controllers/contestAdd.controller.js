@@ -32,26 +32,17 @@ const removeContest = asyncHandler(async (req, res) => {
 });
 
 const getAllContests = asyncHandler(async (req, res) => {
-  let { page = 1, limit = 6 } = req.query;
-  page = parseInt(page) || 1; 
-  limit = parseInt(limit) || 6; 
-  // console.log(page);
-  const totalContests = await Contest.countDocuments();
-  const contests = await Contest.find()
-    .sort({ date: -1 }) // Latest first
-    .skip((page - 1) * limit)
-    .limit(limit);
-  // console.log(contests);
+  const contests = await Contest.find().sort({ date: -1 });
+  const totalContests = contests.length;
+  //console.log(contests);
   return res.status(200).json(
     new ApiResponse(
       200,
       {
         totalContests,
-        totalPages: Math.ceil(totalContests / limit),
-        currentPage: page,
         contests,
       },
-      "Fetched contests"
+      "Fetched all contests"
     )
   );
 });

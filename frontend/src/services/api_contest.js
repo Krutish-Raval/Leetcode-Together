@@ -1,17 +1,16 @@
 import axios from "axios";
 import { apiFunc } from "../utils/apiClient.js";
-const API_BASE_URL = "http://localhost:7000/api/v1/contest"; // Change for production
+const API_BASE_URL = "http://localhost:7000/api/v1/contest";
 
-export const fetchContests = async (page = 1, limit = 10) => {
+export const fetchContests = async () => {
     try {
         const response = await apiFunc().get(`contest/get-all-contest`,{
-            params:{page,limit},
             withCredentials:true,
         });
-        console.log(response);
+        // console.log(response);
         return response.data;
     } catch (error) {
-        console.log(error);
+       // console.log(error);
         console.error("Error fetching contests:", error);
         return { contests: [], totalPages: 0 };
     }

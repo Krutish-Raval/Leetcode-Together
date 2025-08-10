@@ -149,12 +149,13 @@ export const updatePassword=async()=>{
   }
 }
 
-export const updateFriend=async({beforeleetcodeid,leetcodeId,friendName})=>{
+export const updateFriend=async({beforeleetcodeId,friendName,leetcodeId})=>{
   try {
     const response=await apiFunc().patch(`user/update-friend-profile`,{
-      beforeleetcodeid,
-      leetcodeId,
+      beforeleetcodeId,
       friendName,
+      leetcodeId,
+      
     },{
       withCredentials:true,
     })

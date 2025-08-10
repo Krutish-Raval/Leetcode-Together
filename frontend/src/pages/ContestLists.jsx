@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -6,39 +6,47 @@ import { fetchContests } from "../services/api_contest.js";
 
 const ContestLists = () => {
   let [contestType, setContestType] = useState("");
-  const [contestNumber, setContestNumber] = useState(0);
-  const [contests, setContests] = useState([]);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const navigate = useNavigate();
-  const inputRefs = useRef(null);
-
+  let [contestNumber, setContestNumber] = useState(0);
+  let [contests, setContests] = useState([]);
+  let [page, setPage] = useState(1);
+  let [totalPages, setTotalPages] = useState(1);
+  let navigate = useNavigate();
+  let inputRefs = useRef(null);
+  let [loading, setLoading] = useState(true);
+  let contestsPerPage = 6;
   useEffect(() => {
     const loadContests = async () => {
-      const realData = await fetchContests(page, 6);
+      setLoading(true);
+      const realData = await fetchContests();
       const data = realData.data;
-      if (data && Array.isArray(data.contests)) {
+      try {
         setContests(data.contests);
-        setTotalPages(data.totalPages);
-      } else {
+        setTotalPages(Math.ceil(data.totalContests / contestsPerPage));
+      } catch (err) {
+        console.log(err);
         setContests([]);
+      } finally {
+        setLoading(false);
       }
     };
     loadContests();
-  }, [page]);
+  }, []);
 
   const handleButtonViewStanding = (e) => {
     e.preventDefault();
-    if (!contestType.trim() || contestNumber <= 0 ) {
+    if (!contestType.trim() || contestNumber <= 0) {
       toast.error("Please enter valid Contest Type and Contest Number");
       return;
     }
     contestType = contestType.toLowerCase();
     navigate(`/contest-standing/${contestType}-contest-${contestNumber}`);
   };
-  
+  const startIndex = (page - 1) * contestsPerPage;
+  const endIndex = startIndex + contestsPerPage;
+  const contestsToShow = contests.slice(startIndex, endIndex);
+
   return (
-    <div className="min-h-screen bg-[#0e0e10] text-white p-4">
+    <div className="min-h-screen bg-[#0e0e10] text-white p-3">
       <ToastContainer
         position="top-center"
         autoClose={2000}
@@ -57,7 +65,7 @@ const ContestLists = () => {
       </header>
 
       {/* Add Contest Section */}
-      <div className="max-w-lg mx-auto bg-[#1e1e1e] p-6 rounded-lg shadow-lg mb-5">
+      <div className="max-w-lg mx-auto bg-[#1e1e1e] p-6 rounded-lg shadow-lg mb-3">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <select
             value={contestType}
@@ -99,14 +107,13 @@ const ContestLists = () => {
         </div>
       </div>
 
-      {/* Contests List Section */}
       <div className="max-w-lg mx-auto">
-        {contests.length === 0 ? (
-          <p className="text-gray-500 text-center">No contests added yet.</p>
+        {loading ? (
+          <p className="text-center text-2xl">Loading...</p>
         ) : (
           <>
             <ul className="space-y-4">
-              {contests.map((contest) => (
+              {contestsToShow.map((contest) => (
                 <li
                   key={contest._id}
                   className="flex justify-between items-center p-4 bg-[#1e1e1e] rounded-lg shadow-md hover:bg-[#2e2e30] transition-all"
@@ -141,7 +148,6 @@ const ContestLists = () => {
                     >
                       View Standing
                     </Link>
-          
                   </div>
                 </li>
               ))}
