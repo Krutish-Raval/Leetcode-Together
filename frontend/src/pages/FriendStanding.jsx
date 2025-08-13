@@ -130,7 +130,7 @@ const FriendStanding = () => {
           if (label) {
             acc[label] = {
               ...sub,
-              failCount: sub?.failCount ?? 0, // make sure it's included
+              failCount: sub?.failCount ?? 0, 
             };
           }
           //console.log("Submission:", sub);
@@ -200,7 +200,6 @@ const FriendStanding = () => {
         {contestName.replace(/-/g, " ").toUpperCase()} - Friends Standings
       </h1>
       <div className="text-center text-sm text-gray-100 mb-2">
-        {/* {processedStandings.length} Friend Participated || */}
         Total Participants : {contestMetadata?.totalParticipants}
       </div>
 

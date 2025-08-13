@@ -1,7 +1,7 @@
+import pLimit from "p-limit";
 import { LccnContestInfo } from "../models/lccnContestInfo.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import pLimit from "p-limit";
 
 const PAGE_SIZE = 25;
 const MAX_RETRIES = 20;
@@ -20,7 +20,7 @@ const fetchAndStoreLCCNContests = asyncHandler(async (req, res) => {
 
   for (let i = biweeklyRange.start; i <= biweeklyRange.end; i++) {
     contests.push({ type: "biweekly", id: i });
-  } 
+  }
 
   const results = [];
 
@@ -54,42 +54,49 @@ export async function processLCCNContest(contestType, contestId) {
   // console.log(totalPages);
   const limit = pLimit(MAX_CONCURRENT_PAGES);
 
-  const skips = Array.from({ length: totalPages }, (_, i) => i * PAGE_SIZE);
-
-  const results = await Promise.allSettled(
+  //  const skips = Array.from({ length: totalPages }, (_, i) => i * PAGE_SIZE); // make array of skips[0,25,75,..]
+  const skips = [];
+  for (let i = 0; i < totalPages; i++) {
+    skips.push(i * PAGE_SIZE);
+  }
+  await Promise.allSettled(
     skips.map((skip) =>
       limit(() =>
-        retry(() => fetchLccnPage(slug, skip), MAX_RETRIES).then(async (pageData) => {
-          if (!pageData || pageData.length === 0) return;
+        retry(() => fetchLccnPage(slug, skip), MAX_RETRIES).then(
+          async (pageData) => {
+            if (!pageData || pageData.length === 0) return;
 
-          const ops = pageData.map((user) => ({
-            updateOne: {
-              filter: {
-                contest_id: contestId,
-                username: user.username,
-                contest_type: contestType,
-              },
-              update: {
-                $set: {
-                  username: user.username,
+            const ops = pageData.map((user) => ({
+              updateOne: {
+                filter: {
                   contest_id: contestId,
+                  username: user.username,
                   contest_type: contestType,
-                  rank: user.rank,
-                  score: user.score,
-                  old_rating: user.old_rating,
-                  new_rating: user.new_rating,
-                  delta_rating: user.delta_rating,
                 },
+                update: {
+                  $set: {
+                    username: user.username,
+                    contest_id: contestId,
+                    contest_type: contestType,
+                    rank: user.rank,
+                    score: user.score,
+                    old_rating: user.old_rating,
+                    new_rating: user.new_rating,
+                    delta_rating: user.delta_rating,
+                  },
+                },
+                upsert: true,
               },
-              upsert: true,
-            },
-          }));
+            }));
 
-          if (ops.length > 0) {
-            await LccnContestInfo.bulkWrite(ops);
-            console.log(`Stored ${ops.length} users for ${slug} (skip=${skip})`);
+            if (ops.length > 0) {
+              await LccnContestInfo.bulkWrite(ops);
+              console.log(
+                `Stored ${ops.length} users for ${slug} (skip=${skip})`
+              );
+            }
           }
-        })
+        )
       )
     )
   );
@@ -97,12 +104,12 @@ export async function processLCCNContest(contestType, contestId) {
   console.log(`Completed ${slug}`);
 }
 
-
 async function fetchLccnCount(slug) {
   const url = `https://lccn.lbao.site/api/v1/contest-records/count?contest_name=${slug}&archived=false`;
   const res = await fetch(url);
   //console.log(res);
-  if (!res.ok) throw new Error(`Failed to fetch count for ${slug} - ${res.status}`);
+  if (!res.ok)
+    throw new Error(`Failed to fetch count for ${slug} - ${res.status}`);
   const data = await res.json();
   //console.log(data);
   return data || 0;
@@ -131,57 +138,62 @@ async function retry(fn, maxRetries) {
   throw new Error(`Failed after ${maxRetries} retries`);
 }
 
-  const getFriendsLCCNPerformance = asyncHandler(async (req, res) => {
-    const { contestName: contest_name, friends } = req.body;
+const getFriendsLCCNPerformance = asyncHandler(async (req, res) => {
+  const { contestName: contest_name, friends } = req.body;
 
-    if (!contest_name || !Array.isArray(friends) || friends.length === 0) {
-      throw new ApiError(400, "contest_name and non-empty friends array are required");
-    }
-   
-    // Extract contestType and contestId
-    const [type, , idStr] = contest_name.split("-");
-    const contestType = type;
-    const contestId = parseInt(idStr);
-    //console.log(contestType, contestId, friends);
-    if (!["weekly", "biweekly"].includes(contestType) || isNaN(contestId)) {
-      throw new ApiError(400, "Invalid contest name format");
-    }
+  if (!contest_name || !Array.isArray(friends) || friends.length === 0) {
+    throw new ApiError(
+      400,
+      "contest_name and non-empty friends array are required"
+    );
+  }
 
-    // Fetch data from LccnContestInfo
-    const participants = await LccnContestInfo.find({
-      contest_type: contestType,
-      contest_id: contestId,
-      username: { $in: friends },
-    });
+  // Extract contestType and contestId
+  const [type, , idStr] = contest_name.split("-");
+  const contestType = type;
+  const contestId = parseInt(idStr);
+  //console.log(contestType, contestId, friends);
+  if (!["weekly", "biweekly"].includes(contestType) || isNaN(contestId)) {
+    throw new ApiError(400, "Invalid contest name format");
+  }
 
-    const friendMap = {};
-    for (const friend of friends) {
-      friendMap[friend] = {
-        username: friend,
-        rank: null,
-        score: null,
-        old_rating: null,
-        new_rating: null,
-        delta_rating: null,
-      };
-    }
-    
-    for (const p of participants) {
-      if (friendMap[p.username]) {
-        friendMap[p.username] = {
-          username: p.username,
-          rank: p.rank,
-          score: p.score,
-          old_rating: p.old_rating,
-          new_rating: p.new_rating,
-          delta_rating: p.delta_rating,
-        };
-      }
-    }
-
-    const friendData = Object.values(friendMap)
-
-    return res.status(200).json(new ApiResponse(200, friendData, "LCCN Friends Ranking"));
+  // Fetch data from LccnContestInfo
+  const participants = await LccnContestInfo.find({
+    contest_type: contestType,
+    contest_id: contestId,
+    username: { $in: friends },
   });
 
-export { fetchAndStoreLCCNContests,getFriendsLCCNPerformance  };
+  const friendMap = {};
+  for (const friend of friends) {
+    friendMap[friend] = {
+      username: friend,
+      rank: null,
+      score: null,
+      old_rating: null,
+      new_rating: null,
+      delta_rating: null,
+    };
+  }
+
+  for (const p of participants) {
+    if (friendMap[p.username]) {
+      friendMap[p.username] = {
+        username: p.username,
+        rank: p.rank,
+        score: p.score,
+        old_rating: p.old_rating,
+        new_rating: p.new_rating,
+        delta_rating: p.delta_rating,
+      };
+    }
+  }
+
+  const friendData = Object.values(friendMap);
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, friendData, "LCCN Friends Ranking"));
+});
+
+export { fetchAndStoreLCCNContests, getFriendsLCCNPerformance };

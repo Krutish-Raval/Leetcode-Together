@@ -74,7 +74,6 @@ const AddFriends = () => {
     }
   };
 
-  // Update a friend's details (name and LeetCode ID)
   const handleUpdateFriend = async () => {
     if (!editedFriendName.trim() || !editedFriendId.trim()) {
       toast.error("Both friend name and LeetCode ID are required.");

@@ -32,7 +32,6 @@ const Header = () => {
     <div>
       <header className="bg-[#1e1e1e] text-white py-4 px-7 shadow-md">
         <div className="flex justify-between items-center">
-          {/* Brand Logo */}
           <div
             className="text-2xl font-bold cursor-pointer text-white"
             onClick={() => navigate("/home")}
@@ -40,7 +39,6 @@ const Header = () => {
             <span className="text-[#ffa116]">&lt;/&gt;</span> LeetCode Together
           </div>
 
-          {/* Navigation Links */}
           <nav className="flex gap-7">
             <button
               onClick={() => navigate("/home")}
@@ -74,7 +72,6 @@ const Header = () => {
             </button>
           </nav>
 
-          {/* Buttons Section */}
           <div className="flex items-center gap-4">
             {/* Logout Button */}
             <button
@@ -86,7 +83,6 @@ const Header = () => {
           </div>
         </div>
       </header>
-      {/* Orange Line for Separation */}
       <div className="h-1 w-full bg-[#ffa116] "></div>
     </div>
   );

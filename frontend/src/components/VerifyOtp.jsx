@@ -60,11 +60,11 @@ const VerifyOtp = ({ email, password, confirmPassword, goBack }) => {
   const handleResendOtp = async () => {
     try {
       await otpSend({ email });
-      toast.dismiss(); // Remove any existing toast
+      toast.dismiss(); 
 
       toast.info('OTP Resent Successfully!');
     } catch (err) {
-        toast.dismiss(); // Remove any existing toast
+        toast.dismiss(); 
 
       toast.error('Failed to resend OTP. Please try again.');
     }

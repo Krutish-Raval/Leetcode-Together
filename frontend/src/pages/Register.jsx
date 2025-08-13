@@ -151,7 +151,6 @@ const Register = () => {
               </button>
             </div>
 
-            {/* Confirm Password with Visibility Toggle */}
             <div className="relative">
               <input
                 type={showConfirmPassword ? "text" : "password"}
