@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { addUserDetail, getUserDetails,logOutUser } from "../services/api_user.js";
+import { addUserDetail, getUserDetails } from "../services/api_user.js";
 import { useDispatch } from "react-redux";
 import { logout } from "../store/authSlice";
 
@@ -33,7 +33,7 @@ const HomePage = () => {
           setIsSubmitted(false);
         }
       } catch (error) {
-        await logOutUser({});
+        //await logOutUser({});
         dispatch(logout());
         navigate("/login");
         console.error("Error fetching user data:", error);
