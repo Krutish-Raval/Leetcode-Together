@@ -30,7 +30,7 @@ export const autoFetchLCInfo = async () => {
     console.log(`Fetching Biweekly Contest ID: ${latestBiweekly.contestId}`);
     await processContest("biweekly", latestBiweekly.contestId);
   }
-   if (day ==2 || day==1 || day === 3 || day === 4 || day === 5) {
+   if (day === 2 || day === 1 || day === 3 || day === 4 || day === 5) {
     console.log("Midweek Update: Refetching Weekly...");
     await processContest("weekly", latestWeekly.contestId);
 
