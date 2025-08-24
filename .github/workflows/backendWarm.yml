@@ -2,9 +2,8 @@ name: Keep Backend Warm
 
 on:
   schedule:
-    # Run every 14 minutes to prevent 15-minute sleep on Render
-    - cron: '*/14 * * * *'
-  workflow_dispatch: # Allows manual triggering
+    - cron: '*/30 * * * *'
+  workflow_dispatch: 
 
 jobs:
   ping:
