@@ -31,7 +31,7 @@ const registerUser = asyncHandler(async (req, res, next) => {
 
   const { email, password, confirmPassword, otp } = req.body;
   // console.log("Body: ",req.body);
-
+  email = email.toLowerCase();
   if (
     [email, password, confirmPassword].some((field) => field?.trim() === "")
   ) {
@@ -78,12 +78,12 @@ const loginUser = asyncHandler(async (req, res, next) => {
   if (!(email && password)) {
     throw new ApiError(400, "Email and password are required");
   }
-
+  email = email.toLowerCase();
   const user = await User.findOne({ email });
   if (!user) {
     throw new ApiError(404, "User does not exist");
   }
-
+  
   const isPasswordCorrect = await user.verifyPassword(password);
   if (!isPasswordCorrect) {
     throw new ApiError(401, "Incorrect password");
