@@ -48,14 +48,14 @@ export const autoFetchLccnContest = async () => {
   if (day === 0) {
     const nextWeeklyId = latestWeekly.contestId;
     console.log(`📦 Fetching Weekly Contest ID: ${nextWeeklyId}`);
-    await processLCCNContest("weekly", nextWeeklyId);
-    await deleteOldestContest("weekly", 17); // Delete the 18th oldest contest
+    // await processLCCNContest("weekly", nextWeeklyId);
+    await deleteOldestContest("weekly", 16); // Delete the 17th oldest contest
   }
-  if (day === 6 && isAlternateSaturday(latestBiweekly.date)) {
+  if (day === 0 && isAlternateSaturday(latestBiweekly.date)) {
     const nextBiweeklyId = latestBiweekly.contestId;
     console.log(`📦 Fetching Biweekly Contest ID: ${nextBiweeklyId}`);
-    await processLCCNContest("biweekly", nextBiweeklyId);
-    await deleteOldestContest("biweekly", 9); // Delete the 10th oldest contest
+    // await processLCCNContest("biweekly", nextBiweeklyId);
+    await deleteOldestContest("biweekly", 8); // Delete the 9th oldest contest
   }
   // if (day === 0 ) {
   //   const nextBiweeklyId = latestBiweekly.contestId;
