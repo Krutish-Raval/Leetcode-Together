@@ -19,12 +19,12 @@ export const autoAddContest = async()=> {
       contestId: latestWeekly.contestId + 1,
       date: new Date(new Date(latestWeekly.date).getTime() + 7 * 24 * 60 * 60 * 1000)
     };
-    await Contest.create(newWeekly);
-    console.log(`Adding weekly contest ${latestWeekly.contestId + 1}`);
-    const removeWeeklyId = latestWeekly.contestId - 17;
+    //await Contest.create(newWeekly);
+    //console.log(`Adding weekly contest ${latestWeekly.contestId + 1}`);
+    const removeWeeklyId = parseInt(latestWeekly.contestId) - 17;
     await Contest.deleteOne({ contestType: "Weekly", contestId: removeWeeklyId });
     console.log(`Removing weekly contest ${removeWeeklyId}`);
-  }
+  } 
   else if (day===6 && isAlternateSaturday(latestBiweekly.date)) {
     const newBiweekly = {
       contestType: "Biweekly",
