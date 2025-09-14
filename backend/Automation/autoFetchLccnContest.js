@@ -17,7 +17,7 @@ const isAlternateSaturday = (lastDate) => {
 };
 
 const deleteOldestContest = async (contestType, deleteIndex) => {
-  const contests = await Contest.find({ contestType }).sort({ contestId: -1 });
+  const contests = await ContestMetadata.find({ contestType }).sort({ contestId: -1 });
 
   if (contests.length <= deleteIndex) return;
 
