@@ -21,7 +21,7 @@ export const autoAddContest = async()=> {
     };
     //await Contest.create(newWeekly);
     //console.log(`Adding weekly contest ${latestWeekly.contestId + 1}`);
-    const removeWeeklyId = parseInt(latestWeekly.contestId) - 17;
+    const removeWeeklyId = parseInt(latestWeekly.contestId) - 16;
     await Contest.deleteOne({ contestType: "Weekly", contestId: removeWeeklyId });
     console.log(`Removing weekly contest ${removeWeeklyId}`);
   } 
