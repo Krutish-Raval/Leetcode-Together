@@ -19,10 +19,10 @@ export const autoAddContest = async()=> {
       contestId: latestWeekly.contestId + 1,
       date: new Date(new Date(latestWeekly.date).getTime() + 7 * 24 * 60 * 60 * 1000)
     };
-    await Contest.create(newWeekly);
-    console.log(`Adding weekly contest ${latestWeekly.contestId + 1}`);
-    const removeWeeklyId = parseInt(latestWeekly.contestId) - 15;
-    await Contest.deleteOne({ contestType: "Weekly", contestId: removeWeeklyId });
+   // await Contest.create(newWeekly);
+    // console.log(`Adding weekly contest ${latestWeekly.contestId + 1}`);
+   // const removeWeeklyId = parseInt(latestWeekly.contestId) - 15;
+    //await Contest.deleteOne({ contestType: "Weekly", contestId: removeWeeklyId });
     console.log(`Removing weekly contest ${removeWeeklyId}`);
   } 
   else if (day===6 && isAlternateSaturday(latestBiweekly.date)) {
@@ -32,9 +32,9 @@ export const autoAddContest = async()=> {
       date: new Date(new Date(latestBiweekly.date).getTime() + 14 * 24 * 60 * 60 * 1000)
     };
     console.log(`Adding biweekly contest ${latestBiweekly.contestId + 1}`);
-    await Contest.create(newBiweekly);
-    const removeBiweeklyId = parseInt(latestBiweekly.contestId) - 7;
-    await Contest.deleteOne({ contestType: "Biweekly", contestId: removeBiweeklyId });
-    console.log(`Removing biweekly contest ${removeBiweeklyId}`);
+    //await Contest.create(newBiweekly);
+    //const removeBiweeklyId = parseInt(latestBiweekly.contestId) - 7;
+    //await Contest.deleteOne({ contestType: "Biweekly", contestId: removeBiweeklyId });
+    //console.log(`Removing biweekly contest ${removeBiweeklyId}`);
   }
 };  
