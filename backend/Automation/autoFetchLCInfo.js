@@ -24,20 +24,20 @@ export const autoFetchLCInfo = async () => {
   }).sort({ contestId: -1 });
   if (day === 0) {
     console.log(`Fetching Weekly Contest ID: ${latestWeekly.contestId}`);
-    await processContest("weekly", latestWeekly.contestId)    ;
+    //await processContest("weekly", latestWeekly.contestId)    ;
   }
   if (day === 6 && isAlternateSaturday(latestBiweekly.date)) {
     console.log(`Fetching Biweekly Contest ID: ${latestBiweekly.contestId}`);
-    await processContest("biweekly", latestBiweekly.contestId);
+   // await processContest("biweekly", latestBiweekly.contestId);
   }
    if (day === 2 || day === 1 || day === 3 || day === 4 || day === 5) {
     console.log("Midweek Update: Refetching Weekly...");
-    await processContest("weekly", latestWeekly.contestId);
+    //await processContest("weekly", latestWeekly.contestId);
 
     const daysSinceBiweekly = Math.floor((now - new Date(latestBiweekly.date)) / (1000 * 60 * 60 * 24));
     if (daysSinceBiweekly <= 6) {
       console.log("Midweek Update: Refetching Biweekly...");
-      await processContest("biweekly", latestBiweekly.contestId);
+      // await processContest("biweekly", latestBiweekly.contestId);
     } else {
       console.log("Midweek: Skipping biweekly (no recent contest).");
     }
